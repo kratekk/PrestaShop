@@ -66,7 +66,7 @@ class dotpaypaymentModuleFrontController extends ModuleFrontController
                     'id' => Configuration::get('DP_ID'),
                     'amount' => (float)$cart->getOrderTotal(true, Cart::BOTH),
                     'currency' => $currency["iso_code"],
-                    'description' => Configuration::get('PS_SHOP_NAME'), 
+                    'description' => Configuration::get('PS_SHOP_NAME').", zam.(order) nr: ".$cart->id,
                     'url' => $this->context->link->getModuleLink('dotpay', 'payment', array('control' => $cart->id), Configuration::get('DP_SSL', false)),                        
                     'type' => 0,                        
                     'urlc' => $this->context->link->getModuleLink('dotpay', 'callback', array('ajax' => '1'), Configuration::get('DP_SSL', false)),

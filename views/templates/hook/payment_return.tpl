@@ -27,7 +27,7 @@
 <p class="dotpay_return"><img src="{$module_dir}img/Dotpay_logo_napis{if $lang_iso == 'pl'}_pl{else}_en{/if}.png" /><img width="128" height="128" src="{$module_dir}img/loading2.gif" /></p>
 <p class="dotpay_return">{l s='Please wait for payment confirmation.' mod='dotpay'}</p><br/><br/>
 <form action="{$form_url}" method="post" id="dpForm" name="dpForm" target="_parent">
-{foreach from=$params key=k item=v}
+{foreach from=$params_dotpay_payment key=k item=v}
 <input type="hidden" name="{$k|escape}" value="{$v|escape}"/>
 {/foreach}
 </form>

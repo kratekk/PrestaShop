@@ -18,7 +18,7 @@
 * versions in the future. If you wish to customize PrestaShop for your
 * needs please refer to http://www.prestashop.com for more information.
 *
-*  @author    Piotr Karecki <tech@dotpay.pl>
+*  @author    Piotr Karecki & Dotpay Team <tech@dotpay.pl>
 *  @copyright Dotpay
 *  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *
@@ -37,14 +37,14 @@ class dotpay extends PaymentModule
 	{
 		$this->name = 'dotpay';
 		$this->tab = 'payments_gateways';
-		$this->version = '1.4.9';
+		$this->version = '1.5.0';
                 $this->author = 'tech@dotpay.pl';
 
 		parent::__construct();
 
-		$this->displayName = $this->l('dotpay');
-		$this->description = $this->l('dotpay payment module');
-		$this->confirmUninstall = $this->l('Are you sure you want to uninstall dotpay payment module?');
+		$this->displayName = $this->l('Dotpay');
+		$this->description = $this->l('Dotpay payment module');
+		$this->confirmUninstall = $this->l('Are you sure you want to uninstall Dotpay payment module?');
 	}
 	
     private function addNewOrderState($state, $names, $color)
@@ -82,7 +82,8 @@ class dotpay extends PaymentModule
     {
         Configuration::updateValue('DP_TEST', false);
         Configuration::updateValue('DP_CHK', false);
-        Configuration::updateValue('DP_SSL', false);
+		if (isset($_SERVER['SERVER_PORT']) && ($_SERVER['SERVER_PORT'] === '443')) { Configuration::updateValue('DP_SSL', true); }else{
+        Configuration::updateValue('DP_SSL', false); }
         Configuration::updateValue('DP_ID', self::DOTPAY_PAYMENTS_TEST_CUSTOMER);
         Configuration::updateValue('DP_PIN', self::DOTPAY_PAYMENTS_TEST_CUSTOMER_PIN);
         Configuration::updateValue('DOTPAY_CONFIGURATION_OK', false);
@@ -92,7 +93,7 @@ class dotpay extends PaymentModule
             $this->registerHook('backOfficeHeader') &&
             $this->registerHook('payment') &&
             $this->registerHook('paymentReturn') &&
-            $this->addNewOrderState('PAYMENT_DOTPAY_NEW_STATUS', array('Awaiting payment confirmation', 'Oczekuje potwierdzenia płatności'),'lightblue') &&
+            $this->addNewOrderState('PAYMENT_DOTPAY_NEW_STATUS', array('Awaiting Dotpay payment confirmation', 'Oczekiwanie na płatność Dotpay'),'#4169E1') &&
             $this->addNewOrderState('PAYMENT_DOTPAY_COMPLAINT_STATUS', array('Complaint', 'Rozpatrzona reklamacja'),'darkred');   
     }
 	
@@ -126,17 +127,23 @@ class dotpay extends PaymentModule
 	 */
         public function getContent()
         {
+			if (!isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] != 'on') {$is_https = 0;}else{$is_https = 1;}
             $this->_postProcess();
             $this->context->smarty->assign(array(
                 'module_dir' => $this->_path,
                 'DOTPAY_CONFIGURATION_OK' => Configuration::get('DOTPAY_CONFIGURATION_OK', false),
                 'DP_URLC' => $this->context->link->getModuleLink('dotpay', 'callback', array('ajax' => '1')),
                 'DP_URI' => $_SERVER['REQUEST_URI'],
-                'SSL_ENABLED' => Configuration::get('PS_SSL_ENABLED')
+                'SSL_ENABLED' => Configuration::get('PS_SSL_ENABLED'),
+				'bad_ID' => $this->l('Incorrect ID (6 digits maximum)'),
+				'bad_PIN' => $this->l('Incorrect PIN (minimum 16 and maximum 32 alphanumeric characters)'),
+				'forced_HTTPS' => $this->l('(forced YES)'),
+				'DOTPAY_HTTPS' => Configuration::get('DP_SSL')
             ));
             $form_values = $this->getConfigFormValues();
             foreach ($form_values as $key => $value)
                 $this->context->smarty->assign($key, $value);
+				$this->context->smarty->assign("is_https", $is_https);
             if (version_compare(_PS_VERSION_, "1.6.0", ">=")) {
                 $output = $this->context->smarty->fetch($this->local_path.'views/templates/admin/configure.tpl');
                 return $output.$this->renderForm();
@@ -164,7 +171,7 @@ class dotpay extends PaymentModule
 		$helper->token = Tools::getAdminTokenLite('AdminModules');
 
 		$helper->tpl_vars = array(
-                        'fields_value' => $this->getConfigFormValues(),
+            'fields_value' => $this->getConfigFormValues(),
 			'languages' => $this->context->controller->getLanguages(),
 			'id_language' => $this->context->language->id
 		);
@@ -175,21 +182,40 @@ class dotpay extends PaymentModule
 	/**
 	 * Create the structure of your form.
 	 */
-	protected function getConfigForm()
+
+protected function getConfigForm()
 	{
 		return array(
 			'form' => array(
 				'legend' => array(
 				'title' => $this->l('Settings'),
-				'icon' => 'icon-cogs',
+				'icon' => 'icon-wrench',
 				),
 				'input' => array(
 					array(
+						'type' => 'text',
+						'name' => 'DP_ID',
+						'label' => $this->l('ID').'<span style="color:red;"> *</span>',
+						'size' => 6, 
+						'desc' => $this->l('The same as in Dotpay user panel').' <div id="infoID" /></div>',
+						'required' => true						
+					),
+					array(
+						'type' => 'text',
+						'name' => 'DP_PIN',
+						'label' => $this->l('PIN').'<span style="color:red;"> *</span>',
+						'class' => 'fixed-width-lg',
+						'desc' => $this->l('The same as in Dotpay user panel').' <div id="infoPIN" /></div>',
+						'required' => true
+					),
+					
+					
+					array(
 						'type' => 'switch',
-                                           	'label' => $this->l('Test mode'),
+                        'label' => '<div id="ukryj_test">'.$this->l('Test mode').'</div>',
 						'name' => 'DP_TEST',
 						'is_bool' => true,
-						'desc' => $this->l('Use this module in test environment'),
+						'desc' => '<div id="ukryj_test_desc">'.$this->l('I\'m using Dotpay test account (test ID)').'</div>',
 						'values' => array(
 							array(
 								'id' => 'active_on',
@@ -203,11 +229,13 @@ class dotpay extends PaymentModule
 							)
 						),
 					),
-                                        array(
+					
+
+                          array(
 						'type' => 'switch',
-                                           	'label' => $this->l('Use SSL'),
+                        'label' => $this->l('This shop is using HTTPS'),
 						'name' => 'DP_SSL',
-                                                'desc' => $this->l('Secure Sockets Layer cryptographic protocol'),
+                        'desc' => $this->l('Use secure HTTPS protocol for communication with Dotpay').' <span id="https_replace"></span>',
 						'is_bool' => true,
 						'values' => array(
 							array(
@@ -224,9 +252,9 @@ class dotpay extends PaymentModule
 					),                                                                        
                                         array(
 						'type' => 'switch',
-                                           	'label' => $this->l('CHK mode'),
+                        'label' => $this->l('CHK mode'),
 						'name' => 'DP_CHK',
-                                                'desc' => $this->l('Secure payment parameters'),
+                        'desc' => $this->l('Secure payment parameters'),
 						'is_bool' => true,
 						'values' => array(
 							array(
@@ -241,16 +269,7 @@ class dotpay extends PaymentModule
 							)
 						),
 					),                                    
-					array(
-						'type' => 'text',
-						'name' => 'DP_ID',
-						'label' => $this->l('ID'),
-					),
-					array(
-						'type' => 'text',
-						'name' => 'DP_PIN',
-						'label' => $this->l('PIN'),
-					),
+
 				),
 				'submit' => array(
 					'title' => $this->l('Save'),
@@ -259,6 +278,7 @@ class dotpay extends PaymentModule
 		);
 	}
 
+	 
 	/**
 	 * Set values for the inputs.
 	 */
@@ -343,7 +363,7 @@ class dotpay extends PaymentModule
             'submitGuestTracking' => 1       
         );
         $this->smarty->assign(array(
-            'params' => $param,
+            'params_dotpay_payment' => $param,
             'module_dir' => $this->getPathUri(),
             'form_url' => $form_url,
         ));

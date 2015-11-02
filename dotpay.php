@@ -128,6 +128,7 @@ class dotpay extends PaymentModule
         public function getContent()
         {
 			if (!isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] != 'on') {$is_https = 0;}else{$is_https = 1;}
+			if (version_compare(_PS_VERSION_, "1.6.1", ">=")) {$is_compatibility_currency = 1;}else{$is_compatibility_currency = 0;}
             $this->_postProcess();
             $this->context->smarty->assign(array(
                 'module_dir' => $this->_path,
@@ -144,6 +145,7 @@ class dotpay extends PaymentModule
             foreach ($form_values as $key => $value)
                 $this->context->smarty->assign($key, $value);
 				$this->context->smarty->assign("is_https", $is_https);
+				$this->context->smarty->assign("is_compatibility_currency", $is_compatibility_currency);
             if (version_compare(_PS_VERSION_, "1.6.0", ">=")) {
                 $output = $this->context->smarty->fetch($this->local_path.'views/templates/admin/configure.tpl');
                 return $output.$this->renderForm();

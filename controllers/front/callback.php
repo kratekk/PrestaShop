@@ -41,17 +41,22 @@ class dotpaycallbackModuleFrontController extends ModuleFrontController
 			$cart = new Cart((int)Tools::getValue('control'));
 			$customer = new Customer((int)$cart->id_customer);
 			$orginal_amount = trim(Tools::getValue('orginal_amount'));
-			$D_amount = explode(" ",trim(Tools::getValue('amount')));
 			$currency = Currency::getCurrency((int)$cart->id_currency);
 			$currency_self = Currency::getCurrency((int)self::$cart->id_currency);
 			$total = (float)$cart->getOrderTotal();
-				if($currency["iso_code"] <> $currency_self["iso_code"] && $orginal_amount <> $D_amount[0]){  //if you have used 2 Currency (conversion currency in Dotpay)
-					$price = number_format(($total*$currency["conversion_rate"]), 2,'.', ''); 
-					$price .= " ".$currency["iso_code"];
-				}else{
+			
+			if(version_compare(_PS_VERSION_, "1.6.1", ">=")) {
+				$D_amount = explode(" ",trim(Tools::getValue('amount')));
+					if($currency["iso_code"] <> $currency_self["iso_code"] && $orginal_amount <> $D_amount[0] ){  //if you have used 2 Currency
+						$price = number_format(($total*$currency["conversion_rate"]), 2,'.', ''); 
+						$price .= " ".$currency["iso_code"];
+					}
+				
+			} else{
 					$price = number_format($total, 2,'.', ''); 
 					$price .= " ".$currency["iso_code"];
-				}
+			}
+			
 
         if($price <> $orginal_amount)
             die('PrestaShop - NO MATCH OR WRONG AMOUNT - '.$price.' <> '.$orginal_amount);

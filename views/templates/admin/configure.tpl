@@ -55,7 +55,8 @@
         <table><tr><td><img width="100" height="100" src="{$module_dir}img/tick.png"></td><td><br>
         <p><h2 style="color: green;">{l s='Module is active. ' mod='dotpay'}</h2></p>
 		<p><b>{l s='If you do not recive payment information, please check URLC configuration in your Dotpay user panel.' mod='dotpay'}</b></p>
-        <p style="color: red;"><b>{if $DP_TEST}{l s='Module is in TEST mode. All payment informations are fake!' mod='dotpay'}{/if}</b></p><br>
+        <p style="color: red;"><b>{if $DP_TEST}{l s='Module is in TEST mode. All payment informations are fake!' mod='dotpay'}{/if}</b></p><br><br>
+        <p style="color: red;"><b>{if $is_compatibility_currency == '0'}{l s='This version of PrestaShop does not support currencies othen that PLN. Please update your PrestaShop installation to the latest version if you want to use other currencies!' mod='dotpay'}{/if}</b></p><br>
         </td></tr></table>
     {else}
         <table><tr><td><img width="100" height="100" src="{$module_dir}img/cross.png"></td><td>

@@ -50,7 +50,10 @@ class dotpaycallbackModuleFrontController extends ModuleFrontController
 					if($currency["iso_code"] <> $currency_self["iso_code"] && $orginal_amount <> $D_amount[0] ){  //if you have used 2 Currency
 						$price = number_format(($total*$currency["conversion_rate"]), 2,'.', ''); 
 						$price .= " ".$currency["iso_code"];
-					}
+					}else{					
+						$price = number_format($total, 2,'.', ''); 
+						$price .= " ".$currency["iso_code"];
+					}	
 				
 			} else{
 					$price = number_format($total, 2,'.', ''); 

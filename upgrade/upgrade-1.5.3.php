@@ -1,4 +1,5 @@
-{*
+<?php
+/**
 *
 *
 * NOTICE OF LICENSE
@@ -17,18 +18,18 @@
 * versions in the future. If you wish to customize PrestaShop for your
 * needs please refer to http://www.prestashop.com for more information.
 *
-*  @author    Tech Dotpay <tech@dotpay.pl>
-*  @copyright Dotpay
+*  @author    Dotpay Team <tech@dotpay.pl>
+*  @copyright dotpay
 *  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *
-*}
-<div class="row">
-	<div class="col-xs-12 col-md-12">
-		<p class="payment_module">
-			<a class="dotpay" href="{$link->getModuleLink('dotpay', 'payment')|escape:'html'}" title="{l s='Pay by dotpay' mod='dotpay'}">
-				{l s='Pay by dotpay' mod='dotpay'}&nbsp;<span>{l s='(fast and secure internet payment)' mod='dotpay'}</span>
-					</a>
-		</p>
-    </div>
-</div>
+*/
 
+if (!defined('_PS_VERSION_'))
+	exit;
+
+function upgrade_module_1_5_3($module)
+{
+        Configuration::updateValue('DP_SUMMARY', false);
+
+		return $module;
+}

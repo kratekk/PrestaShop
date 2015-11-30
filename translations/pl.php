@@ -28,6 +28,7 @@
 global $_MODULE;
 $_MODULE = array();
 $_MODULE['<{dotpay}prestashop>dotpay_d082f054837b2c2b99b891eec5888a0c'] = 'Dotpay';
+$_MODULE['<{dotpay}prestashop>dotpay_4d8273457c820b4826aa6b816661dfe1'] = 'UWAGA! Ta wersja modułu płatności Dotpay dedykowana jest dla PrestaShop w wersji co najmniej 1.6. Dla starszej wersji PrestaShop, użyj starszej wersji modułu Dotpay, którą możesz pobrać z naszego repozytorium:  https://github.com/dotpay/PrestaShop/tags';
 $_MODULE['<{dotpay}prestashop>dotpay_531cc2d8596a42890742aa03e031be72'] = 'Moduł płatnosci Dotpay';
 $_MODULE['<{dotpay}prestashop>dotpay_057227babaa6faf8edce476ad7bb0bbf'] = 'Czy jesteś pewien że chcesz usnąć moduł płatności Dotpay?';
 $_MODULE['<{dotpay}prestashop>dotpay_fcebcb79af158ac0af6278fd072ee0d8'] = 'Błędne ID (wprowadź maks. 6 cyfr)';
@@ -92,3 +93,11 @@ $_MODULE['<{dotpay}prestashop>payment_59101810060e03e0266fac30066965c2'] = 'Trwa
 $_MODULE['<{dotpay}prestashop>payment_return_57ca035f385ffdb420caaae9b2765ba5'] = 'Oczekiwanie na potwierdzenie płatności. Proszę czekać na załadowanie strony.';
 $_MODULE['<{dotpay}prestashop>payment_1f813fac16e31da23bdda501f7cbf5c1'] = 'Zapłać przez dotpay.pl';
 $_MODULE['<{dotpay}prestashop>payment_ad72d36e367c7682c175f973408a7ca8'] = ' (szybkie i bezpieczne płatności)';
+$_MODULE['<{dotpay}prestashop>dotpay_ad3cbca6839068ffa83d2d153048e279'] = 'Szybkie i bezpieczne płatności';
+$_MODULE['<{dotpay}prestashop>dotpay_47697eca9bf5dfea240509bdf82c9ac2'] = 'Bezpośrednie przekierowanie do Dotpay';
+$_MODULE['<{dotpay}prestashop>dotpay_389c834277f97344b338fe4a520a556b'] = 'Nie wyświetlaj dodatkowego podsumowania';				  
+$_MODULE['<{dotpay}prestashop>payment_30076960376f0bbe305a8e9b0564dbfe'] = 'Zamównienie numer ';
+$_MODULE['<{dotpay}prestashop>payment_7e7e076a81fa5dc64f44b8ff14199cbf'] = ' na kwotę ';
+$_MODULE['<{dotpay}prestashop>payment_5eb96f89e7ba03542166a0ea0e2a0824'] = 'Wybierz przycisk \"Zamawiam z obowiązkiem zapłaty\", aby potwierdzić swoje zamówienie i przejść na stronę dotpay.pl, gdzie będziesz mógł dokończyć swoją płatność.';
+$_MODULE['<{dotpay}prestashop>payment_569fd05bdafa1712c4f6be5b153b8418'] = 'Inne metody płatności';
+$_MODULE['<{dotpay}prestashop>payment_6a3b660f17e72e20626576d02cffc9a4'] = 'Zamawiam z obowiązkiem zapłaty';

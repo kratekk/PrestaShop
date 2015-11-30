@@ -18,7 +18,7 @@
 * versions in the future. If you wish to customize PrestaShop for your
 * needs please refer to http://www.prestashop.com for more information.
 *
-*  @author    Piotr Karecki & Dotpay Team <tech@dotpay.pl>
+*  @author    Dotpay Team <tech@dotpay.pl>
 *  @copyright Dotpay
 *  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *
@@ -31,96 +31,75 @@ class dotpay extends PaymentModule
 {
     	const DOTPAY_PAYMENTS_TEST_CUSTOMER = '';
         const DOTPAY_PAYMENTS_TEST_CUSTOMER_PIN = '';
+	
 	protected $config_form = false;
 
 	public function __construct()
 	{
 		$this->name = 'dotpay';
 		$this->tab = 'payments_gateways';
-		$this->version = '1.5.2';
-                $this->author = 'tech@dotpay.pl';
-
+		$this->version = '1.5.3';
+        $this->author = 'tech@dotpay.pl';
+		$this->ps_versions_compliancy = array('min' => '1.6', 'max' => _PS_VERSION_); 
+		$this->bootstrap = true;
+		$this->controllers = array('payment', 'callback');
+		$this->is_eu_compatible = 1;
 		parent::__construct();
 
 		$this->displayName = $this->l('Dotpay');
-		$this->description = $this->l('Dotpay payment module');
+		 if (_PS_VERSION_ < 1.6 ) {
+            $this->description = $this->l('WARNING! This Dotpay payment module is designed only for PrestaShop 1.6 and newer. For older PrestaShop version use an older version of the Dotpay payment module available to download from following address: https://github.com/dotpay/PrestaShop/tags');
+            parent::uninstall();
+        } else {
+			$this->description = $this->l('Dotpay payment module');
+        }
+
 		$this->confirmUninstall = $this->l('Are you sure you want to uninstall Dotpay payment module?');
+		
+		
 	}
 	
-    private function addNewOrderState($state, $names, $color)
-    {
-            $query='SELECT * FROM `'._DB_PREFIX_.'order_state` os LEFT JOIN `'._DB_PREFIX_.'order_state_lang` osl ON (os.`id_order_state` = osl.`id_order_state` AND osl.`id_lang` = '.(int)$this->context->language->id.') WHERE module_name = "dotpay"';
-            if ($result = Db::getInstance()->ExecuteS($query))
-                foreach ($result as $row)
-                    if ($row["name"] == $names[1] || $row["name"] == $names[0]) {
-                        Configuration::updateValue($state, $row["id_order_state"]);
-                        Db::getInstance()->execute("UPDATE " . _DB_PREFIX_ . 'order_state SET `deleted` = 0 WHERE `id_order_state` = ' . $row["id_order_state"]);       
-                    };
-
-            $order_status = new OrderState((int)Configuration::get($state), (int)$this->context->language->id);
-            if (Validate::isLoadedObject($order_status)) 
-                return true;
-            
-            $order_state = new OrderState();
-            $order_state->name = array();
-            foreach (Language::getLanguages() as $language)
-            {
-                if (Tools::strtolower($language['iso_code']) == 'pl') $order_state->name[$language['id_lang']] = $names[1];
-                else $order_state->name[$language['id_lang']] = $names[0];
-            }
-            $order_state->send_email = false;
-            $order_state->invoice = false;
-            $order_state->unremovable = false;
-            $order_state->color = $color;
-            $order_state->module_name = $this->name;
-            
-            if ($order_state->add() || Configuration::updateValue($state, $order_state->id)) return true;
-                else return false;
-    }
-    
-    public function install()
-    {
-        Configuration::updateValue('DP_TEST', false);
+		function install()
+	{
+			if (!parent::install() OR !$this->registerHook('payment') OR !$this->registerHook('paymentReturn') OR !$this->registerHook('header') OR !$this->registerHook('backOfficeHeader') OR !$this->registerHook('displayPaymentEU'))
+			return false;
+		
+		Configuration::updateValue('DP_TEST', false);
         Configuration::updateValue('DP_CHK', false);
-		if (isset($_SERVER['SERVER_PORT']) && ($_SERVER['SERVER_PORT'] === '443')) { Configuration::updateValue('DP_SSL', true); }else{
-        Configuration::updateValue('DP_SSL', false); }
+			if (isset($_SERVER['SERVER_PORT']) && ($_SERVER['SERVER_PORT'] === '443')) { 
+				Configuration::updateValue('DP_SSL', true); 
+			}else{
+				Configuration::updateValue('DP_SSL', false); 
+			}
+		Configuration::updateValue('DP_SUMMARY', true); 	
         Configuration::updateValue('DP_ID', self::DOTPAY_PAYMENTS_TEST_CUSTOMER);
         Configuration::updateValue('DP_PIN', self::DOTPAY_PAYMENTS_TEST_CUSTOMER_PIN);
         Configuration::updateValue('DOTPAY_CONFIGURATION_OK', false);
-        return 
-            parent::install() &&
-            $this->registerHook('header') &&
-            $this->registerHook('backOfficeHeader') &&
-            $this->registerHook('payment') &&
-            $this->registerHook('paymentReturn') &&
-            $this->addNewOrderState('PAYMENT_DOTPAY_NEW_STATUS', array('Awaiting Dotpay payment confirmation', 'Oczekiwanie na płatność Dotpay'),'#4169E1') &&
-            $this->addNewOrderState('PAYMENT_DOTPAY_COMPLAINT_STATUS', array('Complaint', 'Rozpatrzona reklamacja'),'darkred');   
-    }
+		
+
+		if (Validate::isInt(Configuration::get('PAYMENT_DOTPAY_NEW_STATUS')) XOR (Validate::isLoadedObject($order_state_new = new OrderState(Configuration::get('PAYMENT_DOTPAY_NEW_STATUS')))))
+		{
+			$order_state_new = new OrderState();
+			$order_state_new->name[Language::getIdByIso("pl")] = "Oczekuje potwierdzenia platnosci Dotpay";
+			$order_state_new->name[Language::getIdByIso("en")] = "Awaiting payment confirmation Dotpay";
+			$order_state_new->send_email = false;
+			$order_state_new->invoice = false;
+			$order_state_new->unremovable = false;
+			$order_state_new->color = "#4169E1";
+			if (!$order_state_new->add())
+				return false;
+			if(!Configuration::updateValue('PAYMENT_DOTPAY_NEW_STATUS', $order_state_new->id))
+				return false;
+		}
 	
-    public function uninstall()
-    {
-        $sql = array(
-                "UPDATE " . _DB_PREFIX_ . 'order_state SET `deleted` = 1 WHERE `module_name` = "dotpay"',
-                "UPDATE " . _DB_PREFIX_ . "order_state SET `deleted` = 1 WHERE id_order_state = " . pSQL(Configuration::get('PAYMENT_DOTPAY_NEW_STATUS')),
-                "UPDATE " . _DB_PREFIX_ . "order_state SET `deleted` = 1 WHERE id_order_state = " . pSQL(Configuration::get('PAYMENT_DOTPAY_COMPLAINT_STATUS'))
-            );
-
-        foreach ($sql as $query)
-                Db::getInstance()->execute($query);
-
-        Configuration::deleteByName('DP_ID');
-        Configuration::deleteByName('DP_PIN');
-        Configuration::deleteByName('DP_TEST');
-        Configuration::deleteByName('DP_CHK');
-        Configuration::deleteByName('DP_SSL');
-        Configuration::deleteByName('PAYMENT_DOTPAY_NEW_STATUS');
-        Configuration::deleteByName('PAYMENT_DOTPAY_COMPLAINT_STATUS');
-        Configuration::deleteByName('DOTPAY_CONFIGURATION_OK');
-        
-        return parent::uninstall();
-    }	
-
-
+		return true;
+	}
+	
+		function uninstall()
+	{
+		return (parent::uninstall());
+	}
+	
 	
 	/**
 	 * Load the configuration form
@@ -128,7 +107,7 @@ class dotpay extends PaymentModule
         public function getContent()
         {
 			if (!isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] != 'on') {$is_https = 0;}else{$is_https = 1;}
-			if (version_compare(_PS_VERSION_, "1.6.1", ">=")) {$is_compatibility_currency = 1;}else{$is_compatibility_currency = 0;}
+			if (version_compare(_PS_VERSION_, "1.6.0.1", ">=")) {$is_compatibility_currency = 1;}else{$is_compatibility_currency = 0;}
             $this->_postProcess();
             $this->context->smarty->assign(array(
                 'module_dir' => $this->_path,
@@ -139,18 +118,16 @@ class dotpay extends PaymentModule
 				'bad_ID' => $this->l('Incorrect ID (6 digits maximum)'),
 				'bad_PIN' => $this->l('Incorrect PIN (minimum 16 and maximum 32 alphanumeric characters)'),
 				'forced_HTTPS' => $this->l('(forced YES)'),
-				'DOTPAY_HTTPS' => Configuration::get('DP_SSL')
+				'DOTPAY_HTTPS' => Configuration::get('DP_SSL'),
+				'DOTPAY_SUMMARY' => Configuration::get('DP_SUMMARY')
             ));
             $form_values = $this->getConfigFormValues();
             foreach ($form_values as $key => $value)
                 $this->context->smarty->assign($key, $value);
 				$this->context->smarty->assign("is_https", $is_https);
 				$this->context->smarty->assign("is_compatibility_currency", $is_compatibility_currency);
-            if (version_compare(_PS_VERSION_, "1.6.0", ">=")) {
                 $output = $this->context->smarty->fetch($this->local_path.'views/templates/admin/configure.tpl');
                 return $output.$this->renderForm();
-            } else 
-                return $this->display(__FILE__, 'views/templates/admin/content.tpl');
         } 
 
 	/**
@@ -197,15 +174,16 @@ protected function getConfigForm()
 					array(
 						'type' => 'text',
 						'name' => 'DP_ID',
-						'label' => $this->l('ID').'<span style="color:red;"> *</span>',
+						'label' => $this->l('ID'),
 						'size' => 6, 
+						'class' => 'fixed-width-sm',
 						'desc' => $this->l('The same as in Dotpay user panel').' <div id="infoID" /></div>',
 						'required' => true						
 					),
 					array(
 						'type' => 'text',
 						'name' => 'DP_PIN',
-						'label' => $this->l('PIN').'<span style="color:red;"> *</span>',
+						'label' => $this->l('PIN'),
 						'class' => 'fixed-width-lg',
 						'desc' => $this->l('The same as in Dotpay user panel').' <div id="infoPIN" /></div>',
 						'required' => true
@@ -252,7 +230,7 @@ protected function getConfigForm()
 							)
 						),
 					),                                                                        
-                                        array(
+                     array(
 						'type' => 'switch',
                         'label' => $this->l('CHK mode'),
 						'name' => 'DP_CHK',
@@ -270,7 +248,26 @@ protected function getConfigForm()
 								'label' => $this->l('Disabled')
 							)
 						),
-					),                                    
+					),
+					array(
+						'type' => 'switch',
+                        'label' => $this->l('Direct forwarding to Dotpay'),
+						'name' => 'DP_SUMMARY',
+                        'desc' => $this->l('Without displaying an additional summary'),
+						'is_bool' => true,
+						'values' => array(
+							array(
+								'id' => 'active_on',
+								'value' => true,
+								'label' => $this->l('Enabled')
+							),
+							array(
+								'id' => 'active_off',
+								'value' => false,
+								'label' => $this->l('Disabled')
+							)
+						),
+					), 		
 
 				),
 				'submit' => array(
@@ -290,6 +287,7 @@ protected function getConfigForm()
 			'DP_TEST' => Configuration::get('DP_TEST', false),
 			'DP_CHK'  => Configuration::get('DP_CHK', false),
 			'DP_SSL'  => Configuration::get('DP_SSL', false),
+			'DP_SUMMARY'  => Configuration::get('DP_SUMMARY', false),
 			'DP_ID' => Configuration::get('DP_ID'),
 			'DP_PIN' => Configuration::get('DP_PIN'),
 		);
@@ -305,7 +303,7 @@ protected function getConfigForm()
                 $values = $this->getConfigFormValues();
                 foreach (array_keys($values) as $key)
                     $values[$key] = trim(Tools::getValue($key));
-                $values["DP_SSL"] = Configuration::get('PS_SSL_ENABLED') && Tools::getValue("DP_SSL");               
+                $values["DP_SSL"] = Configuration::get('PS_SSL_ENABLED') && Tools::getValue("DP_SSL");                           
                 $values["DOTPAY_CONFIGURATION_OK"] = !empty($values["DP_PIN"]) && is_numeric($values["DP_ID"]);
                 if ($values["DOTPAY_CONFIGURATION_OK"] && Tools::strlen($values["DP_ID"]) < 6) $values["DP_TEST"] = false;
                 foreach ($values as $key => $value)
@@ -317,27 +315,17 @@ protected function getConfigForm()
 	*/
 	public function hookBackOfficeHeader()
 	{
-            if (version_compare(_PS_VERSION_, "1.5.0.1", ">=")) {
-		$this->context->controller->addJS($this->_path.'js/back.js');
-		$this->context->controller->addCSS($this->_path.'css/back.css');
-            } else {
-                ToolsCore::addJS($this->_path.'/js/back.js');
-                ToolsCore::addCSS($this->_path.'/css/back.css');
-            }                        
+		$this->context->controller->addCSS($this->_path.'css/back.css');                   
 	}
 	/**
 	 * Add the CSS & JavaScript files you want to be added on the FO.
 	 */
+
 	public function hookHeader()
 	{
-            if (version_compare(_PS_VERSION_, "1.5.0.1", ">=")) {
-		$this->context->controller->addJS($this->_path.'/js/front.js');
-		$this->context->controller->addCSS($this->_path.'/css/front.css');
-            } else {
-                ToolsCore::addJS($this->_path.'/js/front.js');
-                ToolsCore::addCSS($this->_path.'/css/front.css');
-            }
+		$this->context->controller->addCSS($this->_path.'css/front.css');
 	}
+	
 
     public function hookPayment()
     {
@@ -371,7 +359,45 @@ protected function getConfigForm()
         ));
         return $this->display(__FILE__, 'payment_return.tpl');            
     }
-        static public function check_urlc_legacy() 
+	
+	
+	/**
+	* add 'Advanced EU Compliance' (2015.11.27)
+	*/
+	
+	   	public function hookDisplayPaymentEU($params)
+	{
+		if (!$this->active)
+			return;
+
+		if (!$this->checkCurrency($params['cart']))
+			return;
+
+		$payment_options = array(
+			'cta_text' => $this->l('Fast and secure internet payments'),
+			'logo' => $this->_path.'img/dotpay_logo85.png',
+			'action' => $this->context->link->getModuleLink($this->name, 'payment', array(), true)
+		);
+
+		return $payment_options;
+	}
+
+	public function checkCurrency($cart)
+	{
+		$currency_order = new Currency($cart->id_currency);
+		$currencies_module = $this->getCurrency($cart->id_currency);
+
+		if (is_array($currencies_module))
+			foreach ($currencies_module as $currency_module)
+				if ($currency_order->id == $currency_module['id_currency'])
+					return true;
+		return false;
+	}
+	//.
+	
+	
+  
+  static public function check_urlc_legacy() 
             {
 		$signature =
 			Configuration::get('DP_PIN').":".

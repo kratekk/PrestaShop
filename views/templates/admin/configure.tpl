@@ -66,6 +66,7 @@
     {/if}
 </div></div>
 {literal}
+
 <script type="text/javascript">
 		  var badID = '{/literal}{$bad_ID}{literal}';
 		  var badPIN = '{/literal}{$bad_PIN}{literal}';
@@ -83,10 +84,11 @@
 				$('label[for=DP_TEST_on]').css('color', 'red');
 				$('#ukryj_test').css('color', 'red');
 				}
-				
+		
+
 		$('input#DP_ID').on('keyup',function(){
 		  var charCount = $(this).val().replace(/\s/g, '').length;
-		  
+
 			if(charCount > 0 && charCount < 7){
 				if (!($(this).val().match(/[0-9]{4,6}/))){
 						$("#infoID").text(badID);
@@ -96,24 +98,27 @@
 						$("button[name=submitDotpayModule]").removeAttr('disabled');						
 					}
 				if (!($(this).val().match(/(\d{6})/))){
+							$("#ukryj_test").closest("div.form-group").css('display', 'none');
 							$('#DP_TEST_on').css('display', 'none');
 				            $('#DP_TEST_off').css('display', 'none');
 				            $('label[for=DP_TEST_off]').css('display', 'none');
 							$('label[for=DP_TEST_on]').css('display', 'none');
-							$("#ukryj_test").hide("fast");	
+
 							$("#ukryj_test_desc").hide("fast");	
 				}else{
+							$("#ukryj_test").closest("div.form-group").css('display', 'inline');
 							$('#DP_TEST_on').css('display', 'inline');
 							$('#DP_TEST_off').css('display', 'inline');
 							 $('label[for=DP_TEST_off]').css('display', 'inline');
 							$('label[for=DP_TEST_on]').css('display', 'inline');
 							$("#ukryj_test").show("fast");	
-							$("#ukryj_test_desc").show("fast");
+							$("#ukryj_test_desc").show("fast");							
 							$("button[name=submitDotpayModule]").removeAttr('disabled');	
 					}	
 					
 			}else{
 				$("#infoID").text(badID);
+				$("#ukryj_test").closest("div.form-group").css('display', 'none');
 				$('#DP_TEST_on').css('display', 'none');
 				$('#DP_TEST_off').css('display', 'none');
 				$('label[for=DP_TEST_off]').css('display', 'none');
@@ -147,6 +152,8 @@
 	
 </script>
 
+
+
 <style type="text/css">
 {/literal}
 	{if strlen($DP_ID) == '6'}
@@ -156,6 +163,7 @@
 	input[name=DP_TEST]{display:inline;}
 	#ukryj_test{display:inline; color: #1B23BC;}
 	#ukryj_test_desc{display:inline; float:left; color: #264AE9;}
+	
 {/literal}	
 {else}
 {literal}
@@ -169,8 +177,26 @@
 {literal}	
 	input#DP_ID{float:left;}
 	input#DP_PIN{float:left;}
-	#infoID {color:red; margin-left: 180px;}
-	#infoPIN {color:red; margin-left: 180px;}
+	#infoID {color:red; margin-left: 80px;}
+	#infoPIN {color:red; margin-left: 80px;}
 	#https_replace {color:red;}
 </style>
+
 {/literal}
+	{if strlen($DP_ID) == '6'}
+{literal}
+			<script>
+			$(document).ready(function(){
+				$("#ukryj_test").closest("div.form-group").css('display', 'inline');
+			});
+		</script>
+{/literal}	
+{else}
+{literal}
+			<script>
+			$(document).ready(function(){
+				$("#ukryj_test").closest("div.form-group").css('display', 'none');
+			});
+			</script>
+{/literal}
+{/if}		

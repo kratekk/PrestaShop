@@ -61,7 +61,8 @@ class dotpaypaymentModuleFrontController extends ModuleFrontController
             $template = "payment";
             $form_url = "https://ssl.dotpay.pl/";
             $currency = Currency::getCurrency($cart->id_currency);
-            if (Configuration::get('DP_TEST')==1) $form_url.="test_payment/";
+            if (Configuration::get('DP_TEST') == 1 ) $form_url.="test_payment/";
+			if (strlen(Configuration::get('DP_ID')) > 5 && Configuration::get('DP_TEST') != 1) $form_url.="t2/";
             $params = array(
                     'id' => Configuration::get('DP_ID'),
                     'amount' => (float)$cart->getOrderTotal(true, Cart::BOTH),
@@ -88,6 +89,7 @@ class dotpaypaymentModuleFrontController extends ModuleFrontController
             'params' => $params,
             'module_dir' => $this->module->getPathUri(),
             'form_url' => $form_url,
+            'dPorder_summary' => Configuration::get('DP_SUMMARY'),
             ));
         $this->setTemplate($template.".tpl");
     }

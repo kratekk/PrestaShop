@@ -18,7 +18,7 @@
 * versions in the future. If you wish to customize PrestaShop for your
 * needs please refer to http://www.prestashop.com for more information.
 *
-*  @author    Piotr Karecki <tech@dotpay.pl>
+*  @author    Dotpay Team <tech@dotpay.pl>
 *  @copyright Dotpay
 *  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *
@@ -31,7 +31,9 @@ class dotpaypaymentModuleFrontController extends ModuleFrontController
         $this->display_column_left = false;	
         parent::initContent();
         $control=(int)Tools::getValue('control');
-        $cart = $this->context->cart;              
+        $cart = $this->context->cart; 
+		$cookie = $this->context->cookie;
+				
         if (!empty($control))
             $cart = new Cart($control);
         if ($cart->id_customer == 0 || $cart->id_address_delivery == 0 || $cart->id_address_invoice == 0 || !$this->module->active)
@@ -40,6 +42,8 @@ class dotpaypaymentModuleFrontController extends ModuleFrontController
         if (!Validate::isLoadedObject($customer))
                 Tools::redirect('index.php?controller=order&step=1');
         $address = new Address($cart->id_address_invoice);
+
+		
         $params = null;
         $template = "payment_return";
         if ($cart->OrderExists() == true) 
@@ -58,35 +62,160 @@ class dotpaypaymentModuleFrontController extends ModuleFrontController
             }
             if (!$authorized)
                 die('This payment method is not available.');         
-            $template = "payment";
-            $form_url = "https://ssl.dotpay.pl/";
+            $template = "payment";           
             $currency = Currency::getCurrency($cart->id_currency);
-            if (Configuration::get('DP_TEST') == 1 ) $form_url.="test_payment/";
-			if (strlen(Configuration::get('DP_ID')) > 5 && Configuration::get('DP_TEST') != 1) $form_url.="t2/";
-            $params = array(
+			$form_url1 = "";	
+				if (Configuration::get('DP_TEST') == 1 && (strlen(Configuration::get('DP_ID'))) > 5) $form_url1="test_payment/";
+				if (strlen(Configuration::get('DP_ID')) > 5 && Configuration::get('DP_TEST') != 1) $form_url1="t2/";
+			$form_url = "https://ssl.dotpay.pl/".$form_url1;
+			
+			
+			
+			//save amount to tmp table
+			 $i_amount = (float)$cart->getOrderTotal(true, Cart::BOTH);
+				
+				$i_id_customer = null;
+				if ($this->context->customer->isLogged()) {
+					 $i_id_customer = $this->context->customer->id;
+				}else{
+					 $i_id_customer = $this->context->cookie->id_customer;	
+				}
+				
+			$cookie_checksum = (int) $cookie->checksum;
+			$cookie_is_guest = (int) $cookie->is_guest;
+			$cookie_id_guest = (int) $cookie->id_guest;
+			$cookie_id_connections = (int) $cookie->id_connections;
+				
+				$sum_order_cust = md5($cart->id.$i_amount.$currency["iso_code"].$cookie_checksum.$i_id_customer.$cookie_is_guest.$cookie_id_guest.$cookie_id_connections);
+				
+			Db::getInstance()->Execute('INSERT INTO '._DB_PREFIX_.'dotpay_amount (i_id_order,i_amount,i_currency,cookie_checksum,i_id_customer,i_suma,i_is_guest,i_id_guest,i_id_connections,i_secure_key) '.'VALUES("'.$cart->id.'","'.$i_amount.'","'.$currency["iso_code"].'","'.$cookie_checksum.'","'.$i_id_customer.'","'.$sum_order_cust.'","'.$cookie_is_guest.'","'.$cookie_id_guest.'","'.$cookie_id_connections.'","'.$customer->secure_key.'")');
+			
+			
+			$language = strtolower(LanguageCore::getIsoById($cookie->id_lang));
+			
+			if($language == 'pl'){
+				$lang_desc = ", numer zamówienia: ";
+				$lang_company = ", firma: ";
+				$lang_other = ", dodatkowe informacje: ";
+			}else{
+				$lang_desc = ", order number: ";
+				$lang_company = ", company: ";
+				$lang_other = ", other info: ";
+			}
+			
+				
+				$iso_lang = new Country((int)($address->id_country));
+							
+				$tel_nr ='';
+				if($address->phone_mobile !='') $tel_nr = $address->phone_mobile;
+				if($address->phone !='') $tel_nr = $address->phone;
+				if($address->company !='') {$firma = $lang_company.$address->company.' ';}else{$firma ='';}
+				if($address->other !='') {$inne = $lang_other.$address->other.' ';}else{$inne ='';}			
+				
+				
+				
+				
+			if ((strlen(Configuration::get('DP_ID'))) > 5) {				      
+				
+				
+				$params = array(
                     'id' => Configuration::get('DP_ID'),
                     'amount' => (float)$cart->getOrderTotal(true, Cart::BOTH),
                     'currency' => $currency["iso_code"],
-                    'description' => Configuration::get('PS_SHOP_NAME').", zam.(order) nr: ".$cart->id,
-                    'url' => $this->context->link->getModuleLink('dotpay', 'payment', array('control' => $cart->id), Configuration::get('DP_SSL', false)),                        
+                    'description' => Configuration::get('PS_SHOP_NAME').$lang_desc.$cart->id.$firma.$inne,
+                    'lang' => $language,
+                    'channel' => '',
+                    'ch_lock' => '',
+                    'URL' => $this->context->link->getModuleLink('dotpay', 'payment', array('control' => $cart->id), Configuration::get('DP_SSL', false)),                        
                     'type' => 0,                        
-                    'urlc' => $this->context->link->getModuleLink('dotpay', 'callback', array('ajax' => '1'), Configuration::get('DP_SSL', false)),
-                    'control' => $cart->id,
+                    'buttontext' => '',                        
+                    'URLC' => $this->context->link->getModuleLink('dotpay', 'callback', array('ajax' => '1'), Configuration::get('DP_SSL', false)),
+                    'control' => $cart->id.'|'.$sum_order_cust,
                     'firstname' => $customer->firstname,
                     'lastname' => $customer->lastname,                        
                     'email' => $customer->email,
                     'street' => $address->address1,
+                    'street_n1' => $address->address2,
+                    'street_n2' => '',
+                    'state' => '',
+                    'addr3' => '',
                     'city' => $address->city,
                     'postcode'=> $address->postcode,
+                    'phone'=> $tel_nr,
+                    'country'=> $iso_lang->iso_code,
+                    'api_version' => 'dev'
+					);
+			
+
+
+		$chk = Configuration::get('DP_PIN').
+				$params["api_version"].
+				$params["lang"].
+				$params["id"].
+				$params["amount"].
+				$params["currency"].
+				$params["description"].
+				$params["control"].
+				$params["channel"].
+				$params["ch_lock"].
+				$params["URL"].
+				$params["type"].
+				$params["buttontext"].
+				$params["URLC"].
+				$params["firstname"].
+				$params["lastname"].
+				$params["email"].
+				$params["street"].
+				$params["street_n1"].
+				$params["street_n2"].
+				$params["state"].
+				$params["addr3"].
+				$params["city"].
+				$params["postcode"].
+				$params["phone"].
+				$params["country"];
+				
+			if(Configuration::get('DP_CHK'))
+				$params['chk']=hash('sha256', $chk);
+		
+			
+			
+			}else{ 
+
+				  $params = array(
+                    'id' => Configuration::get('DP_ID'),
+                    'amount' => (float)$cart->getOrderTotal(true, Cart::BOTH),
+                    'currency' => $currency["iso_code"],
+					'description' => Configuration::get('PS_SHOP_NAME').$lang_desc.$cart->id.$firma.$inne,
+                    'url' => $this->context->link->getModuleLink('dotpay', 'payment', array('control' => $cart->id), Configuration::get('DP_SSL', false)),
+					'lang' => $language,	
+                    'type' => 0,                        
+                    'urlc' => $this->context->link->getModuleLink('dotpay', 'callback', array('ajax' => '1'), Configuration::get('DP_SSL', false)),
+                    'control' => $cart->id.'|'.$sum_order_cust,
+                    'forename' => $customer->firstname,
+                    'surname' => $customer->lastname,                        
+                    'email' => $customer->email,
+                    'street' => $address->address1,
+					'street_n1' => $address->address2,
+                    'city' => $address->city,
+					'phone'=> $tel_nr,
+                    'postcode'=> $address->postcode,
+					'country'=> $iso_lang->iso_code,
                     'api_version' => 'legacy'
-            );
-            $chk = $params['id'].$params['amount'].$params['currency'].$params['description'].$params['control'].Configuration::get('DP_PIN');
-            $chk = rawurlencode($chk);
-            if(Configuration::get('DP_CHK'))
-                $params['chk']=hash('md5', $chk);
+					);
+				$chk = $params['id'].$params['amount'].$params['currency'].$params['description'].$params['control'].Configuration::get('DP_PIN');
+				 $chk = rawurlencode($chk);
+					if(Configuration::get('DP_CHK'))
+						$params['chk']=hash('md5', $chk);
+			
+			}
+
+			
+
         }
         $this->context->smarty->assign(array(
             'params' => $params,
+            'numer_zam' => $cart->id,
             'module_dir' => $this->module->getPathUri(),
             'form_url' => $form_url,
             'dPorder_summary' => Configuration::get('DP_SUMMARY'),

@@ -37,7 +37,7 @@
 					 </div>
 					 <div class="col-sm-6">
 					 <h4>{l s='Pay by dotpay' mod='dotpay'}&nbsp;<em>{l s='(fast and secure internet payment)' mod='dotpay'}</em></h4>
-						<h3>{l s='Order number ' mod='dotpay'}{$params['control']}{l s=' of ' mod='dotpay'}{$params['amount']} {$params['currency']}</h3>
+						<h3>{l s='Order number ' mod='dotpay'}{$numer_zam}{l s=' of ' mod='dotpay'}{$params['amount']} {$params['currency']}</h3>
 					 </div>
 				</div>
 				 <hr>

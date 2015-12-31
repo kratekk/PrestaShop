@@ -32,5 +32,23 @@ function upgrade_module_1_4_9($module)
         Configuration::updateValue('DP_TEST', false);
 		Configuration::updateValue('DP_CHK', false);
         Configuration::updateValue('DP_SSL', false);
+	    
+		Db::getInstance()->execute(
+            'CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'dotpay_amount` (
+				  `i_id` int(10) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,
+				  `i_id_order` int(10) unsigned NOT NULL,
+				  `i_amount` varchar(16) NOT NULL,
+				  `i_currency` varchar(3) NOT NULL,
+				  `cookie_checksum` varchar(250) NOT NULL,
+				  `i_id_customer` int(10) unsigned DEFAULT NULL,
+				  `i_id_connections` int(10) unsigned DEFAULT NULL,
+				  `i_suma` varchar(32) NOT NULL,
+				  `i_is_guest` int(1) NOT NULL,
+				  `i_id_guest` int(10) NOT NULL,
+				  `i_secure_key` varchar(64) NOT NULL,
+				  `i_datetime_update` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+				) CHARSET=utf8');	
+		Db::getInstance()->execute('ALTER TABLE `'._DB_PREFIX_.'dotpay_amount` ADD UNIQUE INDEX (`i_suma`)');					
+	
 	return $module;
 }

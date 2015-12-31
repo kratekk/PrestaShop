@@ -38,7 +38,7 @@ class dotpay extends PaymentModule
 	{
 		$this->name = 'dotpay';
 		$this->tab = 'payments_gateways';
-		$this->version = '1.5.3';
+		$this->version = '1.5.4';
         $this->author = 'tech@dotpay.pl';
 		$this->ps_versions_compliancy = array('min' => '1.6', 'max' => _PS_VERSION_); 
 		$this->bootstrap = true;
@@ -48,7 +48,7 @@ class dotpay extends PaymentModule
 
 		$this->displayName = $this->l('Dotpay');
 		 if (_PS_VERSION_ < 1.6 ) {
-            $this->description = $this->l('WARNING! This Dotpay payment module is designed only for PrestaShop 1.6 and newer. For older PrestaShop version use an older version of the Dotpay payment module available to download from following address: https://github.com/dotpay/PrestaShop/tags');
+            $this->description = $this->l('WARNING! This Dotpay payment module is designed only for the PrestaShop 1.6 and later. For older version PrestaShop use an older version of the Dotpay payment module  available to download from the following address: https://github.com/dotpay/PrestaShop/tags');
             parent::uninstall();
         } else {
 			$this->description = $this->l('Dotpay payment module');
@@ -61,11 +61,11 @@ class dotpay extends PaymentModule
 	
 		function install()
 	{
-			if (!parent::install() OR !$this->registerHook('payment') OR !$this->registerHook('paymentReturn') OR !$this->registerHook('header') OR !$this->registerHook('backOfficeHeader') OR !$this->registerHook('displayPaymentEU'))
+			if (!parent::install() OR !$this->registerHook('payment') OR !$this->registerHook('paymentReturn') OR !$this->registerHook('header') OR !$this->registerHook('backOfficeHeader') OR !$this->registerHook('displayPaymentEU') OR !$this->createAmountTable())
 			return false;
 		
 		Configuration::updateValue('DP_TEST', false);
-        Configuration::updateValue('DP_CHK', false);
+        Configuration::updateValue('DP_CHK', true);
 			if (isset($_SERVER['SERVER_PORT']) && ($_SERVER['SERVER_PORT'] === '443')) { 
 				Configuration::updateValue('DP_SSL', true); 
 			}else{
@@ -94,6 +94,40 @@ class dotpay extends PaymentModule
 	
 		return true;
 	}
+	
+	    /**
+     * add new table: currency and amount orders (to verify callback)
+     */
+    private function createAmountTable() {
+
+		$query = ' 
+				CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'dotpay_amount` (
+				  `i_id` int(10) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,
+				  `i_id_order` int(10) unsigned NOT NULL,
+				  `i_amount` varchar(16) NOT NULL,
+				  `i_currency` varchar(3) NOT NULL,
+				  `cookie_checksum` varchar(250) NOT NULL,
+				  `i_id_customer` int(10) unsigned DEFAULT NULL,
+				  `i_id_connections` int(10) unsigned DEFAULT NULL,
+				  `i_suma` varchar(32) NOT NULL,
+				  `i_is_guest` int(1) NOT NULL,
+				  `i_id_guest` int(10) NOT NULL,
+				  `i_secure_key` varchar(64) NOT NULL,
+				  `i_datetime_update` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+				) CHARSET=utf8
+				';
+		
+		$query1 ='ALTER TABLE `'._DB_PREFIX_.'dotpay_amount` ADD UNIQUE INDEX (`i_suma`)';
+	
+	 Db::getInstance()->execute($query);
+	 Db::getInstance()->execute($query1);
+	
+		  return true;
+    }
+	
+	
+	
+	
 	
 		function uninstall()
 	{
@@ -126,8 +160,11 @@ class dotpay extends PaymentModule
                 $this->context->smarty->assign($key, $value);
 				$this->context->smarty->assign("is_https", $is_https);
 				$this->context->smarty->assign("is_compatibility_currency", $is_compatibility_currency);
+            if (version_compare(_PS_VERSION_, "1.6.0.1", ">=")) {
                 $output = $this->context->smarty->fetch($this->local_path.'views/templates/admin/configure.tpl');
                 return $output.$this->renderForm();
+            } else 
+                return $this->display(__FILE__, 'views/templates/admin/content.tpl');
         } 
 
 	/**
@@ -414,5 +451,42 @@ protected function getConfigForm()
 	$signature=hash('md5', $signature);
 	return (Tools::getValue('md5') == $signature);
     } 
+	
+	
+		/**
+	 * Calculate sygnature based on dotpay parameters and pin for api_version = 'dev'
+	 *
+	 */
+
+	static public function check_urlc_dev()
+	{
+					
+					$signature = Configuration::get('DP_PIN').Configuration::get('DP_ID').
+					Tools::getValue('operation_number').
+					Tools::getValue('operation_type').
+					Tools::getValue('operation_status').
+					Tools::getValue('operation_amount').
+					Tools::getValue('operation_currency').
+					Tools::getValue('operation_withdrawal_amount').
+					Tools::getValue('operation_commission_amount').
+					Tools::getValue('operation_original_amount').
+					Tools::getValue('operation_original_currency').
+					Tools::getValue('operation_datetime').
+					Tools::getValue('operation_related_number').
+					Tools::getValue('control').
+					Tools::getValue('description').
+					Tools::getValue('email').
+					Tools::getValue('p_info').
+					Tools::getValue('p_email').
+					Tools::getValue('channel').
+					Tools::getValue('channel_country').
+					Tools::getValue('geoip_country');		
+					
+					
+			$signature = hash('sha256', $signature);
+			return (Tools::getValue('signature') == $signature);
+	}
+
+
     
 }

@@ -1,39 +1,25 @@
 <?php
-/**
-*
-*
-* NOTICE OF LICENSE
-*
-* This source file is subject to the Academic Free License (AFL 3.0)
-* that is bundled with this package in the file LICENSE.txt.
-* It is also available through the world-wide-web at this URL:
-* http://opensource.org/licenses/afl-3.0.php
-* If you did not receive a copy of the license and are unable to
-* obtain it through the world-wide-web, please send an email
-* to license@prestashop.com so we can send you a copy immediately.
-*
-* DISCLAIMER
-*
-* Do not edit or add to this file if you wish to upgrade PrestaShop to newer
-* versions in the future. If you wish to customize PrestaShop for your
-* needs please refer to http://www.prestashop.com for more information.
-*
-*  @author    Dotpay Team <tech@dotpay.pl>
-*  @copyright Dotpay
-*  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
-*
-*/
-
 
 global $_MODULE;
 $_MODULE = array();
-$_MODULE['<{dotpay}prestashop>dotpay_d082f054837b2c2b99b891eec5888a0c'] = 'Dotpay';
+$_MODULE['<{dotpay}prestashop>dotpay_26b8edb38139e79f0eb953234810aae4'] = 'Dotpay - moduł płatności';
 $_MODULE['<{dotpay}prestashop>dotpay_4d8273457c820b4826aa6b816661dfe1'] = 'UWAGA! Ta wersja modułu płatności Dotpay dedykowana jest dla PrestaShop w wersji co najmniej 1.6. Dla starszej wersji PrestaShop, użyj starszej wersji modułu Dotpay, którą możesz pobrać z naszego repozytorium:  https://github.com/dotpay/PrestaShop/tags';
-$_MODULE['<{dotpay}prestashop>dotpay_531cc2d8596a42890742aa03e031be72'] = 'Moduł płatnosci Dotpay';
-$_MODULE['<{dotpay}prestashop>dotpay_057227babaa6faf8edce476ad7bb0bbf'] = 'Czy jesteś pewien że chcesz usnąć moduł płatności Dotpay?';
+$_MODULE['<{dotpay}prestashop>dotpay_ad3cbca6839068ffa83d2d153048e279'] = 'Szybkie i bezpieczne płatności';
+$_MODULE['<{dotpay}prestashop>dotpay_057227babaa6faf8edce476ad7bb0bbf'] = 'Czy jesteś pewien że chcesz usnąć moduł płatności Dotpay ?';
 $_MODULE['<{dotpay}prestashop>dotpay_fcebcb79af158ac0af6278fd072ee0d8'] = 'Błędne ID (wprowadź maks. 6 cyfr)';
 $_MODULE['<{dotpay}prestashop>dotpay_f15c8e5eff1cff13329f829d45d369a2'] = 'Błędny PIN (wprowadź min. 16 , maks. 32 znaki alfanumeryczne)';
 $_MODULE['<{dotpay}prestashop>dotpay_ce87cc005e82701f107e7ddb02f0c6bc'] = '(wymuszone TAK)';
+$_MODULE['<{dotpay}prestashop>dotpay_3d4377ab560a06829288b6c53a6687b9'] = 'Pokaż listę kanałów w sklepie (kafelki z logo)';
+$_MODULE['<{dotpay}prestashop>dotpay_7bf72b36615f0b8a7b34225062c285e0'] = 'Pokaż rozwijaną listę kanałów w sklepie';
+$_MODULE['<{dotpay}prestashop>dotpay_2e1522722523373c9b37e330dd1323d5'] = 'Lista kanałów dostępna na stronie Dotpay';
+$_MODULE['<{dotpay}prestashop>dotpay_bb6abd3c2199d7342976ea5b7363753f'] = 'Dostępny tylko jeden konkretny kanał płatności';
+$_MODULE['<{dotpay}prestashop>dotpay_948c47cd59d395941ec3da5ceac0f37f'] = '- WYBRANO: ';
+$_MODULE['<{dotpay}prestashop>dotpay_c485d2ed5cc4ce64fcccca710c7a0bb7'] = 'kanał';
+$_MODULE['<{dotpay}prestashop>dotpay_d827c6d8de16220b11a266ff40439789'] = 'Wybierz proszę jeden z dostępnych kanałów na powyższej liście by aktywować tą metodę płatności.';
+$_MODULE['<{dotpay}prestashop>dotpay_b1b4d51b63f63f3852537b5200735cae'] = 'Wybierz z listy powyżej jeden kanał płatności na który będą kierowani bezpośrednio kupujący a następnie ZAPISZ ustawienia modułu.';
+$_MODULE['<{dotpay}prestashop>dotpay_e2ea506dab4c68cde84c89510a84c87c'] = 'Dla konta o identyfikatorze ID: \"';
+$_MODULE['<{dotpay}prestashop>dotpay_46b7c9666e4d70dc3ce7f5b1cd667bd6'] = '\" nie ma dostępnej listy kanałów!';
+$_MODULE['<{dotpay}prestashop>dotpay_4a72db97827b80c465e450b48f30b8ce'] = 'Musisz najpierw wprowadzić ID swojego konta Dotpay i zapisać zmiany przed wybraniem kanału.';
 $_MODULE['<{dotpay}prestashop>dotpay_f4f70727dc34561dfde1a3c529b6205c'] = 'Ustawienia';
 $_MODULE['<{dotpay}prestashop>dotpay_b718adec73e04ce3ec720dd11a06a308'] = 'ID';
 $_MODULE['<{dotpay}prestashop>dotpay_ee12e5cc065cfc8b3146a6110512738d'] = 'Przepisz z panelu Dotpay';
@@ -42,11 +28,23 @@ $_MODULE['<{dotpay}prestashop>dotpay_4245499695408b974322be6f01b0d17a'] = 'Środ
 $_MODULE['<{dotpay}prestashop>dotpay_8d2793a4310a7f20f7072a3f71586a6b'] = 'Używam konta testowego w Dotpay (ID testowe)';
 $_MODULE['<{dotpay}prestashop>dotpay_00d23a76e43b46dae9ec7aa9dcbebb32'] = 'Włączony';
 $_MODULE['<{dotpay}prestashop>dotpay_b9f5c797ebbf55adccdd8539a65a0241'] = 'Wyłączony';
+$_MODULE['<{dotpay}prestashop>dotpay_aeac5af78ace85ca3b6670094495145c'] = 'Wyświetlenie listy kanałów na stronie sklepu skraca ścieżkę płatności. Możesz również wskazać tylko jeden kanał dostępny dla płacącego lub wskazać by lista kanałów była wybierana dopiero na stronie Dotpay.';
+$_MODULE['<{dotpay}prestashop>dotpay_d2c8d5705e978a3322d5db2620b6dbe5'] = 'Prezentacja listy kanałów';
+$_MODULE['<{dotpay}prestashop>dotpay_bb7a3197cb12b6bbf11892b5403b60a5'] = 'Możliwe wyświetlnie listy kanałów w Twoim sklepie lub wyświetlenie tylko jednego konkretnego kanału.';
+$_MODULE['<{dotpay}prestashop>dotpay_5f811426d7db86f34e141935d830136f'] = 'Wybierz z listy konkretny kanał płatności, który ma być prezentowany jako dostępna metoda płatności w Twoim sklepie. Wyświetlane będzie logo przypisane do danego kanału płatności  zamiast logo Dotpay.';
+$_MODULE['<{dotpay}prestashop>dotpay_3d8d5a022d7d8b3aafe227f832c42a04'] = 'Wybrany kanał płatności ';
 $_MODULE['<{dotpay}prestashop>dotpay_ee7e558368f0d40f40da5dbb4316be78'] = 'Ten sklep używa \'https\'';
 $_MODULE['<{dotpay}prestashop>dotpay_29d03369e5fd1db7e2b425bb0e3b48d1'] = 'Użyj bezpiecznego protokołu HTTPS do komunikacji z Dotpay';
 $_MODULE['<{dotpay}prestashop>dotpay_79eae524e39d273d6a4e85f822b896ef'] = 'Tryb CHK';
 $_MODULE['<{dotpay}prestashop>dotpay_3094cbd9a9f3059e9ae5e99645167a4f'] = 'Zabezpieczenie parametrów przed modyfikacją';
+$_MODULE['<{dotpay}prestashop>dotpay_47697eca9bf5dfea240509bdf82c9ac2'] = 'Bezpośrednie przekierowanie płatności';
+$_MODULE['<{dotpay}prestashop>dotpay_389c834277f97344b338fe4a520a556b'] = 'bez dodatkowego wyświetlenia podsumowania zamówienia';
+$_MODULE['<{dotpay}prestashop>dotpay_f2538d90c907a7240239f1ac3ff6256a'] = 'Ten numer ułatwi Ci odnalezienie zamówienia w Twoim sklepie. Kupujący w potwierdzeniu email również otrzyma informację o tym numerze.';
+$_MODULE['<{dotpay}prestashop>dotpay_5f3a12e11033ffc48c834bb650ca6e0b'] = 'Dodaj numer zamówienia (referencje) do opisu transakcji';
+$_MODULE['<{dotpay}prestashop>dotpay_9917e2c90cbbeffdcfcc3cbf3138bc7b'] = 'Utwórz nowe zamównienie przed otrzymaniem notyfikacji o płatności z Dotpay. Dane z koszyka będą skasowane po wybraniu tej metody płatności.';
 $_MODULE['<{dotpay}prestashop>dotpay_c9cc8cce247e49bae79f15173ce97354'] = 'Zapisz';
+$_MODULE['<{dotpay}prestashop>dotpay_d22e8bf6263dfeb9e56945a2075b6b34'] = 'Zapłać przez ';
+$_MODULE['<{dotpay}prestashop>dotpay_3dce11269d050853e3e87d51ed15c03c'] = ' (dotpay.pl)';
 $_MODULE['<{dotpay}prestashop>configure_0f98b7f230f3c91292f0de4c99e263f2'] = 'Rejestracja';
 $_MODULE['<{dotpay}prestashop>configure_f28494b4787339f0581a3c44e0aaf790'] = 'W odpowiedzi na zapotrzebowanie rynku Dotpay od lat świadczy innowacyjne usługi płatności internetowych, dostarczając najszerszą ofertę rozwiązań dla klientów z branży e-commerce. Domeną są transfery pieniężne przesyłane pomiędzy kupującym a sprzedającym, wraz z kompleksowym serwisem, opartym na fachowym doradztwie i stosowaniu dodatkowych zabezpieczeń. W ramach oferty płatności internetowych Dotpay oferuje ponad 140 kanałów płatności, w tym: płatności mobilne, ratalne, gotówkowe, e-portfele, przelewy i karty płatnicze.';
 $_MODULE['<{dotpay}prestashop>configure_8cc0479846a82293975f8e1c2f4ea626'] = 'Wszystkim nowym klientom, którzy wypełnią formularz i chcą już dzisiaj zacząć przyjmować płatności, oferujemy promocyjne warunki współpracy:';
@@ -63,9 +61,14 @@ $_MODULE['<{dotpay}prestashop>configure_91f4e57b55e7e86303d2f3073fd489a9'] = 'Dz
 $_MODULE['<{dotpay}prestashop>configure_9dd6b2ffe69525012396992be6a3a9b9'] = 'ID oraz PIN można odnaleźć w panelu Dotpay po zalogowaniu klikając \"Ustawienia\" na górnym pasku. Numer ID to 6-cyfrowy ciąg umieszczony po znaku # w wierszu \"Sklep\".';
 $_MODULE['<{dotpay}prestashop>configure_098610bf9ef093a25aa8e42d07a54d80'] = 'Konfiguracja URLC polega na ustawieniu adresu na który mają być kierowane informacje o płatnościach. Tym adresem jest:';
 $_MODULE['<{dotpay}prestashop>configure_a0bfb0ffe8676a5387f8f574ab080872'] = 'Twój sklep automatycznie prześle do Dotpay adres URLC.';
-$_MODULE['<{dotpay}prestashop>configure_13aed11a8a6a9ebbab8c199419888c5a'] = 'Jedyne co musisz zrobić to po zalogowaniu w panalu Dotpay odznacz opcję (zezwól) \"Blokuj zewnetrzne URLC\" klikając przycisk \"Edycja\" w sekcji \"Ustawienia -> Powiadomienia -> Konfiguracja URLC\".';
+$_MODULE['<{dotpay}prestashop>configure_13aed11a8a6a9ebbab8c199419888c5a'] = 'Jedyne co musisz zrobić to po zalogowaniu w panelu Dotpay odznacz opcję (zezwól) \"Blokuj zewnetrzne URLC\" klikając przycisk \"Edycja\" w sekcji \"Ustawienia -> Powiadomienia -> Konfiguracja URLC\".';
 $_MODULE['<{dotpay}prestashop>configure_ab86e74927f7c098c3bdbd631a629285'] = 'Stan konfiguracji';
+$_MODULE['<{dotpay}prestashop>configure_50c91709a6c4146e436edfec1152ae0b'] = 'Wersja tego modułu: ';
+$_MODULE['<{dotpay}prestashop>configure_657b211878a7a203660bc0eb62cb3798'] = 'Sprawdź czy pojawiła się nowa wersja tego modułu na ';
+$_MODULE['<{dotpay}prestashop>configure_cedc667944cf600d9133f948fc07b66a'] = 'Sprawdź nasze repozytorium na GitHub';
+$_MODULE['<{dotpay}prestashop>configure_8334797b9b3383d4f48d98178b8845ea'] = 'tej stronie';
 $_MODULE['<{dotpay}prestashop>configure_19d9b76ebd217e34df3a5315e3170c27'] = 'Moduł jest aktywny';
+$_MODULE['<{dotpay}prestashop>configure_7db51452fffda612bf2b93b276a3468a'] = 'Nie wybrano kanału płatności !';
 $_MODULE['<{dotpay}prestashop>configure_3542cb4bbe8e5dac8954c96bf6e37ad0'] = 'Jeśli nie otrzymujesz informacji zwrotnej z Dotpay o płatności, sprawdź proszę czy w panelu Dotpay odblokowałeś możliwość przyjęcia zewnętrznego adresu URLC.';
 $_MODULE['<{dotpay}prestashop>configure_0f05055fbe879c87b19590d5e26c64a7'] = 'Moduł pracuje w trybie konta testowego w Dotpay. Wszystkie informacje o transakcjach mają charakter jedynie poglądowy.';
 $_MODULE['<{dotpay}prestashop>configure_5b98e05696bce323b8098369fc7c906f'] = 'W tej wersji instalacji PrestaShop, moduł płatności Dotpay nie wspiera płatności w walucie innej niż PLN. Proszę zaktualizować instalację PrestaShop  jeśli sprzedaż ma być prowadzona również w innych walutach !';
@@ -89,15 +92,20 @@ $_MODULE['<{dotpay}prestashop>content_ab86e74927f7c098c3bdbd631a629285'] = 'Konf
 $_MODULE['<{dotpay}prestashop>content_95d72185b485478483b1e8de5785caa2'] = 'Moduł jest aktywny. Jeśli nie otrzymujesz informacji zwrotnej z Dotpay o płatności, sprawdź proszę czy w panelu Dotpay odblokowałeś możliwość przyjęcia zewnętrznego adresu URLC.';
 $_MODULE['<{dotpay}prestashop>content_0f05055fbe879c87b19590d5e26c64a7'] = 'Moduł pracuje w trybie konta testowego w Dotpay. Wszystkie informacje o transakcjach mają charakter jedynie poglądowy.';
 $_MODULE['<{dotpay}prestashop>content_1b85c912b9ab84ec0512e6ffecd85f7b'] = 'Moduł jest nieaktywny. Proszę sprawdzić poniższą konfigurację.';
-$_MODULE['<{dotpay}prestashop>payment_59101810060e03e0266fac30066965c2'] = 'Trwa przygotowanie Państwa płatności. Proszę czekać na załadowanie strony.';
-$_MODULE['<{dotpay}prestashop>payment_return_57ca035f385ffdb420caaae9b2765ba5'] = 'Oczekiwanie na potwierdzenie płatności. Proszę czekać na załadowanie strony.';
+$_MODULE['<{dotpay}prestashop>payment_d22e8bf6263dfeb9e56945a2075b6b34'] = 'Zapłać wybierając ';
+$_MODULE['<{dotpay}prestashop>payment_43088ba45e36ce8a80a96f047bc21776'] = ' ( dzięki dotpay.pl )';
 $_MODULE['<{dotpay}prestashop>payment_1f813fac16e31da23bdda501f7cbf5c1'] = 'Zapłać przez dotpay.pl';
 $_MODULE['<{dotpay}prestashop>payment_ad72d36e367c7682c175f973408a7ca8'] = ' (szybkie i bezpieczne płatności)';
-$_MODULE['<{dotpay}prestashop>dotpay_ad3cbca6839068ffa83d2d153048e279'] = 'Szybkie i bezpieczne płatności';
-$_MODULE['<{dotpay}prestashop>dotpay_47697eca9bf5dfea240509bdf82c9ac2'] = 'Bezpośrednie przekierowanie do Dotpay';
-$_MODULE['<{dotpay}prestashop>dotpay_389c834277f97344b338fe4a520a556b'] = 'Nie wyświetlaj dodatkowego podsumowania';				  
-$_MODULE['<{dotpay}prestashop>payment_30076960376f0bbe305a8e9b0564dbfe'] = 'Zamównienie numer ';
+$_MODULE['<{dotpay}prestashop>payment_30076960376f0bbe305a8e9b0564dbfe'] = 'Zamówienie numer ';
 $_MODULE['<{dotpay}prestashop>payment_7e7e076a81fa5dc64f44b8ff14199cbf'] = ' na kwotę ';
+$_MODULE['<{dotpay}prestashop>payment_e9d0b6f8338a22e2ace305c7fe07f092'] = 'Wybierz kanał płatności';
 $_MODULE['<{dotpay}prestashop>payment_5eb96f89e7ba03542166a0ea0e2a0824'] = 'Wybierz przycisk \"Zamawiam z obowiązkiem zapłaty\", aby potwierdzić swoje zamówienie i przejść na stronę dotpay.pl, gdzie będziesz mógł dokończyć swoją płatność.';
+$_MODULE['<{dotpay}prestashop>payment_5f3b591a2b28f305e03c64e3c84a688c'] = 'Uwaga!';
+$_MODULE['<{dotpay}prestashop>payment_a1483e9f04ca0a424c33754a1f906ad5'] = 'Akceptacja Regulaminu oraz zgody na przetwarzanie danych osobowych JEST WYMAGANA.';
+$_MODULE['<{dotpay}prestashop>payment_c4215ad3e38c25b2cab23c3cd1a6b7b6'] = 'Proszę wybrać jakiś kanał płatności !';
 $_MODULE['<{dotpay}prestashop>payment_569fd05bdafa1712c4f6be5b153b8418'] = 'Inne metody płatności';
 $_MODULE['<{dotpay}prestashop>payment_6a3b660f17e72e20626576d02cffc9a4'] = 'Zamawiam z obowiązkiem zapłaty';
+$_MODULE['<{dotpay}prestashop>payment_59101810060e03e0266fac30066965c2'] = 'Trwa przygotowanie Państwa płatności. Proszę czekać na załadowanie strony.';
+$_MODULE['<{dotpay}prestashop>payment_return_57ca035f385ffdb420caaae9b2765ba5'] = 'Oczekiwanie na potwierdzenie płatności. Proszę czekać na załadowanie strony.';
+$_MODULE['<{dotpay}prestashop>redirect_5642cb7b44742928aa428d8729f17755'] = 'Proszę czekać na połączenie z wybranym przez Ciebie kanałem płatności ...';
+$_MODULE['<{dotpay}prestashop>payment_655ba0f630583b8b50e117bf3d6e257e'] = ' ( dzięki dotpay.pl )';

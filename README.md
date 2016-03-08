@@ -3,7 +3,7 @@ PrestaShop Dotpay payment module
 
 ####Wtyczka dla PrestaShop dodająca bramkę płatności Dotpay####
 
-Najnowsza wersja modułu oraz instruckji instalacji:
+Najnowsza wersja modułu oraz instrukcji instalacji:
 https://github.com/dotpay/PrestaShop/releases/latest
 
 ---------------------------------------

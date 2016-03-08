@@ -17,12 +17,12 @@
 * versions in the future. If you wish to customize PrestaShop for your
 * needs please refer to http://www.prestashop.com for more information.
 *
-*  @author    Piotr Karecki <tech@dotpay.pl>
-*  @copyright dotpay
+*  @author    Dotpay Team <tech@dotpay.pl>
+*  @copyright Dotpay
 *  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *
 *}
-{if !$DOTPAY_CONFIGURATION_OK or $DP_TEST}
+{if !$DOTPAY_CONFIGURATION_OK_OC_MAIN or $DP_TEST_OC_MAIN}
 <div class="panel"><div class="dotpay-offer">
     <h3>{l s='Registration' mod='dotpay'}</h3>
     <p>{l s='In response to the market’s needs Dotpay has been delivering innovative Internet payment services providing the widest e-commerce solution offer for years. The domain is money transfers between a buyer and a merchant within a complex service based on counselling and additional security. Within an offer of Internet payments Dotpay offers over 50 payment channels including: mobile payments, instalments, cash, e-wallets, transfers and credit card payments.' mod='dotpay'}</p>
@@ -43,20 +43,20 @@
     <h3>{l s='Configuration' mod='dotpay'}</h3>
     <p>{l s='Thanks to Dotpay payment module the only activities needed for integration are: rewriting ID and PIN numbers and URLC confirmation configuration.' mod='dotpay'}</p>
     <p>{l s='ID and PIN can be found in Dotpay panel in Settings on the top bar. ID number is a 6-digit string placed after # in a “Shop” line.' mod='dotpay'}</p>
-    <p>{l s='URLC configuration is just setting an address to which information about a payment should be directed. This address is:' mod='dotpay'} <b>{$DP_URLC}</b></p>
+    <p>{l s='URLC configuration is just setting an address to which information about a payment should be directed. This address is:' mod='dotpay'} <b>{$DP_URLC_OC_MAIN}</b></p>
     <p>{l s='If you possess a few shops connected with one dotpay account URL must be directed automatically and “Block external urlc” must not be ticked in Edition section.' mod='dotpay'}</p>
     <p>{l s='More information can be found in Dotpay manual.' mod='dotpay'}</p>
 </div></div>
 
 <div class="panel"><div class="dotpay-config-state">
     <h3>{l s='Configuration state' mod='dotpay'}</h3>
-    {if $DOTPAY_CONFIGURATION_OK}
-        <table><tr><td><img width="100" height="100" src="{$module_dir}img/tick.png"></td><td><p>
+    {if $DOTPAY_CONFIGURATION_OK_OC_MAIN}
+        <table><tr><td><img width="100" height="100" src="{$module_dir_OC_MAIN}img/tick.png"></td><td><p>
         <p>{l s='Module is active. If you do not recive payment information, please chcek URLC configuration.' mod='dotpay'}</p>
-        <p>{if $DP_TEST}{l s='Module is in TEST mode. All payment informations are fake!' mod='dotpay'}{/if}</p>
+        <p>{if $DP_TEST_OC_MAIN}{l s='Module is in TEST mode. All payment informations are fake!' mod='dotpay'}{/if}</p>
         </p></td></tr></table>
     {else}
-        <table><tr><td><img width="100" height="100" src="{$module_dir}img/cross.png"></td><td>
+        <table><tr><td><img width="100" height="100" src="{$module_dir_OC_MAIN}img/cross.png"></td><td>
         <p>{l s='Module is not active. Please check yours configuration.' mod='dotpay'}</p>
         <p>{l s='ID and PIN can be found in Dotpay panel in Settings on the top bar. ID number is a 6-digit string placed after # in a “Shop” line.' mod='dotpay'}</p>
         </p></td></tr></table>
@@ -64,15 +64,15 @@
 </div></div>
 
 <h2>Dotpay</h2>
-<form action='{$DP_URI}' method='post'>
-<input type="radio" name="DP_TEST" value="0" {if $DP_TEST eq '0' || $DP_TEST eq false}checked="checked"{/if}>{l s='Production environment' mod='dotpay'}<br>
-<input type="radio" name="DP_TEST" value="1" {if $DP_TEST eq '1' || $DP_TEST eq true}checked="checked"{/if}>{l s='Testing environment' mod='dotpay'}<br><br>
-<input type="radio" name="DP_CHK" value="1" {if $DP_CHK  eq '1' || $DP_CHK eq true}checked="checked"{/if}>{l s='CHK Blockade ON' mod='dotpay'}<br>
-<input type="radio" name="DP_CHK" value="0" {if $DP_CHK  eq '0' || $DP_CHK eq false}checked="checked"{/if}>{l s='CHK Blockade OFF' mod='dotpay'}<br><br>
-<input type="radio" name="DP_SSL" value="1" {if $DP_SSL  eq '1' || $DP_SSL eq true}checked="checked"{/if}>{l s='SSL ON' mod='dotpay'}<br>
-<input type="radio" name="DP_SSL" value="0" {if $DP_SSL  eq '0' || $DP_SSL eq false}checked="checked"{/if}>{l s='SSL OFF' mod='dotpay'}<br><br>
-ID : <input type='text' name='DP_ID' value='{$DP_ID}'/>
-PIN : <input type='text' name='DP_PIN' value='{$DP_PIN}'/> <br><br>
+<form action='{$DP_URI_OC_MAIN}' method='post'>
+<input type="radio" name="DP_TEST_OC_MAIN" value="0" {if $DP_TEST_OC_MAIN eq '0' || $DP_TEST_OC_MAIN eq false}checked="checked"{/if}>{l s='Production environment' mod='dotpay'}<br>
+<input type="radio" name="DP_TEST_OC_MAIN" value="1" {if $DP_TEST_OC_MAIN eq '1' || $DP_TEST_OC_MAIN eq true}checked="checked"{/if}>{l s='Testing environment' mod='dotpay'}<br><br>
+<input type="radio" name="DP_CHK_OC_MAIN" value="1" {if $DP_CHK_OC_MAIN  eq '1' || $DP_CHK_OC_MAIN eq true}checked="checked"{/if}>{l s='CHK Blockade ON' mod='dotpay'}<br>
+<input type="radio" name="DP_CHK_OC_MAIN" value="0" {if $DP_CHK_OC_MAIN  eq '0' || $DP_CHK_OC_MAIN eq false}checked="checked"{/if}>{l s='CHK Blockade OFF' mod='dotpay'}<br><br>
+<input type="radio" name="DP_SSL_OC_MAIN" value="1" {if $DP_SSL_OC_MAIN  eq '1' || $DP_SSL_OC_MAIN eq true}checked="checked"{/if}>{l s='SSL ON' mod='dotpay'}<br>
+<input type="radio" name="DP_SSL_OC_MAIN" value="0" {if $DP_SSL_OC_MAIN  eq '0' || $DP_SSL_OC_MAIN eq false}checked="checked"{/if}>{l s='SSL OFF' mod='dotpay'}<br><br>
+ID : <input type='text' name='DP_ID_OC_MAIN' value='{$DP_ID_OC_MAIN}'/>
+PIN : <input type='text' name='DP_PIN_OC_MAIN' value='{$DP_PIN_OC_MAIN}'/> <br><br>
 <input type='submit' name='submitDotpayModule' value='Zapisz' /><br>
 <br><br>
 </form>
@@ -90,27 +90,27 @@ PIN : <input type='text' name='DP_PIN' value='{$DP_PIN}'/> <br><br>
 <table class="tg">
   <tr>
     <th class="tg-s6z2">Moduł aktywny<br></th>
-    {if $DOTPAY_CONFIGURATION_OK eq '1' || $DOTPAY_CONFIGURATION_OK eq true}<th class="tg-vkov">True</th>{/if}
-    {if $DOTPAY_CONFIGURATION_OK eq '0' || $DOTPAY_CONFIGURATION_OK eq false}<td class="tg-pn40">False</td>{/if}
+    {if $DOTPAY_CONFIGURATION_OK_OC_MAIN eq '1' || $DOTPAY_CONFIGURATION_OK_OC_MAIN eq true}<th class="tg-vkov">True</th>{/if}
+    {if $DOTPAY_CONFIGURATION_OK_OC_MAIN eq '0' || $DOTPAY_CONFIGURATION_OK_OC_MAIN eq false}<td class="tg-pn40">False</td>{/if}
   </tr>
   <tr>
     <td class="tg-s6z2">Środowisko produkcyjne</td>
-    {if $DP_TEST eq '0' || $DP_TEST eq false}<th class="tg-vkov">True</th>{/if}
-    {if $DP_TEST eq '1' || $DP_TEST eq true}<td class="tg-pn40">False</td>{/if}
+    {if $DP_TEST_OC_MAIN eq '0' || $DP_TEST_OC_MAIN eq false}<th class="tg-vkov">True</th>{/if}
+    {if $DP_TEST_OC_MAIN eq '1' || $DP_TEST_OC_MAIN eq true}<td class="tg-pn40">False</td>{/if}
   </tr>
   <tr>
     <td class="tg-s6z2">Tryb CHK</td>
-    {if $DP_CHK eq '1' || $DP_CHK eq true}<th class="tg-vkov">True</th>{/if}
-    {if $DP_CHK eq '0' || $DP_CHK eq false}<td class="tg-pn40">False</td>{/if}
+    {if $DP_CHK_OC_MAIN eq '1' || $DP_CHK_OC_MAIN eq true}<th class="tg-vkov">True</th>{/if}
+    {if $DP_CHK_OC_MAIN eq '0' || $DP_CHK_OC_MAIN eq false}<td class="tg-pn40">False</td>{/if}
   </tr>
     <tr>
     <td class="tg-s6z2">Aktywacja SSL w sklepie<br>(Preferencje->Ogólny)</td>
-    {if $SSL_ENABLED eq '1' || $SSL_ENABLED eq true}<th class="tg-vkov">True</th>{/if}
-    {if $SSL_ENABLED eq '0' || $SSL_ENABLED eq false}<td class="tg-pn40">False</td>{/if}
+    {if $SSL_ENABLED_OC_MAIN eq '1' || $SSL_ENABLED_OC_MAIN eq true}<th class="tg-vkov">True</th>{/if}
+    {if $SSL_ENABLED_OC_MAIN eq '0' || $SSL_ENABLED_OC_MAIN eq false}<td class="tg-pn40">False</td>{/if}
   </tr>  
   <tr>
   <td class="tg-s6z2">Aktywacja SSL w module</td>
-    {if $DP_SSL eq '1' || $DP_SSL eq true}<th class="tg-vkov">True</th>{/if}
-    {if $DP_SSL eq '0' || $DP_SSL eq false}<td class="tg-pn40">False</td>{/if}
+    {if $DP_SSL_OC_MAIN eq '1' || $DP_SSL_OC_MAIN eq true}<th class="tg-vkov">True</th>{/if}
+    {if $DP_SSL_OC_MAIN eq '0' || $DP_SSL_OC_MAIN eq false}<td class="tg-pn40">False</td>{/if}
   </tr>  
 </table>

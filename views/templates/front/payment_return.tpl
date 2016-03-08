@@ -17,15 +17,15 @@
 * versions in the future. If you wish to customize PrestaShop for your
 * needs please refer to http://www.prestashop.com for more information.
 *
-*  @author    Piotr Karecki <tech@dotpay.pl>
-*  @copyright dotpay
+*  @author    Dotpay Team <tech@dotpay.pl>
+*  @copyright Dotpay
 *  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *
 *}
-<p class="dotpay"><img src="{$module_dir}img/Dotpay_logo_napis{if $lang_iso == 'pl'}_pl{else}_en{/if}.png" /><img width="128" height="128" src="{$module_dir}img/loading2.gif" /></p>
+<p class="dotpay"><img src="{$module_dir_OC_MAIN}img/Dotpay_logo_napis{if $lang_iso == 'pl'}_pl{else}_en{/if}.png" /><img width="128" height="128" src="{$module_dir_OC_MAIN}img/loading2.gif" /></p>
 <p class="dotpay">{l s='Please wait for payment confirmation.' mod='dotpay'}</p><br/><br/>
-<form action="{$form_url}" method="post" id="dpForm" name="dpForm" target="_parent">
-{foreach from=$params_dotpay_payment key=k item=v}
+<form action="{$form_url_MAIN}" method="post" id="dpForm" name="dpForm" target="_parent">
+{foreach from=$params_dotpay_payment_MAIN key=k item=v}
 <input type="hidden" name="{$k|escape}" value="{$v|escape}"/>
 {/foreach}
 </form>

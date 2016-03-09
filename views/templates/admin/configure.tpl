@@ -64,7 +64,6 @@
 			<div class="alert alert-success">
 				<button type="button" class="close" data-dismiss="alert">&times;</button>
 				<h2 style="margin-left: 10px; margin-top: 0px;">{l s='Module is active. ' mod='dotpay'}</h2>
-				{if $DP_ONE_CHANNEL_SELECTED_MAIN == '' && $DP_CHANNELS_VIEW_MAIN == 4}<h2 style="margin-left: 10px; color: #D27C82;">{l s='You have not selected payment channel ! ' mod='dotpay'}</h2>{/if}
 				<br />
 				<p style="color: #555;"><b>{l s='If you do not recive payment information, please check URLC configuration in your Dotpay user panel.' mod='dotpay'}</b></p>
 				<p style="color: #D27C82;"><b>{if $DP_TEST_OC_MAIN}{l s='Module is in TEST mode. All payment informations are fake!' mod='dotpay'}{/if}</b></p><br><br>

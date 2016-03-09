@@ -39,7 +39,7 @@
 {/if}
 
 
-{if $DP_CHANNELS_VIEW_MAIN == 1 || $DP_CHANNELS_VIEW_MAIN == 2 || $DP_CHANNELS_VIEW_MAIN == 4}
+{if $DP_CHANNELS_VIEW_MAIN == 1 || $DP_CHANNELS_VIEW_MAIN == 2 }
 <form action="{$form_url_redirect_MAIN}" method="post" id="dpForm" name="dpForm" target="_parent" > 
 <input type="hidden" name="URLDOTPAY" value="{$form_url_MAIN}"/>	
 {else}
@@ -47,7 +47,7 @@
 {/if}
 
 
-{if $dPorder_summary_MAIN != '1' || $DP_CHANNELS_VIEW_MAIN == 1 || $DP_CHANNELS_VIEW_MAIN == 2 || $DP_CHANNELS_VIEW_MAIN == 4}
+{if $dPorder_summary_MAIN != '1' || $DP_CHANNELS_VIEW_MAIN == 1 || $DP_CHANNELS_VIEW_MAIN == 2 }
 
 <div class="row">
 	<div class="col-xs-12">
@@ -56,18 +56,11 @@
 			<div class="box" id ="payment_dotpay_selected" style="overflow: auto;  border: 1px solid #D6D4D4; padding: 14px 18px 13px; margin: 0px 0px 30px; line-height: 23px;">
 				<div class="row">
 					<div class="col-sm-6">
-						{if $DP_CHANNEL_IMG_MAIN !='' && $DP_CHANNELS_VIEW_MAIN == 4}
-						<img src="{$DP_CHANNEL_IMG_MAIN}" width="200px" />
-						{else}
 						<a href="http://www.dotpay.pl/" target="_blank" title="Dotpay.pl"><img src="{$module_dir_OC_MAIN}img/Dotpay_logo_napis{if $lang_iso == 'pl'}_pl{else}_en{/if}.png" width="250px" border="0" /></a>
-						{/if}
 					 </div>	
 					 <div class="col-sm-6">
-					 {if $DP_CHANNEL_IMG_MAIN !='' && $DP_CHANNELS_VIEW_MAIN == 4}
-					 	<h4>{l s='Pay by ' mod='dotpay'}<strong>{$DP_CHANNEL_NAME_MAIN}</strong>&nbsp;<em>{l s='(by dotpay.pl)' mod='dotpay'}</em></h4>
-					{else}
 						<h4>{l s='Pay by dotpay' mod='dotpay'}&nbsp;<em>{l s='(fast and secure internet payment)' mod='dotpay'}</em></h4>
-					{/if}	
+
 						<h3>{l s='Order number ' mod='dotpay'}<span style="color: #881920;">#{$numer_zam}</span><br>{l s=' of ' mod='dotpay'}<span style="color: #881920;">{$paramsonechannel_MAIN['amount']} {$paramsonechannel_MAIN['currency']}</span></h3>
 					 </div>
 				</div>
@@ -100,7 +93,7 @@
                 {/if}
 				 <hr>
 				<strong>{l s='Select the "Confirm purchase" to confirm your order and go to dotpay.pl where you can complete your payment.' mod='dotpay'}</strong>
-				{if $DP_CHANNELS_VIEW_MAIN == 4 || $DP_CHANNELS_VIEW_MAIN == 1 || $DP_CHANNELS_VIEW_MAIN == 2}
+				{if $DP_CHANNELS_VIEW_MAIN == 1 || $DP_CHANNELS_VIEW_MAIN == 2}
                 <br /><br />
 				<div class="box" style="background: rgba(238, 238, 238, 0.66) none repeat scroll 0% 0%;">
 						<div class="checkbox" >
@@ -166,7 +159,7 @@
 	</script>
 		{/literal}
 {/if}	
-{if $DP_CHANNELS_VIEW_MAIN == 2 || $DP_CHANNELS_VIEW_MAIN == 4}
+{if $DP_CHANNELS_VIEW_MAIN == 2}
 	{literal}
 		<script language="JavaScript">	
 			$(document).ready(function() {

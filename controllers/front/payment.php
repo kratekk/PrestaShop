@@ -27,34 +27,6 @@
 class dotpaypaymentModuleFrontController extends ModuleFrontController
 { 
 	
-/**
-     * Gennerate a unique reference for orders generated with the same cart id
-     * This references, is usefull for check payment
-     *
-     * @return String
-     */
-	
-
-	
-	public function getChannelInfo($ch_number,$what){
-			if(is_numeric($ch_number)){
-				$channel_sql = Db::getInstance()->getRow("SELECT `channel_name`, `logo_url` FROM "._DB_PREFIX_."dotpay_channel_MAIN WHERE channel_number=".(int)$ch_number);	
-				if($what !='' && $what == 'name'){
-					$info_channel = $channel_sql['channel_name'];
-				}
-				elseif($what !='' && $what == 'logo'){
-					$info_channel = $channel_sql['logo_url'];
-				}else{
-					return false;
-				}
-			 if(count($channel_sql) >1)	
-				return $info_channel;
-			}else{
-			return false;
-			
-			}
-				
-		}
 
 /*	
  # Get Agreement from Dotpay
@@ -224,18 +196,10 @@ class dotpaypaymentModuleFrontController extends ModuleFrontController
             else{
                 
 				$ch_chk = $params["channel"];
-				
-				if (Configuration::get('DP_CHANNELS_VIEW_MAIN') == 4 && Configuration::get('DP_ONE_CHANNEL_SELECTED_MAIN') !='' ){   
-					$type_OC_MAIN = 4;
-					$ch_lock_OC_MAIN = 1;
-					$ch_NR_MAIN = Configuration::get('DP_ONE_CHANNEL_SELECTED_MAIN');
 
-				}else{
 					$type_OC_MAIN = 0;
 					$ch_lock_OC_MAIN = '';
 					$ch_NR_MAIN = '';
-				}
-				
               }
 
 			  	if (Configuration::get('DP_SUMMARY_OC_MAIN') != 1 || Configuration::get('DP_CHANNELS_VIEW_MAIN') <> 3) 
@@ -401,7 +365,7 @@ class dotpaypaymentModuleFrontController extends ModuleFrontController
 				$personal_data_var
 				;		
 				
-			if(Configuration::get('DP_CHK_OC_MAIN') && (Configuration::get('DP_CHANNELS_VIEW_MAIN') == 3 || Configuration::get('DP_CHANNELS_VIEW_MAIN') == 4))
+			if(Configuration::get('DP_CHK_OC_MAIN') && (Configuration::get('DP_CHANNELS_VIEW_MAIN') == 3 ))
 				$params['chk'] = hash('sha256', $chk);
 			
 			}	
@@ -419,8 +383,8 @@ class dotpaypaymentModuleFrontController extends ModuleFrontController
            'form_url_redirect_MAIN' => $this->context->link->getModuleLink('dotpay', 'redirect'),
             'dPorder_summary_MAIN' => Configuration::get('DP_SUMMARY_OC_MAIN'),
             'DP_CHANNELS_VIEW_MAIN' => Configuration::get('DP_CHANNELS_VIEW_MAIN'),
-			'DP_CHANNEL_NAME_MAIN' => $this->getChannelInfo(Configuration::get('DP_ONE_CHANNEL_SELECTED_MAIN'),'name'),
-			'DP_CHANNEL_IMG_MAIN' => $this->getChannelInfo(Configuration::get('DP_ONE_CHANNEL_SELECTED_MAIN'),'logo'),
+			//'DP_CHANNEL_NAME_MAIN' => $this->getChannelInfo(Configuration::get('DP_ONE_CHANNEL_SELECTED_MAIN'),'name'),
+			//'DP_CHANNEL_IMG_MAIN' => $this->getChannelInfo(Configuration::get('DP_ONE_CHANNEL_SELECTED_MAIN'),'logo'),
 			'DP_CHANNEL_NUMBER_MAIN' => Configuration::get('DP_ONE_CHANNEL_SELECTED_MAIN'),
 			'DP_AGREEMENT_BYLAW_MAIN' => $this->DotpayAgreement('bylaw'),
 			'DP_AGREEMENT_PERSONAL_DATA_MAIN' => $this->DotpayAgreement('personal_data'),

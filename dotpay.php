@@ -31,8 +31,6 @@ class dotpay extends PaymentModule
 {
     	const DOTPAY_PAYMENTS_TEST_CUSTOMER_OC_MAIN = '';
         const DOTPAY_PAYMENTS_TEST_CUSTOMER_PIN_OC_MAIN = '';
-		const DP_ONE_CHANNEL_SELECTED_MAIN = '';  //default number of selected channel
-        const DP_ONE_CHANNEL_IMG_MAIN = '';  //default path to logo of selected channel
         const DP_CHANNELS_VIEW_MAIN = 1;  //default select payment channels on the shop site
 	
 	
@@ -78,7 +76,6 @@ class dotpay extends PaymentModule
         Configuration::updateValue('DP_ID_OC_MAIN', self::DOTPAY_PAYMENTS_TEST_CUSTOMER_OC_MAIN);
         Configuration::updateValue('DP_CHANNELS_VIEW_MAIN', self::DP_CHANNELS_VIEW_MAIN);
         Configuration::updateValue('DP_PIN_OC_MAIN', self::DOTPAY_PAYMENTS_TEST_CUSTOMER_PIN_OC_MAIN);
-		Configuration::updateValue('DP_ONE_CHANNEL_SELECTED_MAIN', self::DP_ONE_CHANNEL_SELECTED_MAIN);
         Configuration::updateValue('DOTPAY_CONFIGURATION_OK_OC_MAIN', false);
 		
 
@@ -144,22 +141,12 @@ class dotpay extends PaymentModule
 				) CHARSET=utf8
 				';
 		
-		$query2 = '
-					CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'dotpay_channel_MAIN` (
-					`id_dotpay_channel` int(10) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,
-					  `channel_name` varchar(255) NOT NULL,
-					  `channel_number` int(4) NOT NULL,
-					  `logo_url` varchar(255) NOT NULL,
-					  `datetime_update` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-					) CHARSET=utf8;
-					';		
 				
 		
 		$query1 ='ALTER TABLE `'._DB_PREFIX_.'dotpay_amount_MAIN` ADD UNIQUE INDEX (`i_suma`)';
 	
 			 Db::getInstance()->execute($query);
 			 Db::getInstance()->execute($query1);
-			 Db::getInstance()->execute($query2);
 	
 		  return true;
     }
@@ -193,9 +180,9 @@ class dotpay extends PaymentModule
                 'DP_URLC_OC_MAIN' => $this->context->link->getModuleLink('dotpay', 'callback', array('ajax' => '1')),
                 'DP_URI_OC_MAIN' => $_SERVER['REQUEST_URI'],
                 'SSL_ENABLED_OC_MAIN' => Configuration::get('PS_SSL_ENABLED'),
-				'DP_ONE_CHANNEL_SELECTED_MAIN' => Configuration::get('DP_ONE_CHANNEL_SELECTED_MAIN'),
-				'DP_ONE_CHANNEL_IMG_MAIN' => Configuration::get('DP_ONE_CHANNEL_IMG_MAIN'),
-				'DP_ONE_CHANNEL_NAME_MAIN' => Configuration::get('DP_ONE_CHANNEL_NAME_MAIN'),
+			//	'DP_ONE_CHANNEL_SELECTED_MAIN' => Configuration::get('DP_ONE_CHANNEL_SELECTED_MAIN'),
+			//	'DP_ONE_CHANNEL_IMG_MAIN' => Configuration::get('DP_ONE_CHANNEL_IMG_MAIN'),
+			//	'DP_ONE_CHANNEL_NAME_MAIN' => Configuration::get('DP_ONE_CHANNEL_NAME_MAIN'),
 				'bad_ID_OC_MAIN' => $this->l('Incorrect ID (6 digits maximum)'),
 				'bad_PIN_OC_MAIN' => $this->l('Incorrect PIN (minimum 16 and maximum 32 alphanumeric characters)'),
 				'forced_HTTPS_OC_MAIN' => $this->l('(forced YES)'),
@@ -244,93 +231,7 @@ class dotpay extends PaymentModule
 	}
 	
 
-	/**
-	 * Get channel list
-	 */	
-	
-	public	function getSslPage($url) {
-					$ch = curl_init();
-					curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-					curl_setopt($ch, CURLOPT_HEADER, false);
-					curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-					curl_setopt($ch, CURLOPT_URL, $url);
-					curl_setopt($ch, CURLOPT_REFERER, $url);
-					curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-					$result = curl_exec($ch);
-					curl_close($ch);
-					return $result;
-			}	
-
-				
-		
-			public	function channelsListAPI($nrkanal,$nazwa) 
-			{
-				global $cookie;
-				
-			if (Configuration::get('DOTPAY_CONFIGURATION_OK_OC_MAIN') && strlen(Configuration::get('DP_ID_OC_MAIN')) > 5){
-				
-				if (Configuration::get('DP_TEST_OC_MAIN') == 1 && strlen(Configuration::get('DP_ID_OC_MAIN')) > 5) { $url1_channel ="test_payment/"; } 
-				elseif (strlen(Configuration::get('DP_ID_OC_MAIN')) > 5 && Configuration::get('DP_TEST_OC_MAIN') <> 1) { $url1_channel ="t2/"; }
-				else { $url1_channel ="/"; }
-					
-					
-				$language_tmp = strtolower(LanguageCore::getIsoById((int)$cookie->id_lang));
-				$lista_kan_URL = "https://ssl.dotpay.pl/".$url1_channel."payment_api/channels/?currency=PLN&id=".Configuration::get('DP_ID_OC_MAIN')."&amount=301.00&lang=".$language_tmp;		
-
-				
-				$content = $this->getSslPage($lista_kan_URL);
-				$obj = json_decode($content);
-
-			   try {
-						foreach ($obj->channels as $key => $value) {
-							if(is_numeric($nrkanal)){
-								if($obj->channels[$key]->id == $nrkanal){
-										if($nazwa !='' && $nazwa == 1){
-												$channelslist1[$key]['id_option']=$obj->channels[$key]->logo;
-												$channelslist1[$key]['name']=$obj->channels[$key]->name;
-											}
-										//only 	'name'
-										elseif($nazwa !='' && $nazwa == 2){
-												$channelslist1 = $obj->channels[$key]->name;
-											}
-										//only 	'url logo'	
-										elseif($nazwa !='' && $nazwa == 3){
-												$channelslist1 = $obj->channels[$key]->logo;
-											}		
-											
-										else
-											{
-												$channelslist1 = $obj->channels[$key]->logo;	
-											}
-								
-								}
-							}else{
-									if($obj->channels[$key]->is_disable == 'False'){
-										$channelslist1[$key]['id_option']=$obj->channels[$key]->id;
-										$channelslist1[$key]['name']=$obj->channels[$key]->name;
-										$channelslist1[$key]['logo']=$obj->channels[$key]->logo;
-									}
-							}
-						}
-						
-					if(count($obj->channels[$key]->id) > 0){ 
-						return $channelslist1;
-					}	
-				} catch (Exception $e) {
-					//return false;
-					$channelslist1[$key]['id_option']= '';
-					$channelslist1[$key]['name']= '';
-					$channelslist1[$key]['logo']= '';
-					}
-				
-			}else{
-				return false;
-				
-			}	
-				
-		}	
-	
-// channels list.	          
+      
 	
 	/**
 	 * Create the structure of your form.
@@ -352,28 +253,14 @@ protected function getConfigForm()
                 'id_option2' => 3,
                 'name2' => $this->l('Channel list on the Dotpay page  ->')
               ),
-			   array(
-                'id_option2' => 4,
-                'name2' => $this->l('Choose only one specific payment channel  ->')
-              ),
         );
-    
+		
+		
     
 								if (Configuration::get('DOTPAY_CONFIGURATION_OK_OC_MAIN') && strlen(Configuration::get('DP_ID_OC_MAIN')) > 5){
 									$select_desc = '<div id="ukryj_test_ch_desc">';
 									
-										if($this->channelsListAPI('','')){
-
-											if(Configuration::get('DP_ONE_CHANNEL_SELECTED_MAIN', false)){
-												$select_desc .= '<strong>'.$this->l(' - SELECTED: ').'<img src='.$this->channelsListAPI(Configuration::get('DP_ONE_CHANNEL_SELECTED_MAIN'),'').' width="100px"> '; 
-
-												$select_desc .= '['.$this->l('channel').' : '.Configuration::get('DP_ONE_CHANNEL_SELECTED_MAIN').']</strong><br>'.$this->l('Please select one channel from this list that will active as a payment method.');
-											}else{
-												$select_desc .= '<strong style="color: red;">'.$this->l('Please select one channel from this list that will active as a payment method and SAVE settings.').'</strong>';
-												}
-										}else{
 											$select_desc .= '<strong style="color: red;">'.$this->l(' For this ID Account: "').Configuration::get('DP_ID_OC_MAIN').$this->l('" lack of channel list !').'</strong>';
-										}	
 											
 									$select_desc .= '</div>';
 										
@@ -442,24 +329,8 @@ protected function getConfigForm()
                                         )            
 
                       ),
-					
-					
-                    array(
-							'type' => 'select',
-							'lang' => true,
-							'label' => '<span id="ukryj_test_ch" class="label-tooltip" data-toggle="tooltip" title="'.$this->l('Select from the list a specific payment channel that  will be presented as an available payment method in your PrestaShop. A specific payment channel logo will be displayed instead of Dotpay logo.').'">'.$this->l('Selected channel').'</span>',
-							'name' => 'DP_ONE_CHANNEL_SELECTED_MAIN',
-							'desc' => '<div id="ukryj_test_ch">'.$select_desc.'</div>',
-							'options' => array(
-											'query' => $this->channelsListAPI('',''),
-											'id' => 'id_option', 
-											'name' => 'name'
-											)
-						),
-					
 
-
-                          array(
+                     array(
 						'type' => 'switch',
                         'label' => $this->l('This shop is using HTTPS'),
 						'name' => 'DP_SSL_OC_MAIN',
@@ -559,9 +430,9 @@ protected function getConfigForm()
 			'DP_CHK_OC_MAIN'  => Configuration::get('DP_CHK_OC_MAIN', false),
 			'DP_SSL_OC_MAIN'  => Configuration::get('DP_SSL_OC_MAIN', false),
 			'DP_SUMMARY_OC_MAIN'  => Configuration::get('DP_SUMMARY_OC_MAIN', false),
-			'DP_ONE_CHANNEL_SELECTED_MAIN'  => Configuration::get('DP_ONE_CHANNEL_SELECTED_MAIN', false),
-			'DP_ONE_CHANNEL_IMG_MAIN'  => $this->channelsListAPI(Configuration::get('DP_ONE_CHANNEL_SELECTED_MAIN'),3),
-			'DP_ONE_CHANNEL_NAME_MAIN'  => $this->channelsListAPI(Configuration::get('DP_ONE_CHANNEL_SELECTED_MAIN'),2),
+		//	'DP_ONE_CHANNEL_SELECTED_MAIN'  => Configuration::get('DP_ONE_CHANNEL_SELECTED_MAIN', false),
+		//	'DP_ONE_CHANNEL_IMG_MAIN'  => $this->channelsListAPI(Configuration::get('DP_ONE_CHANNEL_SELECTED_MAIN'),'logo'),
+		//	'DP_ONE_CHANNEL_NAME_MAIN'  => $this->channelsListAPI(Configuration::get('DP_ONE_CHANNEL_SELECTED_MAIN'),'name'),
 			'DP_ID_OC_MAIN' => Configuration::get('DP_ID_OC_MAIN'),
 			'DP_CHANNELS_VIEW_MAIN' => Configuration::get('DP_CHANNELS_VIEW_MAIN'),
 			'DP_REFERENCE_MAIN' => Configuration::get('DP_REFERENCE_MAIN'),
@@ -578,14 +449,7 @@ protected function getConfigForm()
 	{
             if (Tools::isSubmit('submitDotpayModule')) 
             {
-				//clear the table with information of channel
-					Db::getInstance()->Execute('TRUNCATE TABLE '._DB_PREFIX_.'dotpay_channel_MAIN');
-				//save the table with new information of selected channel
-				if((Tools::getValue("DP_ONE_CHANNEL_SELECTED_MAIN")))
-					Db::getInstance()->Execute('INSERT INTO '._DB_PREFIX_.'dotpay_channel_MAIN (channel_name,channel_number,logo_url) '.'VALUES("'.$this->channelsListAPI(Tools::getValue("DP_ONE_CHANNEL_SELECTED_MAIN"),2).'","'.Tools::getValue("DP_ONE_CHANNEL_SELECTED_MAIN").'","'.$this->channelsListAPI(Tools::getValue("DP_ONE_CHANNEL_SELECTED_MAIN"),3).'")');
-			
-			
-			
+		
                 $values = $this->getConfigFormValues();
                 foreach (array_keys($values) as $key)
                     $values[$key] = trim(Tools::getValue($key));
@@ -617,11 +481,11 @@ protected function getConfigForm()
 			{
         $this->smarty->assign(array('module_dir_OC_MAIN' => $this->_path));
         if ($this->active && Configuration::get('DOTPAY_CONFIGURATION_OK_OC_MAIN') ){
-			$this->context->smarty->assign("DP_ONE_CHANNEL_SELECTED_MAIN", Configuration::get('DP_ONE_CHANNEL_SELECTED_MAIN'));
+		//	$this->context->smarty->assign("DP_ONE_CHANNEL_SELECTED_MAIN", Configuration::get('DP_ONE_CHANNEL_SELECTED_MAIN'));
 			$this->context->smarty->assign("DP_CHANNELS_VIEW_MAIN", Configuration::get('DP_CHANNELS_VIEW_MAIN'));
 			$this->context->smarty->assign("DP_REFERENCE_MAIN", Configuration::get('DP_REFERENCE_MAIN'));
-			$this->context->smarty->assign("DP_ONE_CHANNEL_IMG_MAIN", $this->channelsListAPI(Configuration::get('DP_ONE_CHANNEL_SELECTED_MAIN'),3) );
-			$this->context->smarty->assign("DP_ONE_CHANNEL_NAME_MAIN", $this->channelsListAPI(Configuration::get('DP_ONE_CHANNEL_SELECTED_MAIN'),2));
+		//	$this->context->smarty->assign("DP_ONE_CHANNEL_IMG_MAIN", $this->channelsListAPI(Configuration::get('DP_ONE_CHANNEL_SELECTED_MAIN'),'logo') );
+		//	$this->context->smarty->assign("DP_ONE_CHANNEL_NAME_MAIN", $this->channelsListAPI(Configuration::get('DP_ONE_CHANNEL_SELECTED_MAIN'),'name'));
             return $this->display(__FILE__, 'payment.tpl');
 			}
 		}
@@ -665,21 +529,12 @@ protected function getConfigForm()
 
 			if (!$this->checkCurrency($params['cart']))
 				return;
-
-				if($this->channelsListAPI(Configuration::get('DP_ONE_CHANNEL_SELECTED_MAIN'),3) && Configuration::get('DP_CHANNELS_VIEW_MAIN') == 4 ){
-						$payment_options = array(
-						'cta_text' => $this->l('Pay by ').$this->channelsListAPI(Configuration::get('DP_ONE_CHANNEL_SELECTED_MAIN'),2).$this->l(' by dotpay.pl'),
-						'logo' => $this->channelsListAPI(Configuration::get('DP_ONE_CHANNEL_SELECTED_MAIN'),3),
-						'action' => $this->context->link->getModuleLink($this->name, 'payment', array(), true)
-					);
-				}else{	
 				
 					$payment_options = array(
 						'cta_text' => $this->l('Fast and secure internet payments'),
 						'logo' => $this->_path.'img/dotpay_logo85.png',
 						'action' => $this->context->link->getModuleLink($this->name, 'payment', array(), true)
 					);
-			}
 
 			return $payment_options;
 		}

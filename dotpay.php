@@ -139,14 +139,14 @@ class dotpay extends PaymentModule
 				  `i_secure_key` varchar(64) NOT NULL,
 				  `i_datetime_update` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 				) CHARSET=utf8
+				  ENGINE=InnoDB
 				';
-		
 				
 		
 		$query1 ='ALTER TABLE `'._DB_PREFIX_.'dotpay_amount_MAIN` ADD UNIQUE INDEX (`i_suma`)';
 	
-			 Db::getInstance()->execute($query);
-			 Db::getInstance()->execute($query1);
+			 if(Db::getInstance()->execute($query))
+					Db::getInstance()->execute($query1);
 	
 		  return true;
     }
@@ -156,10 +156,7 @@ class dotpay extends PaymentModule
 	
 	
 		function uninstall()
-			{
-				$sql_del = 'DROP TABLE `'._DB_PREFIX_.'dotpay_channel_MAIN`';
-				Db::getInstance()->execute($sql_del);
-				 
+			{ 
 				return (parent::uninstall());
 			}
 	
@@ -180,9 +177,6 @@ class dotpay extends PaymentModule
                 'DP_URLC_OC_MAIN' => $this->context->link->getModuleLink('dotpay', 'callback', array('ajax' => '1')),
                 'DP_URI_OC_MAIN' => $_SERVER['REQUEST_URI'],
                 'SSL_ENABLED_OC_MAIN' => Configuration::get('PS_SSL_ENABLED'),
-			//	'DP_ONE_CHANNEL_SELECTED_MAIN' => Configuration::get('DP_ONE_CHANNEL_SELECTED_MAIN'),
-			//	'DP_ONE_CHANNEL_IMG_MAIN' => Configuration::get('DP_ONE_CHANNEL_IMG_MAIN'),
-			//	'DP_ONE_CHANNEL_NAME_MAIN' => Configuration::get('DP_ONE_CHANNEL_NAME_MAIN'),
 				'bad_ID_OC_MAIN' => $this->l('Incorrect ID (6 digits maximum)'),
 				'bad_PIN_OC_MAIN' => $this->l('Incorrect PIN (minimum 16 and maximum 32 alphanumeric characters)'),
 				'forced_HTTPS_OC_MAIN' => $this->l('(forced YES)'),
@@ -430,9 +424,6 @@ protected function getConfigForm()
 			'DP_CHK_OC_MAIN'  => Configuration::get('DP_CHK_OC_MAIN', false),
 			'DP_SSL_OC_MAIN'  => Configuration::get('DP_SSL_OC_MAIN', false),
 			'DP_SUMMARY_OC_MAIN'  => Configuration::get('DP_SUMMARY_OC_MAIN', false),
-		//	'DP_ONE_CHANNEL_SELECTED_MAIN'  => Configuration::get('DP_ONE_CHANNEL_SELECTED_MAIN', false),
-		//	'DP_ONE_CHANNEL_IMG_MAIN'  => $this->channelsListAPI(Configuration::get('DP_ONE_CHANNEL_SELECTED_MAIN'),'logo'),
-		//	'DP_ONE_CHANNEL_NAME_MAIN'  => $this->channelsListAPI(Configuration::get('DP_ONE_CHANNEL_SELECTED_MAIN'),'name'),
 			'DP_ID_OC_MAIN' => Configuration::get('DP_ID_OC_MAIN'),
 			'DP_CHANNELS_VIEW_MAIN' => Configuration::get('DP_CHANNELS_VIEW_MAIN'),
 			'DP_REFERENCE_MAIN' => Configuration::get('DP_REFERENCE_MAIN'),
@@ -481,11 +472,8 @@ protected function getConfigForm()
 			{
         $this->smarty->assign(array('module_dir_OC_MAIN' => $this->_path));
         if ($this->active && Configuration::get('DOTPAY_CONFIGURATION_OK_OC_MAIN') ){
-		//	$this->context->smarty->assign("DP_ONE_CHANNEL_SELECTED_MAIN", Configuration::get('DP_ONE_CHANNEL_SELECTED_MAIN'));
 			$this->context->smarty->assign("DP_CHANNELS_VIEW_MAIN", Configuration::get('DP_CHANNELS_VIEW_MAIN'));
 			$this->context->smarty->assign("DP_REFERENCE_MAIN", Configuration::get('DP_REFERENCE_MAIN'));
-		//	$this->context->smarty->assign("DP_ONE_CHANNEL_IMG_MAIN", $this->channelsListAPI(Configuration::get('DP_ONE_CHANNEL_SELECTED_MAIN'),'logo') );
-		//	$this->context->smarty->assign("DP_ONE_CHANNEL_NAME_MAIN", $this->channelsListAPI(Configuration::get('DP_ONE_CHANNEL_SELECTED_MAIN'),'name'));
             return $this->display(__FILE__, 'payment.tpl');
 			}
 		}

@@ -40,7 +40,7 @@ class dotpay extends PaymentModule
 	{
 		$this->name = 'dotpay';
 		$this->tab = 'payments_gateways';
-		$this->version = '1.6.0';
+		$this->version = '1.6.1';
         $this->author = 'tech@dotpay.pl';
 		$this->ps_versions_compliancy = array('min' => '1.6', 'max' => _PS_VERSION_); 
 		$this->bootstrap = true;
@@ -81,9 +81,21 @@ class dotpay extends PaymentModule
 
 		if (Validate::isInt(Configuration::get('PAYMENT_DOTPAY_NEW_STATUS')) XOR (Validate::isLoadedObject($order_state_new = new OrderState(Configuration::get('PAYMENT_DOTPAY_NEW_STATUS')))))
 		{
+		
+
+		
+		
 			$order_state_new = new OrderState();
-			$order_state_new->name[Language::getIdByIso("en")] = "Awaiting payment confirmation Dotpay";
-			$order_state_new->name[Language::getIdByIso("pl")] = "Oczekuje potwierdzenia platnosci Dotpay";
+			
+			$order_state_new->name = array();
+			   foreach (Language::getLanguages() as $language)
+			   {
+				if (strtolower($language['iso_code']) == 'pl')
+				 $order_state_new->name[$language['id_lang']] = 'Oczekuje potwierdzenia platnosci Dotpay';
+				else
+				 $order_state_new->name[$language['id_lang']] = 'Awaiting Dotpay Payment confiramtion';
+			   }
+
 			$order_state_new->send_email = false;
 			$order_state_new->invoice = false;
 			$order_state_new->unremovable = false;
@@ -99,8 +111,16 @@ class dotpay extends PaymentModule
 	     if (Validate::isInt(Configuration::get('PAYMENT_DOTPAY_NEW_STATUS_UNPAID')) XOR (Validate::isLoadedObject($order_state_new1 = new OrderState(Configuration::get('PAYMENT_DOTPAY_NEW_STATUS_UNPAID')))))
 		{
 			$order_state_new1 = new OrderState();
-			$order_state_new1->name[Language::getIdByIso("en")] = "Chosen Dotpay payments - awaiting payment";
-			$order_state_new1->name[Language::getIdByIso("pl")] = "Wybrano płatność z Dotpay - oczekuje na wpłatę";		
+			
+			$order_state_new1->name = array();
+			   foreach (Language::getLanguages() as $language)
+			   {
+				if (strtolower($language['iso_code']) == 'pl')
+				 $order_state_new1->name[$language['id_lang']] = 'Wybrano płatność z Dotpay - oczekuje na wpłatę';
+				else
+				 $order_state_new1->name[$language['id_lang']] = 'Chosen Dotpay payments - awaiting payment';
+			   }
+	
 			$order_state_new1->send_email = false;
 			$order_state_new1->invoice = false;
 			$order_state_new1->unremovable = false;

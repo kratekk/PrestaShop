@@ -40,8 +40,14 @@ class dotpaypaymentModuleFrontController extends ModuleFrontController
 			if (Configuration::get('DP_TEST_OC_MAIN') == 1 && strlen(Configuration::get('DP_ID_OC_MAIN')) > 5) { $url1_channel = "test_payment/";}
 			elseif (strlen(Configuration::get('DP_ID_OC_MAIN')) > 5 && Configuration::get('DP_TEST_OC_MAIN') != 1) { $url1_channel = "t2/"; }
 			else { $url1_channel = "/"; }
-
-			$language_tmp = strtolower(LanguageCore::getIsoById((int)$cookie->id_lang));
+			
+			$language_tmp1 = strtolower(LanguageCore::getIsoById((int)$cookie->id_lang));
+				if($language_tmp1 == 'pl' || $language_tmp1 == 'en' || $language_tmp1 == 'de'){  // currently available are only 3 languages (for agreement): pl, en, de
+					$language_tmp = $language_tmp1;
+					}else{
+					$language_tmp = 'en';
+					}
+					
 			$currency1 = Currency::getCurrency($cart->id_currency);
 
 			$url = "https://ssl.dotpay.pl/test_payment/payment_api/channels/?currency=".$currency1["iso_code"]."&id=".Configuration::get('DP_ID_OC_MAIN')."&amount=301.00&lang=".$language_tmp;
@@ -107,7 +113,9 @@ class dotpaypaymentModuleFrontController extends ModuleFrontController
         $address = new Address($cart->id_address_invoice);
 
 		
-        $params = null;
+        $ParametersArray = null;
+		$nr_zam2 = null;
+		
         $template = "payment_return";
         if ($cart->OrderExists() == true) 
             Tools::redirect('index.php?controller=order-confirmation&id_cart='.$cart->id.'&id_module='.$this->module->id.'&id_order='.Order::getOrderByCartId($cart->id).'&key='.$customer->secure_key);                    
@@ -159,9 +167,14 @@ class dotpaypaymentModuleFrontController extends ModuleFrontController
 			}
 			
 			
-			
-			
-			$language = strtolower(LanguageCore::getIsoById($cookie->id_lang));
+			$language1 = strtolower(LanguageCore::getIsoById($cookie->id_lang));
+			$lang_allow = array("pl", "en", "de", "it", "fr", "es", "cz", "ru", "bg"); //Available values for language
+				if (in_array($language1, $lang_allow)) {
+					$language = $language1;
+				}else{
+					$language = "en";
+				}
+
 			
 			if($language == 'pl'){
 				$lang_desc = ", numer zamówienia: ";
@@ -185,17 +198,18 @@ class dotpaypaymentModuleFrontController extends ModuleFrontController
 				if($address->other !='') {$inne = $lang_other.$address->other.' ';}else{$inne ='';}			
 				
                 
-            if(Configuration::get('DP_CHANNELS_VIEW_MAIN') == 1 || Configuration::get('DP_CHANNELS_VIEW_MAIN') == 2){
+           // if(Configuration::get('DP_CHANNELS_VIEW_MAIN') == 1 || Configuration::get('DP_CHANNELS_VIEW_MAIN') == 2){
+            if(Configuration::get('DP_CHANNELS_VIEW_MAIN') <> 3){
                     $type_OC_MAIN = 4;
 					$ch_lock_OC_MAIN = 1;
 					$ch_NR_MAIN = '';
-					$ch_chk = '';
+					$ch_chk = $ParametersArray["channel"];
 					
                 }
             
             else{
-                
-				$ch_chk = $params["channel"];
+					$ch_chk = '';
+				
 
 					$type_OC_MAIN = 0;
 					$ch_lock_OC_MAIN = '';
@@ -273,7 +287,7 @@ class dotpaypaymentModuleFrontController extends ModuleFrontController
 
 			if(Configuration::get('DP_CHANNELS_VIEW_MAIN') == 1 || Configuration::get('DP_CHANNELS_VIEW_MAIN') == 2){
 				
-				$params = array(
+				$ParametersArray = array(
                     'id' => Configuration::get('DP_ID_OC_MAIN'),
                     'amount' => (float)$cart->getOrderTotal(true, Cart::BOTH),
                     'currency' => $currency["iso_code"],
@@ -281,8 +295,7 @@ class dotpaypaymentModuleFrontController extends ModuleFrontController
                     'lang' => $language,
                     'ch_lock' => $ch_lock_OC_MAIN,
                     'URL' => $this->context->link->getModuleLink('dotpay', 'payment', array('control' => $cart->id), Configuration::get('DP_SSL_OC_MAIN', false)),                        
-                    'type' => $type_OC_MAIN,                      
-                    'buttontext' => '',                        
+                    'type' => $type_OC_MAIN,                                             
                     'URLC' => $this->context->link->getModuleLink('dotpay', 'callback', array('ajax' => '1'), Configuration::get('DP_SSL_OC_MAIN', false)),
                     'control' => $cart->id.'|'.$sum_order_cust.'|'.$result_ref,
                     'firstname' => $customer->firstname,
@@ -302,17 +315,14 @@ class dotpaypaymentModuleFrontController extends ModuleFrontController
 				 
 				 }else{
 					
-					$params = array(
+					$ParametersArray = array(
                     'id' => Configuration::get('DP_ID_OC_MAIN'),
                     'amount' => (float)$cart->getOrderTotal(true, Cart::BOTH),
                     'currency' => $currency["iso_code"],
                     'description' => Configuration::get('PS_SHOP_NAME').$lang_desc.$nr_zam2.$firma.$inne,
                     'lang' => $language,
-                    'channel' => $ch_NR_MAIN,
-                    'ch_lock' => $ch_lock_OC_MAIN,
                     'URL' => $this->context->link->getModuleLink('dotpay', 'payment', array('control' => $cart->id), Configuration::get('DP_SSL_OC_MAIN', false)),                        
-                    'type' => $type_OC_MAIN,                        
-                    'buttontext' => '',                        
+                    'type' => $type_OC_MAIN,                                              
                     'URLC' => $this->context->link->getModuleLink('dotpay', 'callback', array('ajax' => '1'), Configuration::get('DP_SSL_OC_MAIN', false)),
                     'control' => $cart->id.'|'.$sum_order_cust.'|'.$result_ref,
                     'firstname' => $customer->firstname,
@@ -330,52 +340,70 @@ class dotpaypaymentModuleFrontController extends ModuleFrontController
                     'api_version' => 'dev'
 					); 
 					 
+										 
 				 }
-				
-
+		
+		
+		
+		$chk_order = Configuration::get('DP_PIN_OC_MAIN').
+				(isset($ParametersArray['api_version']) ? $ParametersArray['api_version'] : null).
+				(isset($ParametersArray['lang']) ? $ParametersArray['lang'] : null).
+				(isset($ParametersArray['id']) ? $ParametersArray['id'] : null).
+				(isset($ParametersArray['amount']) ? $ParametersArray['amount'] : null).
+				(isset($ParametersArray['currency']) ? $ParametersArray['currency'] : null).
+				(isset($ParametersArray['description']) ? $ParametersArray['description'] : null).
+				(isset($ParametersArray['control']) ? $ParametersArray['control'] : null).
+				(isset($ParametersArray['channel']) ? $ParametersArray['channel'] : null).
+				(isset($ParametersArray['ch_lock']) ? $ParametersArray['ch_lock'] : null).
+				(isset($ParametersArray['URL']) ? $ParametersArray['URL'] : null).
+				(isset($ParametersArray['type']) ? $ParametersArray['type'] : null).
+				(isset($ParametersArray['URLC']) ? $ParametersArray['URLC'] : null).
+				(isset($ParametersArray['firstname']) ? $ParametersArray['firstname'] : null).
+				(isset($ParametersArray['lastname']) ? $ParametersArray['lastname'] : null).
+				(isset($ParametersArray['email']) ? $ParametersArray['email'] : null).
+				(isset($ParametersArray['street']) ? $ParametersArray['street'] : null).
+				(isset($ParametersArray['street_n1']) ? $ParametersArray['street_n1'] : null).
+				(isset($ParametersArray['street_n2']) ? $ParametersArray['street_n2'] : null).
+				(isset($ParametersArray['state']) ? $ParametersArray['state'] : null).
+				(isset($ParametersArray['addr3']) ? $ParametersArray['addr3'] : null).
+				(isset($ParametersArray['city']) ? $ParametersArray['city'] : null).
+				(isset($ParametersArray['postcode']) ? $ParametersArray['postcode'] : null).
+				(isset($ParametersArray['phone']) ? $ParametersArray['phone'] : null).
+				(isset($ParametersArray['country']) ? $ParametersArray['country'] : null).
+				(isset($ParametersArray['bylaw']) ? $ParametersArray['bylaw'] : null).
+				(isset($ParametersArray['personal_data']) ? $ParametersArray['personal_data'] : null).
+				(isset($ParametersArray['blik_code']) ? $ParametersArray['blik_code'] : null)
+				;	
 			
-				
-		$chk = Configuration::get('DP_PIN_OC_MAIN').
-				$params["api_version"].
-				$params["lang"].
-				$params["id"].
-				$params["amount"].
-				$params["currency"].
-				$params["description"].
-				$params["control"].
-				$ch_chk.
-				$params["ch_lock"].
-				$params["URL"].
-				$params["type"].
-				$params["buttontext"].
-				$params["URLC"].
-				$params["firstname"].
-				$params["lastname"].
-				$params["email"].
-				$params["street"].
-				$params["street_n1"].
-				$params["street_n2"].
-				$params["state"].
-				$params["addr3"].
-				$params["city"].
-				$params["postcode"].
-				$params["phone"].
-				$params["country"].
-				$bylaw_var.
-				$personal_data_var
-				;		
 				
 			if(Configuration::get('DP_CHK_OC_MAIN') && (Configuration::get('DP_CHANNELS_VIEW_MAIN') == 3 ))
-				$params['chk'] = hash('sha256', $chk);
+				$ParametersArray['chk'] = hash('sha256', $chk_order);
+		
 			
-			}	
+			} //for 2.0
+
 
         }
 
+		
+		
+		if(trim($this->DotpayAgreement('bylaw')) != ''){
+				$description_bylaw = $this->DotpayAgreement('bylaw');
+		}else{
+				$description_bylaw = 'I accept Dotpay S.A. <a title="regulations of payments" target="_blank" href="https://ssl.dotpay.pl/files/regulamin_dotpay_sa_dokonywania_wplat_w_serwisie_dotpay_en.pdf">Regulations of Payments</a>.';
+		}
+		
+		if(trim($this->DotpayAgreement('personal_data')) != ''){
+				$description_personal_data = $this->DotpayAgreement('personal_data');
+		}else{
+				$description_personal_data = 'I agree to the use of my personal data by Dotpay S.A. 30-552 Kraków (Poland), Wielicka 72 for the purpose of	conducting a process of payments in accordance with applicable Polish laws (Act of 29.08.1997 for the protection of personal data, Dz. U. No 133, pos. 883, as amended). I have the right to inspect and correct my data.';
+		}
+
 
 		
+		
         $this->context->smarty->assign(array(
-            'paramsonechannel_MAIN' => $params,
+            'paramsonechannel_MAIN' => $ParametersArray,
             'numer_zam' => $nr_zam2,
             'module_dir_OC_MAIN' => $this->module->getPathUri(),
             'form_url_MAIN' => $form_url,
@@ -383,11 +411,9 @@ class dotpaypaymentModuleFrontController extends ModuleFrontController
            'form_url_redirect_MAIN' => $this->context->link->getModuleLink('dotpay', 'redirect'),
             'dPorder_summary_MAIN' => Configuration::get('DP_SUMMARY_OC_MAIN'),
             'DP_CHANNELS_VIEW_MAIN' => Configuration::get('DP_CHANNELS_VIEW_MAIN'),
-			//'DP_CHANNEL_NAME_MAIN' => $this->getChannelInfo(Configuration::get('DP_ONE_CHANNEL_SELECTED_MAIN'),'name'),
-			//'DP_CHANNEL_IMG_MAIN' => $this->getChannelInfo(Configuration::get('DP_ONE_CHANNEL_SELECTED_MAIN'),'logo'),
 			'DP_CHANNEL_NUMBER_MAIN' => Configuration::get('DP_ONE_CHANNEL_SELECTED_MAIN'),
-			'DP_AGREEMENT_BYLAW_MAIN' => $this->DotpayAgreement('bylaw'),
-			'DP_AGREEMENT_PERSONAL_DATA_MAIN' => $this->DotpayAgreement('personal_data'),
+			'DP_AGREEMENT_BYLAW_MAIN' => $description_bylaw,
+			'DP_AGREEMENT_PERSONAL_DATA_MAIN' => $description_personal_data,
 			'DP_CHK_ENABLE_MAIN' => Configuration::get('DP_CHK_OC_MAIN', false),
             ));
         $this->setTemplate($template.".tpl");

@@ -178,7 +178,7 @@ class dotpay extends PaymentModule {
             'valueLowerThanZero' => $this->l('The value must be greater than zero.'),
             'testApiAccount' => !$sellerApi->isAccountRight($this->config->getDotpayApiUsername(), $this->config->getDotpayApiPassword()),
             'urlWithNewVersion' => $version['url'],
-            'obsoletePlugin' => version_compare($version['version'], $this->version, '>='),
+            'obsoletePlugin' => version_compare($version['version'], $this->version, '>'),
             'canNotCheckPlugin' => $version['version'] === NULL
         ));
         $template = $this->context->smarty->fetch($this->local_path.'views/templates/admin/configure.tpl');

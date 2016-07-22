@@ -24,30 +24,30 @@
 *}
 
 {literal}
-<style type="text/css">
+<style type="text/css">	
+ /* Dropdown Button */
+.dropbtn {
+    cursor: pointer;
+}
 
-p.payment_module a.dotpay:after {
-    display: block;
-    content: "\f054";
-    position: absolute;
-    right: 15px;
-    margin-top: -11px;
-    top: 50%;
-    font-family: "FontAwesome";
-    font-size: 25px;
-    height: 22px;
-    width: 14px;
-    color: #777777; }	
-	
-</style>	
+/* The container <div> - needed to position the dropdown content */
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+/* Dropdown Content (Hidden by Default) */
+.dropdown-content {
+    display: none;
+    padding: 12px 16px;
+    min-width: 100%;
+}
+
+/* Show the dropdown menu (use JS to add this class to the .dropdown-content container when the user clicks on the dropdown button) */
+.show {display:block;}
+</style>
+
 {/literal}
 
-<div class="row">
-	<div class="col-xs-12 col-md-12">
-		<p class="payment_module">
-			<a class="dotpay" href="{$link->getModuleLink('dotpay', 'payment')|escape:'html'}" title="{l s='Pay by dotpay' mod='dotpay'}">
-				{l s='Pay by dotpay' mod='dotpay'}&nbsp;<span>{l s='(fast and secure internet payment)' mod='dotpay'}</span>
-					</a>
-		</p>
-    </div>
-</div>
+{include file='../front/chlist.tpl'}
+

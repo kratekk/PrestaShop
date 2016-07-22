@@ -1,0 +1,19 @@
+{
+  "name": "dotpay/prestashop",
+  "description": "Dotpay payment gateway for Prestashop",
+  "homepage": "https://github.com/dotpay/PrestaShop",
+  "license": "AFL - Academic Free License (AFL 3.0)",
+  "authors": [
+    {
+      "name": "Dotpay",
+      "email": "tech@dotpay.pl"
+    }
+  ],
+  "require": {
+    "php": ">=5.5"
+  },
+  "config": {
+    "preferred-install": "dist"
+  },
+  "type": "prestashop-module"
+}

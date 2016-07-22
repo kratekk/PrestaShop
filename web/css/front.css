@@ -1,0 +1,293 @@
+/**
+*
+*
+* NOTICE OF LICENSE
+*
+* This source file is subject to the Academic Free License (AFL 3.0)
+* that is bundled with this package in the file LICENSE.txt.
+* It is also available through the world-wide-web at this URL:
+* http://opensource.org/licenses/afl-3.0.php
+* If you did not receive a copy of the license and are unable to
+* obtain it through the world-wide-web, please send an email
+* to license@prestashop.com so we can send you a copy immediately.
+*
+* DISCLAIMER
+*
+* Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+* versions in the future. If you wish to customize PrestaShop for your
+* needs please refer to http://www.prestashop.com for more information.
+*
+*  @author    Dotpay <tech@dotpay.pl>
+*  @copyright Dotpay
+*  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
+*
+*
+* Don't forget to prefix your containers with your own identifier
+* to avoid any conflicts with others containers.
+*/
+.dotpay_return {
+    text-align: center;
+}
+p.payment_module a.dotpay {
+    background: #fbfbfb;
+    background-size: 85px 50px; 
+    padding:  25px 20px !important;
+}
+    
+p.payment_module a.dotpay:after {
+    display: block;
+    content: "\f078";
+    position: absolute;
+    right: 25px;
+    margin-top: -11px;
+    top: 50%;
+    font-family: "FontAwesome";
+    font-size: 25px;
+    height: 22px;
+    width: 14px;
+    color: #777777;
+}
+
+p.payment_module a:hover {
+    background-color: #f6f6f6;
+}
+	
+	
+/* Payment view */
+input[type="text"], input[type="password"], input[type="url"], input[type="tel"], input[type="search"], input[type="number"], input[type="datetime"], input[type="email"] {
+    background: #FFF none repeat scroll 0% 0% padding-box;
+    border: 1px solid #C2C2C2;
+    border-radius: 1px;
+    font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-size: 14px;
+    height: 32px;
+    line-height: 1.42857;
+    padding: 0px 9px;
+    vertical-align: baseline;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.dotpay-channels-list {
+    display: none;
+}
+
+.selected-channel-message {
+    display: none;
+    font-size: 17px;
+    text-decoration: none;
+    margin-bottom: 5px;
+}
+
+.selected-channel-message a {
+    text-decoration: none;
+}
+
+.selectedChannelContainer {
+    max-width: none !important;
+    cursor: default;
+    display: none;
+    margin-bottom: 15px !important;
+}
+
+.selectedChannelContainer hr {
+    display: block;
+}
+
+.dotpay-form-label {
+    display: inline-block;
+    width: 100%;
+}
+
+.dotpay-hidden-label {
+    width: auto;
+    display: none;
+}
+
+hr {
+    border-width: 1px 0px 0px;
+    border-style: solid none none;
+    border-color: #CCC -moz-use-text-color -moz-use-text-color;
+    -moz-border-top-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    border-image: none;
+    margin-bottom: 20px;
+    margin-top: 20px;
+}
+
+div.checker {
+    display: inline;
+}
+
+form[form-target] {
+    display:none;
+    padding-left: 30px;
+}
+
+form[form-target] button[type="submit"][disabled="disabled"] {
+    background-color: #grey;
+}
+
+p[display-row] {
+    display: table-row;
+    height: 70px;
+    line-height: 70px;
+}
+label[display-cell] {
+    display: table-cell;
+    height: inherit;
+    line-height: inherit;
+}
+label[display-cell] input,
+label[display-cell] img,
+label[display-cell] span,
+label[display-cell] strong
+{
+    vertical-align: middle;
+}
+
+img.oneclick {
+    height: 25px;
+}
+img.pv {
+    height: 25px;
+}
+img.cc {
+    height: 25px;
+}
+img.mp {
+    height: 25px;
+}
+img.blik {
+    height: 30px;
+}
+img.dotpay {
+    height: 31px;
+}
+label {
+    cursor: pointer;
+}
+.my-form-widget-container .dotpay-channels {
+    float: left;
+}
+.my-form-widget-container + p {
+    clear: both;
+}
+
+input.oneclick-margin, .oneclick-margin-label {
+    margin: 0px 0px 10px 30px;
+}
+
+select.oneclick-margin {
+    margin-left: 40px;
+    margin-bottom: 20px;
+    min-width: 250px;
+    min-height: 25px;
+}
+
+input[name="blik_code"] {
+    width: 200px;
+    margin: 5px 0px 30px 0px;
+    border-color: #ff6600;
+    border: #ff6600 2px solid;
+    height: 42px;
+}
+
+.dotpay-channels-list .alert-danger {
+    background-color: #fbefd2;
+    border-color: #f0c569;
+    color: #BD424A;
+}
+
+.dotpay-channels-list .alert-success {
+    background-color: #cef8d4;
+    border-color: #77d485;
+    color: #1A6D27;
+}
+
+/* Confirm page */
+#instruction {
+    text-align: left;
+    float: left;
+    margin: 0px;
+    padding: 0px 20px 20px;
+    border: 1px solid #F1F1F1;
+    width: 100%;
+}
+
+#instruction label {
+    display: block;
+    font-weight: normal;
+    font-size: 18px;
+    margin-bottom: 15px;
+    margin-top: 5px;
+}
+
+#instruction label > input, #instruction label > .input-group {
+    margin-top: 7px;
+}
+
+#instruction input.important {
+    color: #881920;
+    font-weight: bold;
+}
+
+#instruction-content {
+    font-size: 1.3em;
+    margin: 15px 0px 20px;
+    text-align: center;
+}
+
+#blankiet-download-form {
+    text-align: center;
+    padding: 0px;
+    margin: 20px 0px;
+}
+
+#channel_container_confirm {
+    border-radius: 3px;
+    display: inline-block;
+    margin: 5px 10px;
+    border: 1px solid #F0F0F0;
+    background-color: #FFF;
+    text-align: center;
+    width: 200px;
+}
+
+#channel_container_confirm a {
+    width: 100%;
+    height: 100%;
+}
+
+#channel_container_confirm img {
+    margin: auto;
+}
+
+#channel_container_confirm span {
+    font-size: 1.3em;
+    font-weight: bold;
+    display: block;
+    margin: 10px;
+}
+
+#instruction .alert-info {
+    background-color: #e1f6ff;
+    border-color: #7cb6ff;
+    color: #003380;
+}
+
+/* credit cards list */
+#credit-cards-list {
+    width: 100%;
+}
+
+#credit-cards-list .ocheader {
+    font-weight: bold;
+    background-color: #DADBD9;
+}
+
+#credit-cards-list tr:not(.ocheader):hover {
+    background-color: #F3F3F3;
+}

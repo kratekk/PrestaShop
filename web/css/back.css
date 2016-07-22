@@ -1,4 +1,3 @@
-<?php
 /**
 *
 *
@@ -22,14 +21,31 @@
 *  @copyright Dotpay
 *  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *
+*
+* Don't forget to prefix your containers with your own identifier
+* to avoid any conflicts with others containers.
 */
+.cta-button-container {
+	text-align: center;
+}
 
-header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
-header('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT');
+.cta-button {
+    border-radius: 3px;
+    color: #FFF !important;
+    background-color: #881920;
+    border: medium none;
+    font-size: 20px;
+    padding: 15px 50px;
+    margin: 25px 0px;
+    display: inline-block;
+    text-decoration: none !important;
+}
 
-header('Cache-Control: no-store, no-cache, must-revalidate');
-header('Cache-Control: post-check=0, pre-check=0', false);
-header('Pragma: no-cache');
+.errorMessage {
+    color: red;
+    font-weight: bold;
+}
 
-header('Location: ../');
-exit;
+.infoAmount {
+    color: blue;
+}

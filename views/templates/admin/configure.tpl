@@ -23,9 +23,7 @@
 *
 *}
 
-
-
-{if !$DOTPAY_CONFIGURATION_OK_OC_MAIN or $DP_TEST_OC_MAIN}
+{if $regMessEn}
 <div class="panel"><div class="dotpay-offer">
     <h3>{l s='Registration' mod='dotpay'}</h3>
     <p>{l s='In response to the market\'s needs Dotpay has been delivering innovative Internet payment services providing the widest e-commerce solution offer for years. The domain is money transfers between a buyer and a merchant within a complex service based on counselling and additional security. Within an offer of Internet payments Dotpay offers over 140 payment channels including: mobile payments, instalments, cash, e-wallets, transfers and credit card payments.' mod='dotpay'}</p>
@@ -42,246 +40,244 @@
     </div>
 </div></div>
 {/if}
-<div class="panel"><div class="dotpay-config">
-	<br>
-    <h3>{l s='Configuration' mod='dotpay'}</h3>
-    <p>{l s='Thanks to Dotpay payment module the only activities needed for integration are: ID and PIN numbers and URLC confirmation configuration.' mod='dotpay'}</p>
-    <p>{l s='ID and PIN can be found in Dotpay panel in Settings in the top bar. ID number is a 6-digit string after # in a "Shop" line.' mod='dotpay'}</p>
-    <p>{l s='URLC configuration is just setting an address to which information about payment should be directed. This address is:' mod='dotpay'} <b>{$DP_URLC_OC_MAIN}</b></p>
-	<p>{l s='Your shop is going to automatically send URLC address to Dotpay.' mod='dotpay'}</p><br>
-    <p><b style="color: brown;">{l s='Only thing You have to do is log in to the Dotpay user panel and untick "Block external URLC" option in Settings -> Notifications -> Urlc configuration -> Edit.' mod='dotpay'}</b></p>
-</div></div>
+
+<div class="panel">
+    <div class="dotpay-config">
+        <h3>{l s='Inforation' mod='dotpay'}</h3>
+        <a href="http://www.dotpay.pl" target="_blank" title="www.dotpay.pl"><img src="{$moduleMainDir}web/img/dotpay_logo85.png" width="85px" height="50px" border="0" /></a>
+        {if $confOK}
+            <div class="bootstrap">
+                <div class="alert alert-success">
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    <h2 style="margin-left: 10px; margin-top: 0px;">{l s='Module is active. ' mod='dotpay'}</h2>
+                    <br />
+                    <p style="color: #555;"><b>{l s='If you do not recive payment information, please check URLC configuration in your Dotpay user panel.' mod='dotpay'}</b></p>
+                    <p style="color: #D27C82;"><b>{if $testMode}{l s='Module is in TEST mode. All payment informations are fake!' mod='dotpay'}{/if}</b></p><br><br>
+                    <p style="color: #D27C82;"><b>{if $oldVersion}{l s='This version of PrestaShop does not support currencies othen that PLN. Please update your PrestaShop installation to the latest version if you want to use other currencies!' mod='dotpay'}{/if}</b></p>
+                </div>
+            </div>
+        {else}
+            <div class="bootstrap">
+                <div class="alert alert-danger">
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    <h2 style="margin-left: 10px; margin-top: 0px;">{l s='Module is not active. Please check your configuration.' mod='dotpay'}</h2>
+                    <br />
+                    <p style="color: #555;"><b>{l s='ID and PIN can be found in Dotpay panel in Settings in the top bar. ID number is a 6-digit string after # in a "Shop" line.' mod='dotpay'}</b></p>
+                    <br />
+                </div>
+            </div>
+        {/if}
+        {if $testApiAccount}
+            <div class="bootstrap">
+                <div class="alert alert-danger">
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    <h2 style="margin-left: 10px; margin-top: 0px;">{l s='Your username or password for API is incorrect.' mod='dotpay'}</h2>
+                    <br />
+                    <p style="color: #555;"><b>{l s='Please check your API configuration.' mod='dotpay'}</b></p>
+                    <br />
+                </div>
+            </div>
+        {/if}
+
+        <p>{l s='Thanks to Dotpay payment module the only activities needed for integration are: ID and PIN numbers and URLC confirmation configuration.' mod='dotpay'}</p>
+        <p>{l s='ID and PIN can be found in Dotpay panel in Settings in the top bar. ID number is a 6-digit string after # in a "Shop" line.' mod='dotpay'}</p>
+        <p>{l s='URLC configuration is just setting an address to which information about payment should be directed. This address is:' mod='dotpay'} <b>{$targetForUrlc}</b></p>
+        <p>{l s='Your shop is going to automatically send URLC address to Dotpay.' mod='dotpay'}</p><br>
+        <p><b style="color: brown;">{l s='Only thing You have to do is log in to the Dotpay user panel and untick "Block external URLC" option in Settings -> Notifications -> Urlc configuration -> Edit.' mod='dotpay'}</b></p>
+    </div>
+</div>
 
 <div class="panel"><div class="dotpay-config-state">
-    <h3>{l s='Configuration state' mod='dotpay'}</h3>
-	<a href="http://www.dotpay.pl" target="_blank" title="www.dotpay.pl"><img src="{$module_dir_OC_MAIN}img/dotpay_logo85.png" width="85px" height="50px" border="0" /></a>
-	
-		<h4>{l s='Version of this module is: ' mod='dotpay'}<strong>{$DP_THISMODULE_VERSION_MAIN}</strong>. {l s='Check if there is a newer version of this module on ' mod='dotpay'}
-		<a href="https://github.com/dotpay/PrestaShop/releases/latest" target="_blank" title="{l s='Check our repository on the GitHub site.' mod='dotpay'}">{l s='this page' mod='dotpay'}</a>.</h4>
-	
-    {if $DOTPAY_CONFIGURATION_OK_OC_MAIN}
-		<div class="bootstrap">
-			<div class="alert alert-success">
-				<button type="button" class="close" data-dismiss="alert">&times;</button>
-				<h2 style="margin-left: 10px; margin-top: 0px;">{l s='Module is active. ' mod='dotpay'}</h2>
-				<br />
-				<p style="color: #555;"><b>{l s='If you do not recive payment information, please check URLC configuration in your Dotpay user panel.' mod='dotpay'}</b></p>
-				<p style="color: #D27C82;"><b>{if $DP_TEST_OC_MAIN}{l s='Module is in TEST mode. All payment informations are fake!' mod='dotpay'}{/if}</b></p><br><br>
-				<p style="color: #D27C82;"><b>{if $is_compatibility_currency_MAIN == '0'}{l s='This version of PrestaShop does not support currencies othen that PLN. Please update your PrestaShop installation to the latest version if you want to use other currencies!' mod='dotpay'}{/if}</b></p>
-			</div>
-		</div>
+    <h3>{l s='Updates' mod='dotpay'}</h3>
+    <h4>{l s='Version of this module is: ' mod='dotpay'}<strong>{$moduleVersion}</strong>.</h4>
+    {if $obsoletePlugin}
+        <div class="bootstrap">
+            <div class="alert alert-danger">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                <h2 style="margin-left: 10px; margin-top: 0px;">{l s='Your plugin is obsolete!' mod='dotpay'}</h2>
+                <br />
+                <p style="color: #555;">
+                    {l s='You can download the latest version from' mod='dotpay'}
+                    <a href="{$urlWithNewVersion}" target="_blank">{l s='this page' mod='dotpay'}</a>.
+                </p>
+            </div>
+        </div>
+    {elseif $canNotCheckPlugin}
+        <div class="bootstrap">
+            <div class="alert alert-danger">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                <h2 style="margin-left: 10px; margin-top: 0px;">{l s='Can not check the update' mod='dotpay'}</h2>
+                <br />
+                <p style="color: #555;">
+                    {l s='You can manually check the latest version' mod='dotpay'}
+                    <a href="https://github.com/dotpay/PrestaShop/releases/latest" target="_blank">{l s='on this page' mod='dotpay'}</a>.
+                </p>
+            </div>
+        </div>
     {else}
-		<div class="bootstrap">
-			<div class="alert alert-danger">
-				<button type="button" class="close" data-dismiss="alert">&times;</button>
-				<h2 style="margin-left: 10px; margin-top: 0px;">{l s='Module is not active. Please check your configuration.' mod='dotpay'}</h2>
-				<br />
-				<p style="color: #555;"><b>{l s='ID and PIN can be found in Dotpay panel in Settings in the top bar. ID number is a 6-digit string after # in a "Shop" line.' mod='dotpay'}</b></p>
-				<br />
-			</div>
-		</div>
-		
-		
+        <div class="bootstrap">
+            <div class="alert alert-success">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                <h2 style="margin-left: 10px; margin-top: 0px;">{l s='Your version is latest.' mod='dotpay'}</h2>
+                <br />
+                <p style="color: #555;">
+                    {l s='This gives you the guarantee of security and the ability to use the latest solutions offered by Dotpay.' mod='dotpay'}
+                </p>
+            </div>
+        </div>
     {/if}
 </div></div>
+
 {literal}
-
 <script type="text/javascript">
-		  var badID = '{/literal}{$bad_ID_OC_MAIN}{literal}';
-		  var badPIN = '{/literal}{$bad_PIN_OC_MAIN}{literal}';
-		  var forcedHTTPS = '{/literal}{$forced_HTTPS_OC_MAIN}{literal}';
-
-	$(document).ready(function(){
-				{/literal}{if $is_https_MAIN == '1' AND $DOTPAY_HTTPS_OC_MAIN != '1'}{literal}	
-						$("#DP_SSL_OC_MAIN_on").attr('checked', 'checked');
-						$("#https_replace").text(forcedHTTPS);
-				{/literal}{else}{literal}
-						$("#https_replace").text('');
-				{/literal}{/if}{literal}
-				
-				if ($("#DP_TEST_OC_MAIN_on:checked").length == 1){
-				$('label[for=DP_TEST_OC_MAIN_on]').css('color', 'red');
-				$('#ukryj_test').css('color', 'red');
-				$('#ukryj_test_ch').css('color', '#661193');
-				}
-		
-
-		$('input#DP_ID_OC_MAIN').on('keyup',function(){
-		  var charCount = $(this).val().replace(/\s/g, '').length;
-
-			if(charCount == 6){
-				if (!($(this).val().match(/[0-9]{4,6}/))){
-						$("#infoID").text(badID);
-						$("button[name=submitDotpayModule]").prop("disabled", true);
-					}else{
-						$("#infoID").text("");
-						$("button[name=submitDotpayModule]").removeAttr('disabled');	
-						$("#ukryj_test").closest("div.form-group").css('display', 'inline');
-							$('#ukryj_test').css('display', 'inline');
-							$('#ukryj_test_desc').css('display', 'inline');
-							$('#DP_TEST_OC_MAIN_on').css('display', 'inline');
-							$('#DP_TEST_OC_MAIN_off').css('display', 'inline');
-							 $('label[for=DP_TEST_OC_MAIN_off]').css('display', 'inline');
-							$('label[for=DP_TEST_OC_MAIN_on]').css('display', 'inline');	
-					}
-				if (!($(this).val().match(/(\d{6})/))){
-							$("#ukryj_test").closest("div.form-group").css('display', 'none');
-							$("#ukryj_test_desc").closest("div.form-group").css('display', 'none');
-							$("#ukryj_test_ch").closest("div.form-group").css('display', 'none');
-							$("#ukryj_test_ch_desc").closest("div.form-group").css('display', 'none');
-							$("#DP_ONE_CHANNEL_SELECTED_MAIN").closest("div.form-group").css('display', 'none');
-							$('#DP_TEST_OC_MAIN_on').css('display', 'none');
-				            $('#DP_TEST_OC_MAIN_off').css('display', 'none');
-				            $('label[for=DP_TEST_OC_MAIN_off]').css('display', 'none');
-							$('label[for=DP_TEST_OC_MAIN_on]').css('display', 'none');
-
-							$("#ukryj_test_desc").hide("fast");	
-							$("#ukryj_test_ch").hide("fast");	
-							$("#ukryj_test_ch_desc").hide("fast");	
-				}else{
-
-						//if ($("#$DP_SWITCH_MULTI_OC_MAIN_on:checked").length == 1){
-						if ($("#DP_CHANNELS_VIEW_MAIN") == 4){
-							
-							$("#DP_ONE_CHANNEL_SELECTED_MAIN").closest("div.form-group").css('display', 'inline');
-							$("#ukryj_test_ch_desc").closest("div.form-group").css('display', 'inline');
-							$("#ukryj_test_ch").closest("div.form-group").css('display', 'inline');
-							$("#DP_ONE_CHANNEL_SELECTED_MAIN").show("fast");	
-							$("#ukryj_test_ch_desc").show("fast");							
-							$("#ukryj_test_ch").show("fast");
-						}else{
-							$("#DP_ONE_CHANNEL_SELECTED_MAIN").closest("div.form-group").css('display', 'none');
-							$("#ukryj_test_ch_desc").closest("div.form-group").css('display', 'none');
-							$("#ukryj_test_ch").closest("div.form-group").css('display', 'none');
-							$("#DP_ONE_CHANNEL_SELECTED_MAIN").hide("fast");	
-							$("#ukryj_test_ch_desc").hide("fast");							
-							$("#ukryj_test_ch").hide("fast");
-						
-						
-						}
-							$("#ukryj_test").closest("div.form-group").css('display', 'inline');
-							$('#DP_TEST_OC_MAIN_on').css('display', 'inline');
-							$('#DP_TEST_OC_MAIN_off').css('display', 'inline');
-							 $('label[for=DP_TEST_OC_MAIN_off]').css('display', 'inline');
-							$('label[for=DP_TEST_OC_MAIN_on]').css('display', 'inline');
-							$("#ukryj_test").show("fast");	
-							$("#ukryj_test").show("fast");	
-							$("#ukryj_test_desc").show("fast");								
-							$("button[name=submitDotpayModule]").removeAttr('disabled');	
-					}	
-					
-			}else{
-				$("#infoID").text(badID);
-				$("#ukryj_test").closest("div.form-group").css('display', 'none');
-				$('#DP_TEST_OC_MAIN_on').css('display', 'none');
-				$('#DP_TEST_OC_MAIN_off').css('display', 'none');
-				$('label[for=DP_TEST_OC_MAIN_off]').css('display', 'none');
-				$('label[for=DP_TEST_OC_MAIN_on]').css('display', 'none');
-				$("#ukryj_test_ch").hide("fast");
-				$("#ukryj_test").hide("fast");
-				$("#ukryj_test_ch_desc").hide("fast");
-				$("#DP_ONE_CHANNEL_SELECTED_MAIN").hide("fast");
-				$("#ukryj_test_desc").hide("fast");	
-				$("button[name=submitDotpayModule]").prop("disabled", true);				
-			}		
-		});
-
-		$('input#DP_PIN_OC_MAIN').on('keyup',function(){
-			var charCountPIN = $(this).val().replace(/\s/g, '').length;
-		
-			  if(charCountPIN > 0 && charCountPIN < 33){
-				if (!($(this).val().match(/([a-zA-Z0-9]{16,32})/))){
-						$("#infoPIN").text(badPIN);
-						$("button[name=submitDotpayModule]").prop("disabled", true);
-					}else{
-						$("#infoPIN").text("");
-						$("button[name=submitDotpayModule]").removeAttr('disabled');
-					}
-				}else{
-					$("#infoPIN").text(badPIN);
-					$("button[name=submitDotpayModule]").prop("disabled", true);
-				}
-		});	
-	
-			
-	});
-	
-	
-	
+    var badNewID = '{/literal}{$badNewIdMessage}{literal}';
+    var badOldID = '{/literal}{$badOldIdMessage}{literal}';
+    var badNewPIN = '{/literal}{$badNewPinMessage}{literal}';
+    var badOldPIN = '{/literal}{$badOldPinMessage}{literal}';
+    var valueLowerThanZero = '{/literal}{$valueLowerThanZero}{literal}';
+    var badID = '';
+    var badPin = '';
+                  
+    function setFieldsForApi() {
+        var apiVersion = $('.api-select').val();
+        badID = (apiVersion=='dev')?badNewID:badOldID;
+        badPin = (apiVersion=='dev')?badNewPIN:badOldPIN;
+        if(apiVersion=='legacy') {
+            $('.dev-option').parents('.form-group').hide().next('hr').hide();
+            $('.legacy-option').parents('.form-group').show().next('hr').show();
+        } else {
+            $('.legacy-option').parents('.form-group').hide().next('hr').hide();
+            $('.dev-option').parents('.form-group').show().next('hr').show();
+            setFieldsForPV();
+            setFieldsForExCh();
+            setFieldsForDiscount();
+        }
+    }
+    
+    function setFieldsForPV() {
+        if($('.pv-enable-option input[name="DP_PV_MODE"]:checked').val()=='1') {
+            $('.pv-option').parents('.form-group').show();
+        } else {
+            $('.pv-option').parents('.form-group').hide();
+        }
+    }
+    
+    function setFieldsForExCh() {
+        if($('.excharge-enable-option input[name="DP_EXCH_EN"]:checked').val()=='1') {
+            $('.exch-option').parents('.form-group').show();
+        } else {
+            $('.exch-option').parents('.form-group').hide();
+        }
+    }
+    
+    function setFieldsForDiscount() {
+        if($('.discount-enable-option input[name="DP_DISC_EN"]:checked').val()=='1') {
+            $('.discount-option').parents('.form-group').show();
+        } else {
+            $('.discount-option').parents('.form-group').hide();
+        }
+    }
+    
+    function disableSubmit(mode) {
+        $("button[name=saveDotpayConfig]").prop("disabled", mode);
+    }
+    
+    function prepareValidation() {
+        $('.form-group').find('.col-lg-9').append('<span class="errorMessage"></span>');
+    }
+    
+    function setError(obj, message) {
+        obj.parents('.form-group').find('.errorMessage').html(message);
+    }
+    
+    function validateId(idElem, empty) {
+        var idLength = idElem.val().length;
+        if(empty===true && idLength === 0) {
+            return 0;
+        }
+        if((idLength!=6&&$('#DP_API_VERSION').val()=='dev')||
+           ((idLength!=5&&idLength!=4)&&$('#DP_API_VERSION').val()=='legacy') ||
+           (isNaN(idElem.val() % 1))
+        ) {
+            setError(idElem, badID);
+            return 1;
+        } else {
+            setError(idElem, '');
+            return 0;
+        }
+    }
+    
+    function validatePin(pinElem, empty) {
+        var pinLength = pinElem.val().length;
+        if(empty===true && pinLength === 0) {
+            return true;
+        }
+        if(($('#DP_API_VERSION').val()=='dev' && pinLength!=32) ||
+           ($('#DP_API_VERSION').val()=='legacy' && (pinLength!=16 && pinLength!=0))){
+            setError(pinElem, badPin);
+            return 1;
+        } else {
+            setError(pinElem, '');
+            return 0;
+        }
+    }
+    
+    function validateLTZ(obj) {
+        if(parseFloat(obj.val())<0) {
+            setError(obj, valueLowerThanZero);
+            return 1;
+        } else {
+            setError(obj, '');
+            return 0;
+        }
+    }
+    
+    function validateGUI(check) {
+        setFieldsForApi();
+        if(check == undefined)
+            var check = 0;
+        check += validateId($('#DP_USER_ID'));
+        check += validatePin($('#DP_USER_PIN'));
+        check += validateId($('#DP_USER_ID'), check);
+        check += validatePin($('#DP_USER_PIN'), check);
+        check += validateLTZ($('#DP_EXCH_AM'));
+        check += validateLTZ($('#DP_EXCH_PERC'));
+        check += validateLTZ($('#DP_DISC_AM'));
+        check += validateLTZ($('#DP_DISC_PERC'));
+        if(check > 0)
+            disableSubmit(true);
+        else
+            disableSubmit(false);
+    }
+    
+    $(document).ready(function(){
+        $('.password-field').attr('type', 'password');
+        $('.lastInSection').parents('.form-group').after('<hr />');
+        
+        prepareValidation();
+        setFieldsForApi();
+        var check = validateId($('#DP_USER_ID')) + validatePin($('#DP_USER_PIN'));
+        if(check)
+            disableSubmit(true);
+        
+        $('.pv-enable-option input[name="DP_PV_MODE"]').change(function(){
+            setFieldsForPV();
+            var check = ($('.pv-enable-option input[name="DP_PV_MODE"]:checked').val()==1);
+            validateGUI(!check);
+        });
+        
+        $('.excharge-enable-option input[name="DP_EXCH_EN"]').change(function(){
+            setFieldsForExCh();
+        });
+        
+        $('.discount-enable-option input[name="DP_DISC_EN"]').change(function(){
+            setFieldsForDiscount();
+        });
+        
+        $('.api-select,#DP_USER_ID,#DP_USER_PIN,#DP_PV_ID,#DP_PV_PIN,#DP_EXCH_AM,#DP_EXCH_PERC,#DP_DISC_AM,#DP_DISC_PERC').change(function(){
+            validateGUI();
+        });
+    });
 </script>
 
-
-
-<style type="text/css">
 {/literal}
-	{if strlen($DP_ID_OC_MAIN) == '6'}
-{literal}
-	label[for=DP_TEST_OC_MAIN_off]{display:inline;}
-	label[for=DP_TEST_OC_MAIN_on]{display:inline;}
-	input[name=DP_TEST]{display:inline;}
-	#ukryj_test{display:inline; color: #1B23BC;}
-	#ukryj_test_ch{display:inline;}
-	#ukryj_test_desc{display:inline; float:left; color: #661193;}
-	
-{/literal}	
-{else}
-{literal}
-	label[for=DP_TEST_OC_MAIN_off]{display:none;}
-	label[for=DP_TEST_OC_MAIN_on]{display:none;}
-	input[name=DP_TEST]{display:none;}
-	#ukryj_test{display:none; color: #1B23BC;}
-	#ukryj_test_ch{display:none;}
-	#ukryj_test_desc{display:none;float:left; color: #264AE9;}
-{/literal}
-{/if}	
-{literal}	
-	input#DP_ID_OC_MAIN{float:left;}
-	input#DP_PIN_OC_MAIN{float:left;}
-	#infoID {color:red; margin-left: 80px;}
-	#infoPIN {color:red; margin-left: 80px;}
-	#https_replace {color:red;}
-	#ukryj_test_ch_desc {color:#264AE9;}
-</style>
-
-{/literal}
-	{if strlen($DP_ID_OC_MAIN) == '6'}
-{literal}
-			<script>
-			$(document).ready(function(){
-				$("#ukryj_test").closest("div.form-group").css('display', 'inline');
-				$("#DP_ONE_CHANNEL_SELECTED_MAIN").closest("div.form-group").css('display', 'inline');
-			});
-		</script>
-{/literal}	
-{else}
-{literal}
-			<script>
-			$(document).ready(function(){
-				$("#ukryj_test").closest("div.form-group").css('display', 'none');
-				$("#DP_ONE_CHANNEL_SELECTED_MAIN").closest("div.form-group").css('display', 'none');
-			});
-			</script>
-{/literal}
-{/if}
-
-{if $DP_CHANNELS_VIEW_MAIN == 4}
-{literal}
-			<script>
-			$(document).ready(function(){
-				$("#DP_ONE_CHANNEL_SELECTED_MAIN").closest("div.form-group").css('display', 'inline');
-				$("#ukryj_test_ch").closest("div.form-group").css('display', 'inline');
-				$("#ukryj_summary_multi").closest("div.form-group").css('display', 'none');
-			});
-		</script>
-{/literal}	
-{else}
-{literal}
-			<script>
-			$(document).ready(function(){
-				$("#DP_ONE_CHANNEL_SELECTED_MAIN").closest("div.form-group").css('display', 'none');
-				$("#ukryj_test_ch").closest("div.form-group").css('display', 'none');
-				$("#ukryj_summary_multi").closest("div.form-group").css('display', 'inline');
-			});
-			</script>
-{/literal}
-{/if}

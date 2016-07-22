@@ -1,4 +1,6 @@
-{*
+<?php
+
+/**
 *
 *
 * NOTICE OF LICENSE
@@ -21,16 +23,32 @@
 *  @copyright Dotpay
 *  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *
-*}
-<p class="dotpay_return"><img src="{$module_dir_OC_MAIN}img/Dotpay_logo_napis{if $lang_iso == 'pl'}_pl{else}_en{/if}.png" /><img width="128" height="128" src="{$module_dir_OC_MAIN}img/loading2.gif" /></p>
-<p class="dotpay_return">{l s='Please wait for payment confirmation.' mod='dotpay'}</p><br/><br/>
-<form action="{$form_url_MAIN}" method="post" id="dpForm" name="dpForm" target="_parent">
-{foreach from=$params_dotpay_payment_MAIN|default:'&nbsp;' key=k item=v}
-<input type="hidden" name="{$k|escape}" value="{$v|escape}"/>
-{/foreach}
-</form>
-{literal}
-<script language="JavaScript">
-	setTimeout(function(){document.dpForm.submit()}, 500);
-</script>
-{/literal}
+*/
+
+require_once(__DIR__.'/dotpay.php');
+
+/**
+ * Controller for handling return address
+ */
+class dotpaystatusModuleFrontController extends DotpayController {
+
+    public function initContent() {
+        $cookie = new Cookie('lastOrder');
+        if($cookie->orderId != null) {
+            $lastOrderState = OrderHistory::getLastOrderState($cookie->orderId);
+            switch($lastOrderState->id) {
+                case $this->config->getDotpayNewStatusId():
+                    if(Tools::getValue('lastRequest')===true)
+                        $cookie->logout();
+                    die('0');
+                case _PS_OS_PAYMENT_:
+                    $cookie->logout();
+                    die('1');
+                default:
+                    die('-1');
+            }
+        } else {
+            die('NO');
+        }
+    }
+}

@@ -22,15 +22,37 @@
 *  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *
 *}
-<p class="dotpay_return">{l s='Please wait for payment connecting to your selected channel ...' mod='dotpay'}</p><br/><br/>
-<form action="{$form_url_MAIN}" method="post" id="dpForm2" name="dpForm2" target="_parent" class="hidden">
-{foreach from=$params_r_MAIN key=k item=v}
-<input type="hidden" name="{$k|escape}" value="{$v|escape}"/>
-{/foreach}
-</form>
+
 {literal}
-<script language="JavaScript">
-	document.dpForm2.submit();
-</script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $('#instruction input').keypress(function(e){
+                e.preventDefault();
+            }).focus(function(e){
+                $(this).select();
+            });
+        });
+    </script>
 {/literal}
 
+{capture name=path}
+	{l s='Completion of payments' mod='dotpay'}
+{/capture}
+
+<h2 class="page-heading">{l s='Payment instruction' mod='dotpay'}</h2>
+
+{assign var='current_step' value='payment'}
+{include file="$tpl_dir./order-steps.tpl"}
+
+{if $errorMessage}
+    <p class="alert alert-danger">{$errorMessage}</p>
+{/if}
+
+{if $isOk}
+<p class="alert alert-success">{l s='Payment has been initialized' mod='dotpay'}</p>
+
+{include file=$template}
+
+{else}
+    <p class="alert alert-danger">{l s='Payment is not found or registered' mod='dotpay'}</p>
+{/if}

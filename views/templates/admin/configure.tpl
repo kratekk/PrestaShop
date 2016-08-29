@@ -212,7 +212,7 @@
         if(empty===true && pinLength === 0) {
             return true;
         }
-        if(($('#DP_API_VERSION').val()=='dev' && pinLength!=32) ||
+        if(($('#DP_API_VERSION').val()=='dev' && (pinLength>32 || pinLength<16)) ||
            ($('#DP_API_VERSION').val()=='legacy' && (pinLength!=16 && pinLength!=0))){
             setError(pinElem, badPin);
             return 1;
@@ -238,12 +238,16 @@
             var check = 0;
         check += validateId($('#DP_USER_ID'));
         check += validatePin($('#DP_USER_PIN'));
-        check += validateId($('#DP_USER_ID'), check);
-        check += validatePin($('#DP_USER_PIN'), check);
-        check += validateLTZ($('#DP_EXCH_AM'));
-        check += validateLTZ($('#DP_EXCH_PERC'));
-        check += validateLTZ($('#DP_DISC_AM'));
-        check += validateLTZ($('#DP_DISC_PERC'));
+        if($('#DP_API_VERSION').val()=='dev') {
+            if($('.pv-enable-option input[name="DP_PV_MODE"]:checked').val()=='1') {
+                check += validateId($('#DP_PV_ID'), check);
+                check += validatePin($('#DP_PV_PIN'), check);
+            }
+            check += validateLTZ($('#DP_EXCH_AM'));
+            check += validateLTZ($('#DP_EXCH_PERC'));
+            check += validateLTZ($('#DP_DISC_AM'));
+            check += validateLTZ($('#DP_DISC_PERC'));
+        }
         if(check > 0)
             disableSubmit(true);
         else
@@ -256,14 +260,13 @@
         
         prepareValidation();
         setFieldsForApi();
-        var check = validateId($('#DP_USER_ID')) + validatePin($('#DP_USER_PIN'));
+        var check = validateId($('#DP_USER_ID'), true) + validatePin($('#DP_USER_PIN'), true);
         if(check)
             disableSubmit(true);
         
         $('.pv-enable-option input[name="DP_PV_MODE"]').change(function(){
             setFieldsForPV();
-            var check = ($('.pv-enable-option input[name="DP_PV_MODE"]:checked').val()==1);
-            validateGUI(!check);
+            validateGUI();
         });
         
         $('.excharge-enable-option input[name="DP_EXCH_EN"]').change(function(){

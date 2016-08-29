@@ -13,7 +13,7 @@
 * obtain it through the world-wide-web, please send an email
 * to license@prestashop.com so we can send you a copy immediately.
 *
-* DISCLAIMER
+* DISCLAIMER 
 *
 * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
 * versions in the future. If you wish to customize PrestaShop for your
@@ -51,7 +51,7 @@ abstract class DotpayApi {
 
     /**
      *
-     * Channels group for cash method
+     * Channels group for cash method 
      */
     const cashGroup = 'cash';
     
@@ -100,6 +100,11 @@ abstract class DotpayApi {
      * Returns list of payment channels
      */
     abstract public function getChannelList();
+    
+    /**
+     * Returns flag, if was selected PV channel
+     */
+    abstract public function isSelectedPvChannel();
     
     /**
      * Check confirm message from Dotpay
@@ -300,6 +305,38 @@ abstract class DotpayApi {
     }
     
     /**
+     * Adds field with Bylaw agreement of Dotpay to form
+     * @return array
+     */
+    protected function addBylawField() {
+        $byLawAgreements = $this->getByLaw();
+        return array(
+            'type' => 'checkbox',
+            'name' => 'bylaw',
+            'value' => '1',
+            'checked' => true,
+            'label' => $byLawAgreements,
+            'required' => true
+        );
+    }
+    
+    /**
+     * Adds field with Personal data agreement of Dotpay to form
+     * @return array
+     */
+    protected function addPersonalDataField() {
+        $personalDataAgreements = $this->getPersonalData();
+        return array(
+            'type' => 'checkbox',
+            'name' => 'personal_data',
+            'value' => '1',
+            'checked' => true,
+            'label' => $personalDataAgreements,
+            'required' => true
+        );
+    }
+
+        /**
      * Returns submit field for Dotpay Helper Form
      * @return array
      */

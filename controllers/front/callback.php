@@ -36,8 +36,9 @@ class dotpaycallbackModuleFrontController extends DotpayController {
             die("PrestaShop - M.Ver: ".$this->module->version.
                 ", P.Ver: ". _PS_VERSION_ .
                 ", ID: ".$this->config->getDotpayId().
-                ", Active: ".(bool)$this->config->isDotpayEnabled().
-                ", Test: ".(bool)$this->config->isDotpayTestMode()
+                ", Active: ".(int)$this->config->isDotpayEnabled().
+                ", Test: ".(int)$this->config->isDotpayTestMode().
+                ", Api: ".$this->config->getDotpayApiVersion()
             );
         
         if($_SERVER['REMOTE_ADDR'] != $this->config->getDotpayIp())
@@ -49,7 +50,8 @@ class dotpaycallbackModuleFrontController extends DotpayController {
         if (!$this->api->checkConfirm())
             die("PrestaShop - ERROR SIGN");
         
-        if (Tools::getValue('id') != $this->config->getDotpayId())
+        $id = ($this->api->isSelectedPvChannel())?$this->config->getDotpayPvId():$this->config->getDotpayId();
+        if (Tools::getValue('id') != $id)
             die("PrestaShop - ERROR ID");
         
         $order = new Order((int)$this->getDotControl(Tools::getValue('control')));

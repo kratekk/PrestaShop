@@ -71,7 +71,7 @@ class dotpaypreparingModuleFrontController extends DotpayController {
                 $this->context->cart->id,
                 (int)$this->config->getDotpayNewStatusId(),
                 $this->getDotAmount(),
-                'Dotpay',
+                $this->module->displayName,
                 NULL,
                 array(),
                 NULL,

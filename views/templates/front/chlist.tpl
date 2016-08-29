@@ -77,7 +77,7 @@
                     {if $discAmount > 0}
                         <p class="alert alert-success">{$discMessage}: {$discAmount}&nbsp;{$currency}.</p>
                     {/if}
-                    {generateForm form=$form}
+                    {dotpayGenerateForm form=$form}
                 </div>
             </p>
         </div>

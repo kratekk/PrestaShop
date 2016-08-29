@@ -242,7 +242,7 @@ abstract class DotpayController extends ModuleFrontController {
     
     /**
      * 
-     * @return string
+     * @return string 
      */
     public function getDotCity() {
         return $this->address->city;
@@ -266,7 +266,7 @@ abstract class DotpayController extends ModuleFrontController {
     
     /**
      * 
-     * @return string
+     * @return string 
      */
     public function getDotCountry() {
         $country = new Country((int)($this->address->id_country));
@@ -309,9 +309,10 @@ abstract class DotpayController extends ModuleFrontController {
         $this->customer = new Customer($this->context->cart->id_customer);
     }
 
-    protected function isDotSelectedCurrency($allowCurrencyForm) {
+    public function isDotSelectedCurrency($allowCurrencyForm, $paymentCurrency=NULL) {
         $result = false;
-        $paymentCurrency = $this->getDotCurrency();
+        if($paymentCurrency==NULL)
+            $paymentCurrency = $this->getDotCurrency();
         $allowCurrency = str_replace(';', ',', $allowCurrencyForm);
         $allowCurrency = strtoupper(str_replace(' ', '', $allowCurrency));
         $allowCurrencyArray =  explode(",",trim($allowCurrency));

@@ -54,12 +54,15 @@ class DotpaySellerApi {
     
     /**
      * Check, if username and password are right
-     * @param string $username
-     * @param string $password
+     * @param string $username Username of user
+     * @param string $password Password of user
+     * @param string $version Version of used Dotpay Api
      * @return boolean
      */
-    public function isAccountRight($username, $password)
+    public function isAccountRight($username, $password, $version)
     {
+        if($version == 'legacy')
+            return true;
         if(empty($username) && empty($password))
             return true;
         $url = $this->_baseurl.$this->getDotPaymentApi()."payments/";

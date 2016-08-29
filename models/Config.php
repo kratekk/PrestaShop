@@ -143,6 +143,8 @@ class DotpayConfig {
         return $this;
     }
     public function isDotpayTestMode() {
+        if($this->getDotpayApiVersion() === 'legacy')
+            return false;
         return Configuration::get($this->getDotpayTestModeFN());
     }
     

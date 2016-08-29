@@ -44,7 +44,7 @@ if (!defined('_PS_VERSION_'))
  * @param type $smarty
  * @return string
  */
-function generateForm(Array $params, $smarty)
+function dotpayGenerateForm(Array $params, $smarty)
 {
     $data = (isset($params['form']))?$params['form']:array();
     return DotpayFormHelper::generate($data);
@@ -73,7 +73,7 @@ class dotpay extends PaymentModule {
     public function __construct() {
         $this->name = 'dotpay';
         $this->tab = 'payments_gateways';
-        $this->version = '2.0.0';
+        $this->version = '2.0.1';
         $this->author = 'tech@dotpay.pl';
         $this->ps_versions_compliancy = array('min' => '1.6', 'max' => _PS_VERSION_); 
         $this->bootstrap = true;
@@ -176,7 +176,7 @@ class dotpay extends PaymentModule {
             'badNewPinMessage' => $this->l('Incorrect PIN (minimum 16 and maximum 32 alphanumeric characters)'),
             'badOldPinMessage' => $this->l('Incorrect PIN (0 or 16 alphanumeric characters)'),
             'valueLowerThanZero' => $this->l('The value must be greater than zero.'),
-            'testApiAccount' => !$sellerApi->isAccountRight($this->config->getDotpayApiUsername(), $this->config->getDotpayApiPassword()),
+            'testApiAccount' => !$sellerApi->isAccountRight($this->config->getDotpayApiUsername(), $this->config->getDotpayApiPassword(), $this->config->getDotpayApiVersion()),
             'urlWithNewVersion' => $version['url'],
             'obsoletePlugin' => version_compare($version['version'], $this->version, '>'),
             'canNotCheckPlugin' => $version['version'] === NULL
@@ -282,7 +282,8 @@ class dotpay extends PaymentModule {
      * Register Dotpay Form Helper in Smarty engine
      */
     public function registerFormHelper() {
-        $this->context->smarty->registerPlugin("function","generateForm", "generateForm");
+        $this->context->smarty->unregisterPlugin("function","dotpayGenerateForm");
+        $this->context->smarty->registerPlugin("function","dotpayGenerateForm", "dotpayGenerateForm");
     }
     
     /**
@@ -422,7 +423,7 @@ class dotpay extends PaymentModule {
                         'name' => $this->config->getDotpayTestModeFN(),
                         'is_bool' => true,
                         'class' => 'dev-option',
-                        'desc' => $this->l('I\'m using Dotpay test account (test ID)'),
+                        'desc' => $this->l('I\'m using Dotpay test account (test ID)').'<br>'.$this->l('Required Dotpay test account:').' <a href="https://ssl.dotpay.pl/test_seller/test/registration/" target="_blank" title="'.$this->l('Dotpay test account registration').'"><b>'.$this->l('registration').'</b></a>',
                         'values' => array(
                             array(
                                 'id' => 'active_on',

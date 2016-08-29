@@ -88,7 +88,7 @@
         <p class="alert alert-danger">{$message}</p>
         {literal}
             <script type="text/javascript">
-                setTimeout(function(){location.href="{/literal}$redirectUrl{literal}";}, 4000);
+                setTimeout(function(){location.href="{/literal}{$redirectUrl}{literal}";}, 4000);
             </script>
         {/literal}
     {/if}

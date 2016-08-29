@@ -32,9 +32,6 @@ class DotpayDevApi extends DotpayApi {
      * @return array
      */
     public function getChannelList(){
-        $byLawAgreements = $this->getByLaw();
-        $personalDataAgreements = $this->getPersonalData();
-        
         $oneclickAgreements = $this->parent->module->l('I agree to repeated loading bill my credit card for the payment One-Click by way of purchase of goods or services offered by the store.');
         
         $channelList = array();
@@ -83,22 +80,8 @@ class DotpayDevApi extends DotpayApi {
                         'label' => $oneclickAgreements,
                         'required' => true
                     ),
-                    array(
-                        'type' => 'checkbox',
-                        'name' => 'bylaw',
-                        'value' => '1',
-                        'checked' => true,
-                        'label' => $byLawAgreements,
-                        'required' => true
-                    ),
-                    array(
-                        'type' => 'checkbox',
-                        'name' => 'personal_data',
-                        'value' => '1',
-                        'checked' => true,
-                        'label' => $personalDataAgreements,
-                        'required' => true
-                    ),
+                    $this->addBylawField(),
+                    $this->addPersonalDataField(),
                     $this->getSubmitField(),
                 ),
                 'image' => $this->parent->getDotOneClickLogo(),
@@ -111,22 +94,8 @@ class DotpayDevApi extends DotpayApi {
                 'fields' => array(
                     $this->getHiddenField('dotpay_type', 'cc'),
                     $this->getHiddenField('order_id', Tools::getValue('order_id')),
-                    array(
-                        'type' => 'checkbox',
-                        'name' => 'bylaw',
-                        'value' => '1',
-                        'checked' => true,
-                        'label' => $byLawAgreements,
-                        'required' => true
-                    ),
-                    array(
-                        'type' => 'checkbox',
-                        'name' => 'personal_data',
-                        'value' => '1',
-                        'checked' => true,
-                        'label' => $personalDataAgreements,
-                        'required' => true
-                    ),
+                    $this->addBylawField(),
+                    $this->addPersonalDataField(),
                     $this->getSubmitField(),
                 ),
                 'image' => $this->parent->getDotCreditCardLogo(),
@@ -140,22 +109,8 @@ class DotpayDevApi extends DotpayApi {
                     $this->getHiddenField('dotpay_type', 'pv'),
                     $this->getHiddenField('order_id', (int)Tools::getValue('order_id')),
                     $this->getHiddenField('id', $this->config->getDotpayPvId()),
-                    array(
-                        'type' => 'checkbox',
-                        'name' => 'bylaw',
-                        'value' => '1',
-                        'checked' => true,
-                        'label' => $byLawAgreements,
-                        'required' => true
-                    ),
-                    array(
-                        'type' => 'checkbox',
-                        'name' => 'personal_data',
-                        'value' => '1',
-                        'checked' => true,
-                        'label' => $personalDataAgreements,
-                        'required' => true
-                    ),
+                    $this->addBylawField(),
+                    $this->addPersonalDataField(),
                     $this->getSubmitField(),
                 ),
                 'image' => $this->parent->getDotPVLogo(),
@@ -176,22 +131,8 @@ class DotpayDevApi extends DotpayApi {
                         'placeholder' => $blikText,
                         'required' => true
                     ),
-                    array(
-                        'type' => 'checkbox',
-                        'name' => 'bylaw',
-                        'value' => '1',
-                        'checked' => true,
-                        'label' => $byLawAgreements,
-                        'required' => true
-                    ),
-                    array(
-                        'type' => 'checkbox',
-                        'name' => 'personal_data',
-                        'value' => '1',
-                        'checked' => true,
-                        'label' => $personalDataAgreements,
-                        'required' => true
-                    ),
+                    $this->addBylawField(),
+                    $this->addPersonalDataField(),
                     $this->getSubmitField(),
                 ),
                 'image' => $this->parent->getDotBlikLogo(),
@@ -204,22 +145,8 @@ class DotpayDevApi extends DotpayApi {
                 'fields' => array(
                     $this->getHiddenField('dotpay_type', 'mp'),
                     $this->getHiddenField('order_id', Tools::getValue('order_id')),
-                    array(
-                        'type' => 'checkbox',
-                        'name' => 'bylaw',
-                        'value' => '1',
-                        'checked' => true,
-                        'label' => $byLawAgreements,
-                        'required' => true
-                    ),
-                    array(
-                        'type' => 'checkbox',
-                        'name' => 'personal_data',
-                        'value' => '1',
-                        'checked' => true,
-                        'label' => $personalDataAgreements,
-                        'required' => true
-                    ),
+                    $this->addBylawField(),
+                    $this->addPersonalDataField(),
                     $this->getSubmitField(),
                 ),
                 'image' => $this->parent->getDotMasterPassLogo(),
@@ -243,22 +170,8 @@ class DotpayDevApi extends DotpayApi {
                     'value' => $this->config->isDotpayWidgetMode(),
                     'label' => $extendedWidget.'<p class="my-form-widget-container"></p>'
                 ),
-                array(
-                    'type' => 'checkbox',
-                    'name' => 'bylaw',
-                    'value' => 1,
-                    'label' => $byLawAgreements,
-                    'checked' => true,
-                    'required' => true
-                ),
-                array(
-                    'type' => 'checkbox',
-                    'name' => 'personal_data',
-                    'value' => 1,
-                    'label' => $personalDataAgreements,
-                    'checked' => true,
-                    'required' => true
-                ),
+                $this->addBylawField(),
+                $this->addPersonalDataField(),
                 $this->getSubmitField(),
             ),
             'image' => $this->parent->getDotpayLogo(),
@@ -272,7 +185,11 @@ class DotpayDevApi extends DotpayApi {
      * @return bool
      */
     public function checkConfirm(){
-        $signature = $this->config->getDotpayPIN().$this->config->getDotpayId().
+        if($this->isSelectedPvChannel())
+            $start = $this->config->getDotpayPvPIN().$this->config->getDotpayPvId();
+        else
+            $start = $this->config->getDotpayPIN().$this->config->getDotpayId();
+        $signature = $start.
         Tools::getValue('operation_number').
         Tools::getValue('operation_type').
         Tools::getValue('operation_status').
@@ -291,9 +208,19 @@ class DotpayDevApi extends DotpayApi {
         Tools::getValue('p_email').
         Tools::getValue('channel').
         Tools::getValue('channel_country').
-        Tools::getValue('geoip_country');	
+        Tools::getValue('geoip_country');
 
         return (Tools::getValue('signature') === hash('sha256', $signature));
+    }
+    
+    /**
+     * Returns flag, if was selected PV channel
+     */
+    public function isSelectedPvChannel() {
+        return ($this->parent->isDotSelectedCurrency($this->config->getDotpayPvCurrencies(), $this->getOperationCurrency()) 
+           && Tools::getValue('channel')==self::$pvChannel
+           && $this->config->isDotpayPV()
+           && $this->config->getDotpayPvId()==Tools::getValue('id'));
     }
     
     /**

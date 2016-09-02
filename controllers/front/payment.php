@@ -44,11 +44,11 @@ class dotpaypaymentModuleFrontController extends DotpayController {
             $this->context->cart->update();
         }
         
-        $this->context->smarty->assign($this->getArrayForSmarty());
+        $this->context->smarty->assign($this->getArrayForSmarty(true));
         $this->setTemplate("payment.tpl");
     }
     
-    public function getArrayForSmarty() {
+    public function getArrayForSmarty($inCheckout = false) {
         $channelList = $this->api->getChannelList();
         $target = '';
         $disabledChannels = array();
@@ -80,7 +80,8 @@ class dotpaypaymentModuleFrontController extends DotpayController {
             'orderId' => Tools::getValue('order_id'),
             'goodCurency' => in_array($this->getDotCurrency(), $this->config->getDotpayAvailableCurrency()),
             'disabledChannels' => implode(',',$disabledChannels),
-            'channelApiUrl' => $this->config->getDotpayTargetUrl().'payment_api/v1/channels/'
+            'channelApiUrl' => $this->config->getDotpayTargetUrl().'payment_api/v1/channels/',
+            'inCheckout' => $inCheckout
         );
     }
 }

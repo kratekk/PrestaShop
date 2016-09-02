@@ -73,7 +73,7 @@ class dotpay extends PaymentModule {
     public function __construct() {
         $this->name = 'dotpay';
         $this->tab = 'payments_gateways';
-        $this->version = '2.0.1';
+        $this->version = '2.0.2';
         $this->author = 'tech@dotpay.pl';
         $this->ps_versions_compliancy = array('min' => '1.6', 'max' => _PS_VERSION_); 
         $this->bootstrap = true;
@@ -164,13 +164,16 @@ class dotpay extends PaymentModule {
         $version = DotpayGithubApi::getLatestVersion();
         $this->context->smarty->assign(array(
             'regMessEn' => $this->config->isDotpayTestMode() || !$this->config->isAccountConfigOk(),
-            'targetForUrlc' => $this->context->link->getModuleLink('dotpay', 'callback', array('ajax' => '1')),
+            'targetForUrlc' => $this->context->link->getModuleLink('dotpay', 'callback', array('ajax' => '1'), $this->isSSLEnabled()),
             'moduleMainDir' => $this->_path,
             'testMode' => $this->config->isDotpayTestMode(),
             'oldVersion' => !version_compare(_PS_VERSION_, "1.6.0.1", ">="),
+            'badPhpVersion' => !version_compare(PHP_VERSION, "5.4", ">="),
             'confOK' => $this->config->isAccountConfigOk() && $this->config->isDotpayEnabled(),
             'moduleVersion' => $this->version,
             'apiVersion' => $this->config->getDotpayApiVersion(),
+            'phpVersion' => PHP_VERSION,
+            'minorPhpVersion' => '5.4',
             'badNewIdMessage' => $this->l('Incorrect ID (6 digits maximum)'),
             'badOldIdMessage' => $this->l('Incorrect ID (5 digits maximum)'),
             'badNewPinMessage' => $this->l('Incorrect PIN (minimum 16 and maximum 32 alphanumeric characters)'),
@@ -423,7 +426,8 @@ class dotpay extends PaymentModule {
                         'name' => $this->config->getDotpayTestModeFN(),
                         'is_bool' => true,
                         'class' => 'dev-option',
-                        'desc' => $this->l('I\'m using Dotpay test account (test ID)').'<br>'.$this->l('Required Dotpay test account:').' <a href="https://ssl.dotpay.pl/test_seller/test/registration/" target="_blank" title="'.$this->l('Dotpay test account registration').'"><b>'.$this->l('registration').'</b></a>',
+						'desc' => $this->l('I\'m using Dotpay test account (test ID)').'<br>'.$this->l('Required Dotpay test account:').' <a href="https://ssl.dotpay.pl/test_seller/test/registration/" target="_blank" title="'.$this->l('Dotpay test account registration').'"><b>'.$this->l('registration').'</b></a>',
+
                         'values' => array(
                             array(
                                 'id' => 'active_on',
@@ -898,6 +902,24 @@ class dotpay extends PaymentModule {
         return $pc->getArrayForSmarty();
     }
     
+    /**
+     * Checks, if SSL is enabled during current connection
+     * @return boolean
+     */
+    public function isSSLEnabled() {
+        if(isset($_SERVER['HTTPS'])) {
+            if('on' == strtolower($_SERVER['HTTPS']))
+                return true;
+        } else if(isset($_SERVER['SERVER_PORT']) && ('443' == $_SERVER['SERVER_PORT'])) {
+            return true;
+        }
+        return false;
+    }
+    
+    /**
+     * Returns URL of current page
+     * @return string
+     */
     function getUrl() {
         $url = 'http';
         if ($_SERVER["HTTPS"] == "on") {

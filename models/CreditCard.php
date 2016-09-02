@@ -135,6 +135,8 @@ class DotpayCreditCard extends ObjectModel {
             FROM `'._DB_PREFIX_.self::$definition['table'].'` 
             WHERE order_id = '.(int)$order
         );
+        if(!count($card))
+            return NULL;
         return new DotpayCreditCard($card[0]['id']);
     }
 

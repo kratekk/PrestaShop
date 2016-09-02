@@ -38,7 +38,10 @@ class dotpaycallbackModuleFrontController extends DotpayController {
                 ", ID: ".$this->config->getDotpayId().
                 ", Active: ".(int)$this->config->isDotpayEnabled().
                 ", Test: ".(int)$this->config->isDotpayTestMode().
-                ", Api: ".$this->config->getDotpayApiVersion()
+                ", Api: ".$this->config->getDotpayApiVersion().
+                ", SSL: ".(int)Configuration::get('PS_SSL_ENABLED').
+                ", SSL EVERYWHERE: ".(int)Configuration::get('PS_SSL_ENABLED_EVERYWHERE').
+                ", PHP: ".PHP_VERSION
             );
         
         if($_SERVER['REMOTE_ADDR'] != $this->config->getDotpayIp())
@@ -79,7 +82,7 @@ class dotpaycallbackModuleFrontController extends DotpayController {
             die ('PrestaShop - WRONG TRANSACTION STATUS');
         
         $cc = DotpayCreditCard::getCreditCardByOrder($order->id);
-        if($cc->id !== NULL && $cc->card_id == NULL) {
+        if($cc !== NULL && $cc->id !== NULL && $cc->card_id == NULL) {
             $sellerApi = new DotpaySellerApi($this->config->getDotpaySellerApiUrl());
             $ccInfo = $sellerApi->getCreditCardInfo(
                 $this->config->getDotpayApiUsername(),
@@ -105,7 +108,9 @@ class dotpaycallbackModuleFrontController extends DotpayController {
                     $payments[0]->payment_method = $this->module->displayName;
                     $payments[0]->update();
                 }
-                DotpayInstruction::getByOrderId($order->id)->delete();
+                $instruction = DotpayInstruction::getByOrderId($order->id);
+                if($instruction !== NULL)
+                    $instruction->delete();
             }
         }
         else if($lastOrderState->id == $newOrderState && $newOrderState == _PS_OS_PAYMENT_) {

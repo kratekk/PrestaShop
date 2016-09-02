@@ -126,6 +126,17 @@
             </div>
         </div>
     {/if}
+    {if $badPhpVersion}
+        <div class="bootstrap">
+            <div class="alert alert-danger">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                <h2 style="margin-left: 10px; margin-top: 0px;">{l s='Your version of PHP is obsolete:' mod='dotpay'}&nbsp;{$phpVersion}</h2>
+                <br />
+                <p style="color: #555;"><b>{l s='This plugin can work incorrectly. Please update your PHP version to at least' mod='dotpay'}&nbsp;{$minorPhpVersion}</b></p>
+                <br />
+            </div>
+        </div>
+    {/if}
 </div></div>
 
 {literal}

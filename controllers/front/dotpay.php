@@ -133,7 +133,7 @@ abstract class DotpayController extends ModuleFrontController {
      */
     public function getDotDescription() {
         $order = new Order(Order::getOrderByCartId($this->context->cart->id));
-        return ("Order ID: ".$order->reference);
+        return ($this->module->l("Order ID:").' '.$order->reference);
     }
     
     /**
@@ -149,26 +149,23 @@ abstract class DotpayController extends ModuleFrontController {
         }
     }
     
-    public function getServerProtocol() {
+ public function getServerProtocol() {
         $result = 'http';
         
-        if(isset($_SERVER['HTTPS'])) {
+        if($this->module->isSSLEnabled()) {
             $result = 'https';
         }
         
         return $result;
     }
     
-    public function isSSLEnabled() {
-        return (isset($_SERVER['SERVER_PORT']) && ($_SERVER['SERVER_PORT'] === '443'));
-    }
     
-    /**
+   /**
      * 
      * @return string
      */
     public function getDotUrl() {
-        return $this->context->link->getModuleLink('dotpay', 'back', array('control' => $cart->id), $this->isSSLEnabled());
+        return $this->context->link->getModuleLink('dotpay', 'back', array('control' => $cart->id), $this->module->isSSLEnabled());
     }
     
     /**
@@ -176,7 +173,7 @@ abstract class DotpayController extends ModuleFrontController {
      * @return string
      */
     public function getDotUrlC() {
-        return $this->context->link->getModuleLink('dotpay', 'callback', array('ajax' => '1'), $this->isSSLEnabled());
+        return $this->context->link->getModuleLink('dotpay', 'callback', array('ajax' => '1'), $this->module->isSSLEnabled());
     }
     
     /**
@@ -298,7 +295,7 @@ abstract class DotpayController extends ModuleFrontController {
     }
     
     public function getPreparingUrl() {
-        return $this->context->link->getModuleLink($this->module->name,'preparing',array());
+        return $this->context->link->getModuleLink($this->module->name,'preparing',array(), $this->module->isSSLEnabled());
     }
     
     protected function initPersonalData() {

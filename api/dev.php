@@ -392,9 +392,10 @@ class DotpayDevApi extends DotpayApi {
     public function getHiddenFieldsOneClickRegister() {
         $hiddenFields = $this->getHiddenFieldsOneClick();
         $cc = DotpayCreditCard::getCreditCardByOrder($this->parent->getLastOrderNumber());
+        $hash = ($cc !== NULL)?$cc->hash:NULL;
         
         $hiddenFields['credit_card_store'] = 1;
-        $hiddenFields['credit_card_customer_id'] = $cc->hash;
+        $hiddenFields['credit_card_customer_id'] = $hash;
         
         return $hiddenFields;
     }

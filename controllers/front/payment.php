@@ -52,6 +52,8 @@ class dotpaypaymentModuleFrontController extends DotpayController {
         $channelList = $this->api->getChannelList();
         $target = '';
         $disabledChannels = array();
+        if($this->config->isDotpayOneClick())
+            $disabledChannels[] = DotpayApi::$ocChannel;
         if($this->config->isDotpayBlik())
             $disabledChannels[] = DotpayApi::$blikChannel;
         if($this->config->isDotpayCreditCard())
@@ -81,7 +83,8 @@ class dotpaypaymentModuleFrontController extends DotpayController {
             'goodCurency' => in_array($this->getDotCurrency(), $this->config->getDotpayAvailableCurrency()),
             'disabledChannels' => implode(',',$disabledChannels),
             'channelApiUrl' => $this->config->getDotpayTargetUrl().'payment_api/v1/channels/',
-            'inCheckout' => $inCheckout
+            'inCheckout' => $inCheckout,
+            'directPayment' => (int)!$this->config->isDotpayWidgetMode()
         );
     }
 }

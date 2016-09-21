@@ -44,8 +44,7 @@ if (!defined('_PS_VERSION_'))
  * @param type $smarty
  * @return string
  */
-function dotpayGenerateForm(Array $params, $smarty)
-{
+function dotpayGenerateForm(Array $params, $smarty) {
     $data = (isset($params['form']))?$params['form']:array();
     return DotpayFormHelper::generate($data);
 }
@@ -73,7 +72,7 @@ class dotpay extends PaymentModule {
     public function __construct() {
         $this->name = 'dotpay';
         $this->tab = 'payments_gateways';
-        $this->version = '2.0.2';
+        $this->version = '2.0.3';
         $this->author = 'tech@dotpay.pl';
         $this->ps_versions_compliancy = array('min' => '1.6', 'max' => _PS_VERSION_); 
         $this->bootstrap = true;
@@ -174,11 +173,12 @@ class dotpay extends PaymentModule {
             'apiVersion' => $this->config->getDotpayApiVersion(),
             'phpVersion' => PHP_VERSION,
             'minorPhpVersion' => '5.4',
-            'badNewIdMessage' => $this->l('Incorrect ID (6 digits maximum)'),
+            'badNewIdMessage' => $this->l('Incorrect ID (required 6 digits)'),
             'badOldIdMessage' => $this->l('Incorrect ID (5 digits maximum)'),
             'badNewPinMessage' => $this->l('Incorrect PIN (minimum 16 and maximum 32 alphanumeric characters)'),
             'badOldPinMessage' => $this->l('Incorrect PIN (0 or 16 alphanumeric characters)'),
             'valueLowerThanZero' => $this->l('The value must be greater than zero.'),
+            //'upgradeApiMessage' => $this->l('The value must be greater than zero.'),
             'testApiAccount' => !$sellerApi->isAccountRight($this->config->getDotpayApiUsername(), $this->config->getDotpayApiPassword(), $this->config->getDotpayApiVersion()),
             'urlWithNewVersion' => $version['url'],
             'obsoletePlugin' => version_compare($version['version'], $this->version, '>'),
@@ -263,6 +263,30 @@ class dotpay extends PaymentModule {
         return $payment_options;
     }
     
+    public function hookPaymentReturn($params)
+    {
+        if (!$this->active)
+                return;
+
+        $state = $params['objOrder']->getCurrentState();
+        if (in_array($state, array(Configuration::get('PS_OS_BANKWIRE'), Configuration::get('PS_OS_OUTOFSTOCK'), Configuration::get('PS_OS_OUTOFSTOCK_UNPAID'))))
+        {
+                $this->smarty->assign(array(
+                        'total_to_pay' => Tools::displayPrice($params['total_to_pay'], $params['currencyObj'], false),
+                        'bankwireDetails' => Tools::nl2br('wtf'),
+                        'bankwireAddress' => Tools::nl2br('$this->address'),
+                        'bankwireOwner' => '$this->owner',
+                        'status' => 'ok',
+                        'id_order' => $params['objOrder']->id
+                ));
+                if (isset($params['objOrder']->reference) && !empty($params['objOrder']->reference))
+                    $this->smarty->assign('reference', $params['objOrder']->reference);
+        }
+        else
+                $this->smarty->assign('status', 'failed');
+        return $this->display(__FILE__, 'payment_return.tpl');
+    }
+    
     public function hookDisplayOrderDetail($params) {
         if(!$this->config->isDotpayRenewEn())
             return '';
@@ -300,9 +324,9 @@ class dotpay extends PaymentModule {
         $currencies_module = $this->getCurrency($cart->id_currency);
 
         if (is_array($currencies_module))
-                foreach ($currencies_module as $currency_module)
-                        if ($currency_order->id == $currency_module['id_currency'])
-                                return true;
+            foreach ($currencies_module as $currency_module)
+                if ($currency_order->id == $currency_module['id_currency'])
+                    return true;
         return false;
     }
     
@@ -344,11 +368,11 @@ class dotpay extends PaymentModule {
         $optionsApi = array(
               array(
                 'id_option2' => 'dev', 
-                'name2' => $this->l('dev') 
+                'name2' => $this->l('dev (ID has 6 digits)') 
               ),
               array(
                 'id_option2' => 'legacy',
-                'name2' => $this->l('legacy')
+                'name2' => $this->l('legacy (ID has max 5 digits)')
               )
         );
         $optionsCalculateMethod = array(
@@ -371,7 +395,7 @@ class dotpay extends PaymentModule {
 				
                     array(
                         'type' => 'switch',
-                        'label' => $this->l('Activate'),
+                        'label' => $this->l('Enable this payment module'),
                         'name' => $this->config->getDotpayEnabledFN(),
                         'is_bool' => true,
                         'required' => true, 
@@ -394,14 +418,14 @@ class dotpay extends PaymentModule {
                         'class' => 'fixed-width-xxl',
                         'label' => $this->l('Select used Dotpay API version'),
                         'name' => $this->config->getDotpayApiVersionFN(),
-                        'desc' => $this->l('dev is recommended'),
+                        'desc' => '<b>'.$this->l('dev is recommended').'</b><br /><span id="message-for-old-version">'.$this->l('Please contact the Customer Care to improve your API version to dev').':&nbsp;<a href="'.$this->l('https://ssl.dotpay.pl/en/customer_care').'" target="_blank"><b>'.$this->l('Contact').'</b></a></span>',
                         'required' => true,
                         'class' => 'api-select',
                         'options' => array(
                             'query' => $optionsApi,
                             'id' => 'id_option2', 
                             'name' => 'name2'
-                        )
+                        ),
                     ),
                     array(
                         'type' => 'text',
@@ -416,7 +440,7 @@ class dotpay extends PaymentModule {
                         'type' => 'text',
                         'name' => $this->config->getDotpayPINFN(),
                         'label' => $this->l('PIN'),
-                        'class' => 'fixed-width-lg',
+                        'class' => 'fixed-width-xxl',
                         'desc' => $this->l('The same as in Dotpay user panel').' <div id="infoPIN" /></div>',
                         'required' => true
                     ),
@@ -443,7 +467,7 @@ class dotpay extends PaymentModule {
                     ),
                     array(
                         'type' => 'switch',
-                        'label' => '<span class="lastInSection">'.$this->l('Renew payment enabled')."</span>",
+                        'label' => '<span class="">'.$this->l('Renew payment enabled')."</span>",
                         'name' => $this->config->getDotpayRenewFN(),
                         'is_bool' => true,
                         'class' => 'dev-option',
@@ -461,12 +485,13 @@ class dotpay extends PaymentModule {
                             )
                         )
                     ),
-                    array(
+					
+					  array(
                         'type' => 'switch',
-                        'label' => '<span class="dev-option">'.$this->l('OneClick channel enabled').'</span>',
-                        'name' => $this->config->getDotpayOneClickFN(),
+                        'label' => '<span class="dev-option lastInSection">'.$this->l('Dotpay widget enabled').'</span>',
+                        'name' => $this->config->getDotpayWidgetModeFN(),
                         'is_bool' => true,
-                        'desc' => $this->l('You can enable OneClick channel'),
+                        'desc' => $this->l('You can enable Dotpay widget on shop site').'<br><b>'.$this->l('Disable this feature if you are using modules modifying checkout page').'</b>',
                         'values' => array(
                             array(
                                 'id' => 'active_on',
@@ -480,6 +505,7 @@ class dotpay extends PaymentModule {
                             )
                         )
                     ),
+									
                     array(
                         'type' => 'switch',
                         'label' => '<span class="dev-option">'.$this->l('Credit card channel enabled').'</span>',
@@ -538,12 +564,12 @@ class dotpay extends PaymentModule {
                             )
                         )
                     ),
-                    array(
+					 array(
                         'type' => 'switch',
-                        'label' => '<span class="dev-option lastInSection">'.$this->l('Dotpay widget enabled').'</span>',
-                        'name' => $this->config->getDotpayWidgetModeFN(),
+                        'label' => '<span class="dev-option lastInSection">'.$this->l('OneClick channel enabled').'</span>',
+                        'name' => $this->config->getDotpayOneClickFN(),
                         'is_bool' => true,
-                        'desc' => $this->l('You can enable Dotpay widget on shop site'),
+                        'desc' => $this->l('Available after prior contact with Dotpay.').'<br>'.$this->l('Requires Dotpay API username and password (enter below).'),
                         'values' => array(
                             array(
                                 'id' => 'active_on',
@@ -557,6 +583,24 @@ class dotpay extends PaymentModule {
                             )
                         )
                     ),
+					
+					array(
+                        'type' => 'text',
+                        'name' => $this->config->getDotpayApiUsernameFN(),
+                        'label' => '<span class="label-tooltip" data-toggle="tooltip" title="'.
+                        $this->l('Required for proper operation One Click and display instructions for Transfer channels (wire transfer data are not passed to the bank and a payer needs to copy or write the data manually)').
+                            '">'.$this->l('Dotpay API username').'</span>',
+                        'class' => 'fixed-width-xxl dev-option',
+                        'desc' => $this->l('Your username for Dotpay seller panel')
+                    ),
+                    array(
+                        'type' => 'text',
+                        'name' => $this->config->getDotpayApiPasswordFN(),
+                        'label' => $this->l('Dotpay API password'),
+                        'class' => 'fixed-width-xxl dev-option password-field lastInSection',
+                        'desc' => $this->l('Your password for Dotpay seller panel'),
+                    ),
+
                     array(
                         'type' => 'radio',
                         'label' => $this->l('I have separate ID for foreign currencies'),
@@ -590,7 +634,7 @@ class dotpay extends PaymentModule {
                         'type' => 'text',
                         'name' => $this->config->getDotpayPvPINFN(),
                         'label' => $this->l('PIN for foreign currencies account'),
-                        'class' => 'fixed-width-lg dev-option pv-option',
+                        'class' => 'fixed-width-xxl dev-option pv-option',
                         'desc' => $this->l('Copy from Dotpay user panel').' <div id="infoPIN" /></div>',
                         'required' => true
                     ),
@@ -600,28 +644,9 @@ class dotpay extends PaymentModule {
                         'label' => '<span class="label-tooltip" data-toggle="tooltip" title="'.
                                     $this->l('Please enter currency codes separated by commas, for example: EUR,USD').
                                     '">'.$this->l('Currencies for separate ID').'</span>',
-                        'class' => 'fixed-width-lg dev-option pv-option lastInSection',
+                        'class' => 'fixed-width-xxl dev-option pv-option lastInSection',
                         'desc' => $this->l('Currencies used for separate ID')
                     ),
-					
-					
-                    array(
-                        'type' => 'text',
-                        'name' => $this->config->getDotpayApiUsernameFN(),
-                        'label' => '<span class="label-tooltip" data-toggle="tooltip" title="'.
-                        $this->l('Required for proper operation One Click and display instructions for Transfer channels (wire transfer data are not passed to the bank and a payer needs to copy or write the data manually)').
-                            '">'.$this->l('Dotpay API username').'</span>',
-                        'class' => 'fixed-width-lg dev-option',
-                        'desc' => $this->l('Your username for Dotpay seller panel')
-                    ),
-                    array(
-                        'type' => 'text',
-                        'name' => $this->config->getDotpayApiPasswordFN(),
-                        'label' => $this->l('Dotpay API password'),
-                        'class' => 'fixed-width-lg dev-option password-field lastInSection',
-                        'desc' => $this->l('Your password for Dotpay seller panel'),
-                    ),
-					
 					
                     array(
                         'type' => 'radio',

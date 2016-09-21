@@ -161,22 +161,25 @@ class DotpayDevApi extends DotpayApi {
                           '<div class="collapsibleWidgetTitle">'.$this->parent->module->l("Available channels").':</div>';
         $channelList['dotpay'] = array(
             'form' => $this->getFormHeader('dotpay', $targetUrl),
-            'fields' => array(
-                $this->getHiddenField('dotpay_type', 'dotpay'),
-                $this->getHiddenField('order_id', Tools::getValue('order_id')),
-                array(
-                    'type' => 'hidden',
-                    'name' => 'widget',
-                    'value' => $this->config->isDotpayWidgetMode(),
-                    'label' => $extendedWidget.'<p class="my-form-widget-container"></p>'
-                ),
-                $this->addBylawField(),
-                $this->addPersonalDataField(),
-                $this->getSubmitField(),
-            ),
             'image' => $this->parent->getDotpayLogo(),
             'description' => "&nbsp;&nbsp;<strong>".$this->parent->module->l(" Dotpay ")."</strong>&nbsp;<span>".$this->parent->module->l("(fast and secure internet payment)")."</span>",
         );
+        $fields = array(
+            $this->getHiddenField('dotpay_type', 'dotpay'),
+            $this->getHiddenField('order_id', Tools::getValue('order_id'))
+        );
+        if($this->config->isDotpayWidgetMode()) {
+            $fields[] = array(
+                'type' => 'hidden',
+                'name' => 'widget',
+                'value' => $this->config->isDotpayWidgetMode(),
+                'label' => $extendedWidget.'<p class="my-form-widget-container"></p>'
+            );
+            $fields[] = $this->addBylawField();
+            $fields[] = $this->addPersonalDataField();
+        }
+        $fields[] = $this->getSubmitField();
+        $channelList['dotpay']['fields'] = $fields;
         return $channelList;
     }
     

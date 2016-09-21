@@ -156,9 +156,11 @@
         if(apiVersion=='legacy') {
             $('.dev-option').parents('.form-group').hide().next('hr').hide();
             $('.legacy-option').parents('.form-group').show().next('hr').show();
+            $('#message-for-old-version').show();
         } else {
             $('.legacy-option').parents('.form-group').hide().next('hr').hide();
             $('.dev-option').parents('.form-group').show().next('hr').show();
+            $('#message-for-old-version').hide();
             setFieldsForPV();
             setFieldsForExCh();
             setFieldsForDiscount();

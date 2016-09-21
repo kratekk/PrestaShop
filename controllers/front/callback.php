@@ -33,15 +33,23 @@ require_once(__DIR__.'/dotpay.php');
 class dotpaycallbackModuleFrontController extends DotpayController {
     public function displayAjax() {
         if($_SERVER['REMOTE_ADDR'] == $this->config->getOfficeIp() && $_SERVER['REQUEST_METHOD'] == 'GET')
-            die("PrestaShop - M.Ver: ".$this->module->version.
-                ", P.Ver: ". _PS_VERSION_ .
-                ", ID: ".$this->config->getDotpayId().
-                ", Active: ".(int)$this->config->isDotpayEnabled().
-                ", Test: ".(int)$this->config->isDotpayTestMode().
-                ", Api: ".$this->config->getDotpayApiVersion().
-                ", SSL: ".(int)Configuration::get('PS_SSL_ENABLED').
-                ", SSL EVERYWHERE: ".(int)Configuration::get('PS_SSL_ENABLED_EVERYWHERE').
-                ", PHP: ".PHP_VERSION
+            die("--- Dotpay PrestaShop ---"."<br>".
+		        "Active: ".(int)$this->config->isDotpayEnabled()."<br><br>".
+                "--- System Info ---"."<br>".
+                "PrestaShop Version: ". _PS_VERSION_ ."<br>".
+                "Module Version: ".$this->module->version."<br>".
+                "PHP Version: ".PHP_VERSION."<br>".
+                "SSL: ".(int)Configuration::get('PS_SSL_ENABLED')."<br>".
+                "SSL EVERYWHERE: ".(int)Configuration::get('PS_SSL_ENABLED_EVERYWHERE')."<br><br>".
+                "--- Dotpay PLN ---"."<br>".
+                "ID: ".$this->config->getDotpayId()."<br>".
+                "API Version: ".$this->config->getDotpayApiVersion()."<br>".
+                "Test Mode: ".(int)$this->config->isDotpayTestMode()."<br>".
+				"Widget: ".(int)$this->config->isDotpayWidgetMode()."<br><br>".
+                "--- Dotpay PV ---"."<br>".
+				"PV Mode: ".(int)$this->config->isDotpayPV()."<br>".
+				"PV ID: ".$this->config->getDotpayPvId()."<br>".
+				"PV Currencies: ".$this->config->getDotpayPvCurrencies()."<br>"
             );
         
         if($_SERVER['REMOTE_ADDR'] != $this->config->getDotpayIp())

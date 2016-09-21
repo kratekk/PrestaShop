@@ -104,7 +104,7 @@ $(document).ready(function(){
             }
         })(jQuery);
         
-        $('body').on('click', '.dotpay_unsigned_channel a', function (e) {
+        $('.dotpay_unsigned_channel a').not('[data-type=dotpay_payment_link]').click(function (e) {
             var target = $(this).find('label[form-target]').attr('form-target');
             var visible = $('form[form-target="' + target + '"]').parents('.dotpay-channels-list').data('visible');
             
@@ -150,6 +150,12 @@ $(document).ready(function(){
             });
             $('.my-form-widget-container').parents('label').show();
         }
+        
+        /* fix for onepagecheckout module */
+        $('a[data-type=dotpay_payment_link]').click(function(e){
+            $(this).closest('div.row').find('form.dotpay-form').submit();
+        });
+        
         /* Fix for jQuery Uniform */
         $('.oneclick-margin').parents('label').addClass('oneclick-margin-label');
     }

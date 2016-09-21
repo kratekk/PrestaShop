@@ -89,7 +89,7 @@ class DotpayInstruction extends ObjectModel {
             FROM `'._DB_PREFIX_.self::$definition['table'].'` 
             WHERE order_id = '.(int)$orderId
         );
-        if(!is_array($result))
+        if(!is_array($result) || count($result)<1)
             return NULL;
         return new DotpayInstruction($result[count($result)-1]['id']);
     }

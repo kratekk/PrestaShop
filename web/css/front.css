@@ -48,6 +48,20 @@ p.payment_module a.dotpay:after {
     color: #777777;
 }
 
+p.payment_module a.dotpay[data-type=dotpay_payment_link]:after {
+    display: block;
+    content: "\f054";
+    position: absolute;
+    right: 25px;
+    margin-top: -11px;
+    top: 50%;
+    font-family: "FontAwesome";
+    font-size: 25px;
+    height: 22px;
+    width: 14px;
+    color: #777777;
+}
+
 p.payment_module a:hover {
     background-color: #f6f6f6;
 }

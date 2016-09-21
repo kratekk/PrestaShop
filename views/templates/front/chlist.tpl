@@ -63,7 +63,7 @@
     <div class="row">
         <div class="col-xs-12 col-md-12">
             <p class="dotpay_unsigned_channel payment_module">
-                <a class="dotpay dropbtn">
+                <a class="dotpay dropbtn"{if $directPayment} data-type="dotpay_payment_link"{/if}>
                     <label display-cell form-target="{$channel}">
                         <img class="{$channel}" src="{$form['image']}">
                         {$form['description']}

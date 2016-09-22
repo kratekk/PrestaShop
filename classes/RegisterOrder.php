@@ -116,7 +116,7 @@ abstract class DotpayRegisterOrder {
         $payments = $api->getPaymentByOrderId(self::$config->getDotpayApiUsername(), self::$config->getDotpayApiPassword(), $control);
         foreach($payments as $payment) {
             $onePayment = $api->getPaymentByNumber(self::$config->getDotpayApiUsername(), self::$config->getDotpayApiPassword(), $payment->number);
-            if($onePayment->payment_method->channel_id == $channel || $payment->status == 'completed')
+            if($onePayment->control == $control && $onePayment->payment_method->channel_id == $channel && $payment->status == 'completed')
                 return true;
         }
         return false;

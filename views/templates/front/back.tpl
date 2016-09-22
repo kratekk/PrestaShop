@@ -94,17 +94,19 @@
     {/if}
 </div>
 
-{literal}
-    <script type="text/javascript">
-        window.checkStatusConfig = {
-            "url": "{/literal}{$checkStatusUrl}{literal}",
-            "waitingMessage": "{/literal}{$waitingMessage}{literal}",
-            "successMessage": "{/literal}{$successMessage}{literal}",
-            "errorMessage": "{/literal}{$errorMessage}{literal}",
-            "timeoutMessage": "{/literal}{$timeoutMessage}{literal}",
-            "redirectUrl": "{/literal}{$redirectUrl}{literal}"
-        };
-    </script>
-{/literal}
-{include file='./scripts/checkStatus.tpl'}
+{if $message == NULL}
+    {literal}
+        <script type="text/javascript">
+            window.checkStatusConfig = {
+                "url": "{/literal}{$checkStatusUrl}{literal}",
+                "waitingMessage": "{/literal}{$waitingMessage}{literal}",
+                "successMessage": "{/literal}{$successMessage}{literal}",
+                "errorMessage": "{/literal}{$errorMessage}{literal}",
+                "timeoutMessage": "{/literal}{$timeoutMessage}{literal}",
+                "redirectUrl": "{/literal}{$redirectUrl}{literal}"
+            };
+        </script>
+    {/literal}
+    {include file='./scripts/checkStatus.tpl'}
+{/if}
 <a href="{$link->getPageLink('index', true, NULL)|escape:'html'}" class="button_large">{l s='Back to main mage' mod='dotpay'}</a>

@@ -31,7 +31,9 @@ require_once(__DIR__.'/dotpay.php');
  * Controller for managing card saved by One Click
  */
 class dotpayocremoveModuleFrontController extends DotpayController {
-
+    /**
+     * Removes saved credit card
+     */
     public function initContent() {
         $this->display_column_left = false;
         parent::initContent();

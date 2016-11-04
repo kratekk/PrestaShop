@@ -25,15 +25,64 @@
 *
 */
 
+/**
+ * Model of Credit Card
+ */
+
 class DotpayCreditCard extends ObjectModel {
+    /**
+     *
+     * @var int Card id in shop database
+     */
     public $cc_id;
+    
+    /**
+     *
+     * @var int First order, which created an entry with card in database
+     */
     public $order_id;
+    
+    /**
+     *
+     * @var int Id of customer, who is an owner of saved card
+     */
     public $customer_id;
+    
+    /**
+     *
+     * @var string Masked number of saved card
+     */
     public $mask;
+    
+    /**
+     *
+     * @var string Brand name
+     */
     public $brand;
+    
+    /**
+     *
+     * @var string Card hash, unique in database
+     */
     public $hash;
+    
+    /**
+     *
+     * @var string Unique card id, created by Dotpay after first successfull transacion
+     */
     public $card_id;
+    
+    /**
+     *
+     * @var string Date when card was registering
+     */
     public $register_date;
+    
+    /**
+     *
+     * @var DotpayCardBrand Object with card brand data
+     */
+    public $card_brand;
     
     public static $definition = array(
         'table' => 'dotpay_credit_cards',
@@ -129,12 +178,19 @@ class DotpayCreditCard extends ObjectModel {
         return $cards;
     }
     
+    /**
+     * Returns details of credit card
+     * @param int $order Order id
+     * @return \DotpayCreditCard
+     */
     public static function getCreditCardByOrder($order) {
         $card = Db::getInstance()->ExecuteS('
             SELECT cc_id as id
             FROM `'._DB_PREFIX_.self::$definition['table'].'` 
             WHERE order_id = '.(int)$order
         );
+        if(!count($card))
+            return NULL;
         return new DotpayCreditCard($card[0]['id']);
     }
 
@@ -163,11 +219,15 @@ class DotpayCreditCard extends ObjectModel {
         ');
     }
     
+    /**
+     * Returns date in reverse order
+     * @param string $date Source date
+     * @return string
+     */
     public static function reverseDate($date) {
         $tmp = explode('-', $date);
         return implode('-', array_reverse($tmp));
     }
-
 
     /**
      * Generate card hash for OneClick
@@ -204,7 +264,7 @@ class DotpayCreditCard extends ObjectModel {
                 WHERE hash = \''.$cardHash.'\'
             ');
             
-            if ($test[0]['count'] == 0) {
+            if($test[0]['count'] == 0) {
                 $result = $cardHash;
                 break;
             }
@@ -221,6 +281,7 @@ class DotpayCreditCard extends ObjectModel {
      */
     public function __construct($id = null) {
         parent::__construct($id);
-         $this->register_date = DotpayCreditCard::reverseDate($this->register_date);
+        $this->register_date = DotpayCreditCard::reverseDate($this->register_date);
+        $this->card_brand = new DotpayCardBrand($this->brand);
     }
 }

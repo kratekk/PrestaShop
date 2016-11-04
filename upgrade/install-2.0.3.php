@@ -1,4 +1,6 @@
-{*
+<?php
+
+/**
 *
 *
 * NOTICE OF LICENSE
@@ -21,11 +23,8 @@
 *  @copyright Dotpay
 *  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *
-*}
+*/
 
-<li>
-    <a href="{$actionUrl}" title="{l s='My saved cards' mod='dotpay'}">
-        <i class="icon-credit-card fa fa-envelope"></i>
-        <span>{l s='My saved cards' mod='dotpay'}</span>
-    </a>
-</li>
+function upgrade_module_2_0_3($module) {
+    return $module->update();
+}

@@ -104,7 +104,7 @@ $(document).ready(function(){
             }
         })(jQuery);
         
-        $('body').on('click', '.dotpay_unsigned_channel a', function (e) {
+        $('.dotpay_unsigned_channel a').not('[data-type=dotpay_payment_link]').click(function (e) {
             var target = $(this).find('label[form-target]').attr('form-target');
             var visible = $('form[form-target="' + target + '"]').parents('.dotpay-channels-list').data('visible');
             
@@ -113,18 +113,18 @@ $(document).ready(function(){
             $('form[form-target] button[type="submit"]').attr('disabled', true);
             
             if(visible != true) {
-                if ('oneclick' === target) {
+                if('oneclick' === target) {
                     strategyOneClick(target);
-                } else if ('mp' === target) {
+                } else if('mp' === target) {
                     strategyMasterPass(target);
-                } else if ('cc' === target) {
+                } else if('cc' === target) {
                     strategyCreditCard(target);
-                } else if ('pv' === target) {
+                } else if('pv' === target) {
                     strategyPV(target);
-                } else if ('blik' === target) {
+                } else if('blik' === target) {
                     strategyBlik(target);
-                } else if ('dotpay' === target) {
-                    if (window.dotpayConfig.isWidget) {
+                } else if('dotpay' === target) {
+                    if(window.dotpayConfig.isWidget) {
                         strategyWidget(target);
                     } else {
                         strategyNotWidget(target);
@@ -150,10 +150,49 @@ $(document).ready(function(){
             });
             $('.my-form-widget-container').parents('label').show();
         }
+        $('.oneclick-margin[name=dotpay_type]').change(performActionOC);
+        jQuery('#saved_credit_cards').change(changeOcLogo);
+        
+        /* fix for onepagecheckout module */
+        $('a[data-type=dotpay_payment_link]').click(function(e){
+            $(this).closest('div.row').find('form.dotpay-form').submit();
+        });
+        
         /* Fix for jQuery Uniform */
         $('.oneclick-margin').parents('label').addClass('oneclick-margin-label');
     }
 });
+
+function performActionOC() {
+    setVisibilityOcLogo();
+    if(!jQuery('input#select_saved_card:checked').length)
+        jQuery('#saved_credit_cards').attr('disabled', 'disabled');
+    else
+        jQuery('#saved_credit_cards').removeAttr('disabled');
+}
+
+function changeOcLogo() {
+    if(window.positionOcLogo === 0)
+        window.positionOcLogo = 360;
+    else
+        window.positionOcLogo = 0;
+    if($('input#select_saved_card:checked').length) {
+        var logo = $('.dotpay-card-logo');
+        if(typeof(logo.transition) === 'function') {
+            logo.transition({ rotateY: window.positionOcLogo });
+        }
+        logo.attr('src', logo.data('card-'+$('#saved_credit_cards').val()));
+    }
+}
+
+function setVisibilityOcLogo() {
+    if(jQuery('input#select_saved_card:checked').length) {
+        jQuery('.dotpay-card-logo').show();
+    } else {
+        jQuery('.dotpay-card-logo').hide();
+    }
+    changeOcLogo();
+}
 
 function checkBlikCode(target) {
     var value = $('input[name="blik_code"]').val();
@@ -173,6 +212,7 @@ function strategyOneClick(target) {
         $('form[form-target="' + target + '"] input[name=dotpay_type]:first').click().prop('checked', true).parent().addClass('checked');
         $('#saved_credit_cards').attr('disabled', false).parents('label').show().prev().show().find('input').attr('disabled', false);
     }
+    setVisibilityOcLogo();
     standardStrategy(target);
     $('form[form-target="' + target + '"] button[type="submit"]').attr('disabled', false).goTo();
 }

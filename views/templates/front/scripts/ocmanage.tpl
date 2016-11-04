@@ -27,7 +27,7 @@
 
 $(document).ready(function(){
     $('.card-remove').click(function(){
-        if(confirm(onRemoveMessage+' '+$(this).parents('tr').find('td:first').text()+'?')) {
+        if(confirm(onRemoveMessage+' '+$(this).parents('tr').find('.dotpay-card-mask').text()+'?')) {
             var cardId = $(this).data('id');
             $.ajax({
                 "url":removeUrl,
@@ -39,7 +39,6 @@ $(document).ready(function(){
                 if(r=='OK')
                     alert(onDoneMessage);
                 else {
-                    console.warn(r);
                     alert(onFailureMessage);
                 }
                 location.href=location.href;

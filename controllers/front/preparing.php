@@ -31,6 +31,9 @@ require_once(__DIR__.'/dotpay.php');
  * Controller for handling preparing form for Dotpay
  */
 class dotpaypreparingModuleFrontController extends DotpayController {
+    /**
+     * Preparing hidden form with payment data before sending it to Dotpay
+     */
     public function initContent() {
         parent::initContent();
         $this->display_column_left = false;
@@ -71,7 +74,7 @@ class dotpaypreparingModuleFrontController extends DotpayController {
                 $this->context->cart->id,
                 (int)$this->config->getDotpayNewStatusId(),
                 $this->getDotAmount(),
-                'Dotpay',
+                $this->module->displayName,
                 NULL,
                 array(),
                 NULL,
@@ -89,7 +92,8 @@ class dotpaypreparingModuleFrontController extends DotpayController {
             'customer' => $this->context->customer->id
         ));
         
-        if($this->config->isApiConfigOk() && 
+        if($this->config->isDotpayDispInstruction() &&
+           $this->config->isApiConfigOk() && 
            $this->api->isChannelInGroup(Tools::getValue('channel'), array(DotpayApi::cashGroup, DotpayApi::transfersGroup))
         ) {
             $this->context->cookie->dotpay_channel = Tools::getValue('channel');

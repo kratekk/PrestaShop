@@ -1,7 +1,9 @@
 <section id="instruction">
     <div class="row">
         <div class="col-xs-12">
-            <p id="instruction-content">{l s='To pay by cash you need to download and print the blankiet' mod='dotpay'}</p>
+            <p id="instruction-content">{l s='You can make the payment at post office or bank' mod='dotpay'}</p>
+            <p id="instruction-content">{l s='To pay with cash download and print the form below' mod='dotpay'}</p>
+			<p id="instruction-content">{l s='You can also use this data for online transfer or to fill your own form' mod='dotpay'}</p>
         </div>
         <div class="col-md-4 col-md-offset-1">
             {if $bankAccount!= NULL}
@@ -41,10 +43,10 @@
         <section id="payment-form" class="col-xs-12">
             <div id="blankiet-download-form">
                 <div id="channel_container_confirm">
-                    <a href="{$address}" target="_blank" title="{l s='Download blankiet' mod='dotpay'}">
+                    <a href="{$address}" target="_blank" title="{l s='Download form' mod='dotpay'}">
                         <div>
                             <img src="{$channelImage}" alt="{l s='Payment channel logo' mod='dotpay'}" />
-                            <span><i class="icon-file-pdf-o "></i>&nbsp;{l s='Download blankiet' mod='dotpay'}</span>
+                            <span><i class="icon-file-pdf-o "></i>&nbsp;{l s='Download form' mod='dotpay'}</span>
                         </div>
                     </a>
                 </div>

@@ -52,8 +52,8 @@
                     <h2 style="margin-left: 10px; margin-top: 0px;">{l s='Module is active. ' mod='dotpay'}</h2>
                     <br />
                     <p style="color: #555;"><b>{l s='If you do not recive payment information, please check URLC configuration in your Dotpay user panel.' mod='dotpay'}</b></p>
-                    <p style="color: #D27C82;"><b>{if $testMode}{l s='Module is in TEST mode. All payment information is fake!' mod='dotpay'}{/if}</b></p><br><br>
-                    <p style="color: #D27C82;"><b>{if $oldVersion}{l s='This version of PrestaShop does not support currencies other that PLN. Please update your PrestaShop installation to the latest version if you want to use other currencies!' mod='dotpay'}{/if}</b></p>
+                    <p style="color: #D27C82;"><b>{if $testMode}{l s='Module is in TEST mode. All payment informations are fake!' mod='dotpay'}{/if}</b></p><br><br>
+                    <p style="color: #D27C82;"><b>{if $oldVersion}{l s='This version of PrestaShop does not support currencies othen that PLN. Please update your PrestaShop installation to the latest version if you want to use other currencies!' mod='dotpay'}{/if}</b></p>
                 </div>
             </div>
         {else}
@@ -62,23 +62,12 @@
                     <button type="button" class="close" data-dismiss="alert">&times;</button>
                     <h2 style="margin-left: 10px; margin-top: 0px;">{l s='Module is not active. Please check your configuration.' mod='dotpay'}</h2>
                     <br />
-                    <p style="color: #555;"><b>{l s='ID and PIN can be found in Dotpay panel in Settings in the top bar. ID number is a 6-digit string after # in a "Shop" column.' mod='dotpay'}</b></p>
+                    <p style="color: #555;"><b>{l s='ID and PIN can be found in Dotpay panel in Settings in the top bar. ID number is a 6-digit string after # in a "Shop" line.' mod='dotpay'}</b></p>
                     <br />
                 </div>
             </div>
         {/if}
-        {if $testSellerId === false}
-            <div class="bootstrap">
-                <div class="alert alert-danger">
-                    <button type="button" class="close" data-dismiss="alert">&times;</button>
-                    <h2 style="margin-left: 10px; margin-top: 0px;">{l s='Your seller ID is incorrect.' mod='dotpay'}</h2>
-                    <br />
-                    <p style="color: #555;"><b>{l s='Please check your ID and Test mode settings.' mod='dotpay'}</b></p>
-                    <br />
-                </div>
-            </div>
-        {/if}
-        {if $testApiAccount === false}
+        {if $testApiAccount}
             <div class="bootstrap">
                 <div class="alert alert-danger">
                     <button type="button" class="close" data-dismiss="alert">&times;</button>
@@ -91,11 +80,10 @@
         {/if}
 
         <p>{l s='Thanks to Dotpay payment module the only activities needed for integration are: ID and PIN numbers and URLC confirmation configuration.' mod='dotpay'}</p>
-        <p>{l s='ID and PIN can be found in Dotpay panel in Settings in the top bar. ID number is a 6-digit string after # in a "Shop" column.' mod='dotpay'}</p>
+        <p>{l s='ID and PIN can be found in Dotpay panel in Settings in the top bar. ID number is a 6-digit string after # in a "Shop" line.' mod='dotpay'}</p>
         <p>{l s='URLC configuration is just setting an address to which information about payment should be directed. This address is:' mod='dotpay'} <b>{$targetForUrlc}</b></p>
         <p>{l s='Your shop is going to automatically send URLC address to Dotpay.' mod='dotpay'}</p><br>
         <p><b style="color: brown;">{l s='Only thing You have to do is log in to the Dotpay user panel and untick "Block external URLC" option in Settings -> Notifications -> Urlc configuration -> Edit.' mod='dotpay'}</b></p>
-        <p><b style="color: brown;">{l s='If your shop does not use HTTPS protocol you should also disable HTTPS verify and SSL certificate verify.' mod='dotpay'}</b></p>
     </div>
 </div>
 
@@ -130,22 +118,11 @@
         <div class="bootstrap">
             <div class="alert alert-success">
                 <button type="button" class="close" data-dismiss="alert">&times;</button>
-                <h2 style="margin-left: 10px; margin-top: 0px;">{l s='Your module is up to date.' mod='dotpay'}</h2>
+                <h2 style="margin-left: 10px; margin-top: 0px;">{l s='Your version is latest.' mod='dotpay'}</h2>
                 <br />
                 <p style="color: #555;">
                     {l s='This gives you the guarantee of security and the ability to use the latest solutions offered by Dotpay.' mod='dotpay'}
                 </p>
-            </div>
-        </div>
-    {/if}
-    {if $badPhpVersion}
-        <div class="bootstrap">
-            <div class="alert alert-danger">
-                <button type="button" class="close" data-dismiss="alert">&times;</button>
-                <h2 style="margin-left: 10px; margin-top: 0px;">{l s='Your PHP version is obsolete:' mod='dotpay'}&nbsp;{$phpVersion}</h2>
-                <br />
-                <p style="color: #555;"><b>{l s='This plugin might work incorrectly. Please update your PHP version to at least' mod='dotpay'}&nbsp;{$minorPhpVersion}</b></p>
-                <br />
             </div>
         </div>
     {/if}
@@ -168,11 +145,9 @@
         if(apiVersion=='legacy') {
             $('.dev-option').parents('.form-group').hide().next('hr').hide();
             $('.legacy-option').parents('.form-group').show().next('hr').show();
-            $('#message-for-old-version').show();
         } else {
             $('.legacy-option').parents('.form-group').hide().next('hr').hide();
             $('.dev-option').parents('.form-group').show().next('hr').show();
-            $('#message-for-old-version').hide();
             setFieldsForPV();
             setFieldsForExCh();
             setFieldsForDiscount();
@@ -237,7 +212,7 @@
         if(empty===true && pinLength === 0) {
             return true;
         }
-        if(($('#DP_API_VERSION').val()=='dev' && (pinLength>32 || pinLength<16)) ||
+        if(($('#DP_API_VERSION').val()=='dev' && pinLength!=32) ||
            ($('#DP_API_VERSION').val()=='legacy' && (pinLength!=16 && pinLength!=0))){
             setError(pinElem, badPin);
             return 1;
@@ -263,48 +238,32 @@
             var check = 0;
         check += validateId($('#DP_USER_ID'));
         check += validatePin($('#DP_USER_PIN'));
-        if($('#DP_API_VERSION').val()=='dev') {
-            if($('.pv-enable-option input[name="DP_PV_MODE"]:checked').val()=='1') {
-                check += validateId($('#DP_PV_ID'), check);
-                check += validatePin($('#DP_PV_PIN'), check);
-            }
-            check += validateLTZ($('#DP_EXCH_AM'));
-            check += validateLTZ($('#DP_EXCH_PERC'));
-            check += validateLTZ($('#DP_DISC_AM'));
-            check += validateLTZ($('#DP_DISC_PERC'));
-        }
+        check += validateId($('#DP_USER_ID'), check);
+        check += validatePin($('#DP_USER_PIN'), check);
+        check += validateLTZ($('#DP_EXCH_AM'));
+        check += validateLTZ($('#DP_EXCH_PERC'));
+        check += validateLTZ($('#DP_DISC_AM'));
+        check += validateLTZ($('#DP_DISC_PERC'));
         if(check > 0)
             disableSubmit(true);
         else
             disableSubmit(false);
     }
     
-    function setVisibilityForAdvancedMode() {
-        if($('[name=DP_ADVANCED_MODE]:checked').val() == '1')
-            $('#advanced-settings').css('display','block');
-        else
-            $('#advanced-settings').css('display','none');
-    }
-    
     $(document).ready(function(){
         $('.password-field').attr('type', 'password');
         $('.lastInSection').parents('.form-group').after('<hr />');
         
-        $('<div id="advanced-settings"></div>').insertAfter($('.advanced-mode-switch').parents('.form-group'));
-        $('#advanced-settings').nextAll().detach().appendTo('#advanced-settings');
-        $('<hr style="height: 2px; background-color: #2eacce;" />').prependTo('#advanced-settings');
-        $('[name=DP_ADVANCED_MODE]').change(setVisibilityForAdvancedMode);
-        setVisibilityForAdvancedMode();
-        
         prepareValidation();
         setFieldsForApi();
-        var check = validateId($('#DP_USER_ID'), true) + validatePin($('#DP_USER_PIN'), true);
+        var check = validateId($('#DP_USER_ID')) + validatePin($('#DP_USER_PIN'));
         if(check)
             disableSubmit(true);
         
         $('.pv-enable-option input[name="DP_PV_MODE"]').change(function(){
             setFieldsForPV();
-            validateGUI();
+            var check = ($('.pv-enable-option input[name="DP_PV_MODE"]:checked').val()==1);
+            validateGUI(!check);
         });
         
         $('.excharge-enable-option input[name="DP_EXCH_EN"]').change(function(){

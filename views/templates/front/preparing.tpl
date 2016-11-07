@@ -26,7 +26,7 @@
 <html>
     <head></head>
     <body>
-        {dotpayGenerateForm form=$hiddenForm}
+        {generateForm form=$hiddenForm}
         {literal}
         <script type="text/javascript">
             setTimeout(function(){document.getElementsByClassName('dotpay-form')[0].submit();}, 1);

@@ -27,78 +27,21 @@
 
 require_once(mydirname(__DIR__,2).'/vendor/simple_html_dom.php');
 
-/**
- * Model of payment instruction
- */
-
 class DotpayInstruction extends ObjectModel {
-    /**
-     *
-     * @var inte Instruction id
-     */
     public $instruction_id;
-    
-    /**
-     *
-     * @var int Id of order, which is connected with instruction
-     */
     public $order_id;
-    
-    /**
-     *
-     * @var string Number of payment
-     */
     public $number;
-    
-    /**
-     *
-     * @var string Hash of payment, which is used to generating instruction url
-     */
     public $hash;
-    
-    /**
-     *
-     * @var string|null Number of bank account, which is used for transfer or null when instruction applies cash payment
-     */
+    public $firstname;
+    public $lastname;
     public $bank_account;
-    
-    /**
-     *
-     * @var boolean Flag if instruction applies cash
-     */
     public $is_cash;
-    
-    /**
-     *
-     * @var float Amount of payment
-     */
     public $amount;
-    
-    /**
-     *
-     * @var string Code of currency
-     */
     public $currency;
-    
-    /**
-     *
-     * @var int Id of payment channel
-     */
     public $channel;
     
-    /**
-     * Name of payment recipient
-     */
     const DOTPAY_NAME = 'DOTPAY SA';
-    
-    /**
-     * Street of payment recipient
-     */
     const DOTPAY_STREET = 'Wielicka 72';
-    
-    /**
-     * Post code and city of payment recipient
-     */
     const DOTPAY_CITY = '30-552 Kraków';
     
     public static $definition = array(
@@ -108,6 +51,8 @@ class DotpayInstruction extends ObjectModel {
             'order_id' => array('type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true),
             'number' => array('type' => self::TYPE_STRING, 'validate' => 'isMessage', 'required' => true),
             'hash' => array('type' => self::TYPE_STRING, 'validate' => 'isMessage', 'required' => true),
+            'firstname' => array('type' => self::TYPE_STRING, 'validate' => 'isMessage'),
+            'lastname' => array('type' => self::TYPE_STRING, 'validate' => 'isMessage'),
             'bank_account' => array('type' => self::TYPE_STRING, 'validate' => 'isMessage'),
             'is_cash' => array('type' => self::TYPE_BOOL, 'validate' => 'isBool', 'required' => true),
             'amount' => array('type' => self::TYPE_FLOAT, 'validate' => 'isUnsignedFloat', 'required' => true),
@@ -127,6 +72,8 @@ class DotpayInstruction extends ObjectModel {
                 `order_id` INT UNSIGNED NOT NULL,
                 `number` varchar(64) NOT NULL,
                 `hash` varchar(128) NOT NULL,
+                `firstname` VARCHAR(64),
+                `lastname` VARCHAR(64),
                 `bank_account` VARCHAR(64),
                 `is_cash` int(1) NOT NULL,
                 `amount` decimal(10,2) NOT NULL,
@@ -136,37 +83,22 @@ class DotpayInstruction extends ObjectModel {
             ) DEFAULT CHARSET=utf8;');
     }
     
-    /**
-     * Returns DotpayInstruction object with instruction which applies given order id
-     * @param int $orderId Order id
-     * @return \DotpayInstruction
-     */
     public static function getByOrderId($orderId) {
         $result = Db::getInstance()->executeS('
             SELECT instruction_id as id 
             FROM `'._DB_PREFIX_.self::$definition['table'].'` 
             WHERE order_id = '.(int)$orderId
         );
-        if(!is_array($result) || count($result)<1)
+        if(!is_array($result))
             return NULL;
         return new DotpayInstruction($result[count($result)-1]['id']);
     }
     
-    /**
-     * Returns hash which is used to generate Dotpay payment page
-     * @param array $payment Details of payment
-     * @return string
-     */
     public static function gethashFromPayment($payment) {
         $parts = explode('/',$payment['instruction']['instruction_url']);
         return $parts[count($parts)-2];
     }
     
-    /**
-     * Returns a page of bank, where customer can make his transfer
-     * @param string $baseUrl Base url of Dotpay
-     * @return string
-     */
     public function getBankPage($baseUrl) {
         $url = $this->buildInstructionUrl($baseUrl);
         $html = file_get_html($url);
@@ -175,21 +107,15 @@ class DotpayInstruction extends ObjectModel {
         return $html->getElementById('channel_container_')->firstChild()->getAttribute('href');
     }
     
-    /**
-     * Returns url with original pdf payment instruction on dotpay site
-     * @param string $baseUrl Base url of Dotpay
-     * @return string
-     */
     public function getPdfUrl($baseUrl) {
         return $baseUrl.'instruction/pdf/'.$this->number.'/'.$this->hash.'/';
     }
     
-    /**
-     * Returns url of site with original payment instruction on Dotpay
-     * @param string $baseUrl Base url of Dotpay
-     * @return string
-     */
     protected function buildInstructionUrl($baseUrl) {
         return $baseUrl.'instruction/'.$this->number.'/'.$this->hash.'/';
+    }
+    
+    public function __construct($id = null) {
+        parent::__construct($id);
     }
 }

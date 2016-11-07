@@ -32,9 +32,6 @@ require_once(mydirname(__DIR__,3).'/classes/RegisterOrder.php');
  * Controller for display confirm from Register Order
  */
 class dotpayconfirmModuleFrontController extends DotpayController {
-    /**
-     * Display payment instruction for cash or transfer payments
-     */
     public function initContent() {
         $this->display_column_left = false;
         parent::initContent();

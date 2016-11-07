@@ -48,28 +48,10 @@ p.payment_module a.dotpay:after {
     color: #777777;
 }
 
-p.payment_module a.dotpay[data-type=dotpay_payment_link]:after {
-    display: block;
-    content: "\f054";
-    position: absolute;
-    right: 25px;
-    margin-top: -11px;
-    top: 50%;
-    font-family: "FontAwesome";
-    font-size: 25px;
-    height: 22px;
-    width: 14px;
-    color: #777777;
-}
-
 p.payment_module a:hover {
     background-color: #f6f6f6;
 }
-
-/* OC manage */
-.dotpay-card-brand-logo {
-    max-height: 30px;
-}
+	
 	
 /* Payment view */
 input[type="text"], input[type="password"], input[type="url"], input[type="tel"], input[type="search"], input[type="number"], input[type="datetime"], input[type="email"] {
@@ -308,15 +290,4 @@ input[name="blik_code"] {
 
 #credit-cards-list tr:not(.ocheader):hover {
     background-color: #F3F3F3;
-}
-
-#saved_credit_cards {
-    margin-top: 15px;
-}
-
-.dotpay-card-logo {
-    border: 1px solid #01217e;
-    border-radius: 5px;
-    margin-left: 40px;
-    max-height: 60px;
 }

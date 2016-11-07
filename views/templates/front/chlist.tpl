@@ -35,7 +35,6 @@
 {include file='./scripts/noConflict.tpl'}
 {/if}
 
-{include file='./scripts/jquery.transit.tpl'}
 {include file='./scripts/payment.tpl'}
 
 {if $goodCurency }
@@ -64,7 +63,7 @@
     <div class="row">
         <div class="col-xs-12 col-md-12">
             <p class="dotpay_unsigned_channel payment_module">
-                <a class="dotpay dropbtn"{if $directPayment and $channel=='dotpay'} data-type="dotpay_payment_link"{/if}>
+                <a class="dotpay dropbtn">
                     <label display-cell form-target="{$channel}">
                         <img class="{$channel}" src="{$form['image']}">
                         {$form['description']}
@@ -78,7 +77,7 @@
                     {if $discAmount > 0}
                         <p class="alert alert-success">{$discMessage}: {$discAmount}&nbsp;{$currency}.</p>
                     {/if}
-                    {dotpayGenerateForm form=$form}
+                    {generateForm form=$form}
                 </div>
             </p>
         </div>

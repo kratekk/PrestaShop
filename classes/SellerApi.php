@@ -39,7 +39,7 @@ class DotpaySellerApi {
     }
     
     /**
-     * Returns infos about credit card
+     * Return infos about credit card
      * @param string $username
      * @param string $password
      * @param string $number
@@ -53,17 +53,15 @@ class DotpaySellerApi {
     }
     
     /**
-     * Checks, if username and password are right
-     * @param string $username Username of user
-     * @param string $password Password of user
-     * @param string $version Version of used Dotpay Api
-     * @return boolean|null
+     * Check, if username and password are right
+     * @param string $username
+     * @param string $password
+     * @return boolean
      */
-    public function isAccountRight($username, $password, $version) {
-        if($version == 'legacy')
-            return NULL;
+    public function isAccountRight($username, $password)
+    {
         if(empty($username) && empty($password))
-            return NULL;
+            return true;
         $url = $this->_baseurl.$this->getDotPaymentApi()."payments/";
         $curl = new DotpayCurl();
         $curl->addOption(CURLOPT_URL, $url)
@@ -75,13 +73,14 @@ class DotpaySellerApi {
     }
     
     /**
-     * Returns ifnos about payment
+     * Return ifnos about payment
      * @param string $username
      * @param string $password
      * @param string $number
      * @return \stdClass
      */
-    public function getPaymentByNumber($username, $password, $number) {
+    public function getPaymentByNumber($username, $password, $number)
+    {
         $url = $this->_baseurl.$this->getDotPaymentApi()."payments/$number/";
         $curl = new DotpayCurl();
         $curl->addOption(CURLOPT_URL, $url)
@@ -92,13 +91,14 @@ class DotpaySellerApi {
     }
     
     /**
-     * Returns ifnos about payment
+     * Return ifnos about payment
      * @param string $username
      * @param string $password
      * @param int $orderId
      * @return \stdClass
      */
-    public function getPaymentByOrderId($username, $password, $orderId) {
+    public function getPaymentByOrderId($username, $password, $orderId)
+    {
         $url = $this->_baseurl.$this->getDotPaymentApi().'payments/?control='.$orderId;
         $curl = new DotpayCurl();
         $curl->addOption(CURLOPT_URL, $url)
@@ -109,40 +109,7 @@ class DotpaySellerApi {
     }
     
     /**
-     * Makes a return payment and returns infos about a result of this operation
-     * @param string $username
-     * @param string $password
-     * @param string $payment
-     * @param float $amount
-     * @param type $control
-     * @param type $description
-     * @return type
-     */
-    public function makeReturnMoney($username, $password, $payment, $amount, $control, $description) {
-        $url = $this->_baseurl.$this->getDotPaymentApi().'payments/'.$payment.'/refund/';
-        $data = array(
-            'amount' => str_replace(',', '.', $amount),
-            'description' => $description,
-            'control' => $control
-        );
-        $curl = new DotpayCurl();
-        $curl->addOption(CURLOPT_URL, $url)
-             ->addOption(CURLOPT_USERPWD, $username.':'.$password)
-             ->addOption(CURLOPT_POST, 1)
-             ->addOption(CURLOPT_POSTFIELDS, json_encode($data))
-             ->addOption(CURLOPT_SSL_VERIFYPEER, TRUE)
-             ->addOption(CURLOPT_SSL_VERIFYHOST, 2)
-             ->addOption(CURLOPT_RETURNTRANSFER, 1)
-             ->addOption(CURLOPT_TIMEOUT, 100)
-             ->addOption(CURLOPT_HTTPHEADER, array(
-                'Accept: application/json; indent=4',
-                'content-type: application/json'));
-        $resp = json_decode($curl->exec(), true);
-        return $curl->getInfo()+$resp;
-    }
-    
-    /**
-     * Returns path for payment API
+     * Return path for payment API
      * @return string
      */
     private function getDotPaymentApi() {
@@ -150,7 +117,7 @@ class DotpaySellerApi {
     }
 
     /**
-     * Sets option for cUrl and return cUrl resource
+     * Set option for cUrl and return cUrl resource
      * @param resource $curl
      */
     private function setCurlOption($curl) {

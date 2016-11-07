@@ -25,7 +25,7 @@
 
 <li>
     <a href="{$actionUrl}" title="{l s='My saved cards' mod='dotpay'}">
-        <i class="icon-credit-card fa fa-envelope"></i>
+        <i class="icon-credit-card"></i>
         <span>{l s='My saved cards' mod='dotpay'}</span>
     </a>
 </li>

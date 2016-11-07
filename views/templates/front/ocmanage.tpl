@@ -37,17 +37,15 @@
 <p class="alert alert-success">{l s='Below is a list of your credit cards registered in this shop. Data identifying these cards are stored in a secure manner in Dotpay. This allows you to make payments with one click. At any time, you can deregister their cards.' mod='dotpay'}</p>
 <table id="credit-cards-list">
     <tr class="ocheader">
-        <th>{l s='Logo' mod='dotpay'}</th>
-        <th>{l s='Card brand' mod='dotpay'}</th>
         <th>{l s='Card number' mod='dotpay'}</th>
+        <th>{l s='Card brand' mod='dotpay'}</th>
         <th>{l s='Register date' mod='dotpay'}</th>
         <th>{l s='Delete' mod='dotpay'}</th>
     </tr>
     {foreach from=$cards item=card}
     <tr> 
-        <td><img class="dotpay-card-brand-logo" src="{$card->card_brand->image}" /></td>
+        <td>{$card->mask}</td>
         <td>{$card->brand}</td>
-        <td class="dotpay-card-mask">{$card->mask}</td>
         <td>{$card->register_date}</td>
         <td>
             <button data-id="{$card->id}" class="card-remove" title="{l s='Deregister card' mod='dotpay'}">

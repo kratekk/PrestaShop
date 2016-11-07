@@ -13,7 +13,7 @@
 * obtain it through the world-wide-web, please send an email
 * to license@prestashop.com so we can send you a copy immediately.
 *
-* DISCLAIMER 
+* DISCLAIMER
 *
 * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
 * versions in the future. If you wish to customize PrestaShop for your
@@ -32,34 +32,10 @@ require_once(mydirname(__DIR__,2).'/classes/Curl.php');
  * Interface and common functionality of the API.
  */
 abstract class DotpayApi {
-    /**
-     *
-     * @var int Number of One Click card channel
-     */
     public static $ocChannel = 248;
-    
-    /**
-     *
-     * @var int Number of card channel for separated currencies
-     */
     public static $pvChannel = 248;
-    
-    /**
-     *
-     * @var int Number of card channel
-     */
     public static $ccChannel = 246;
-    
-    /**
-     *
-     * @var int Number of Blik channel
-     */
     public static $blikChannel = 73;
-    
-    /**
-     *
-     * @var int Number of MasterPass channel
-     */
     public static $mpChannel = 71;
     /**
      *
@@ -75,7 +51,7 @@ abstract class DotpayApi {
 
     /**
      *
-     * Channels group for cash method 
+     * Channels group for cash method
      */
     const cashGroup = 'cash';
     
@@ -84,28 +60,6 @@ abstract class DotpayApi {
      * Channels group for transfers method
      */
     const transfersGroup = 'transfers';
-    
-    /**
-     * Payment mode of operation
-     */
-    const paymentOperation = 'payment';
-    
-    /**
-     * Refund mode of operation
-     */
-    const refundOperation = 'refund';
-    
-    /**
-     *
-     * @var array Saved data about channels 
-     */
-    private $channelsData = array();
-    
-    /**
-     *
-     * @var type Ids of separated channels, which are added to a list on checkout page
-     */
-    private $enabledSeparatedChannels = array();
     
     /**
      * 
@@ -123,8 +77,8 @@ abstract class DotpayApi {
      */
     public function getFormatAmount($amount) {
         $currency = Currency::getCurrency(Context::getContext()->cart->id_currency);
-        if(isset($currency['decimals']) && $currency['decimals']==0) {
-            if(Configuration::get('PS_PRICE_ROUND_MODE')!=null) {
+        if (isset($currency['decimals']) && $currency['decimals']==0) {
+            if (Configuration::get('PS_PRICE_ROUND_MODE')!=null) {
                 switch (Configuration::get('PS_PRICE_ROUND_MODE')) {
                     case 0:
                         $amount = ceil($amount);
@@ -148,11 +102,6 @@ abstract class DotpayApi {
     abstract public function getChannelList();
     
     /**
-     * Returns flag, if was selected PV channel
-     */
-    abstract public function isSelectedPvChannel();
-    
-    /**
      * Check confirm message from Dotpay
      */
     abstract public function checkConfirm();
@@ -166,21 +115,11 @@ abstract class DotpayApi {
      * Returns currency from confirm message
      */
     abstract public function getOperationCurrency();
-
-    /**
-     * Returns name of operation status
-     */
-    abstract public function getOperationStatusName();
-
+    
     /**
      * Returns operation number from confirm message
      */
     abstract public function getOperationNumber();
-    
-    /**
-     * Returns related operation number from confirm message
-     */
-    abstract public function getRelatedOperationNumber();
     
     /**
      * Returns new order state from confirm message
@@ -218,24 +157,6 @@ abstract class DotpayApi {
     abstract public function getDiscountAmount();
     
     /**
-     * Checks if seller account is right
-     */
-    abstract public function checkSellerId($sellerId);
-    
-    /**
-     * Returns operation type
-     */
-    abstract public function getOperationType();
-    
-    /**
-     * Returns array with enabled separated channels
-     * @return array
-     */
-    public function getSeparatedChannelsList() {
-        return $this->enabledSeparatedChannels;
-    }
-    
-    /**
      * Returns header form for Dotpay Helper Form
      * @param string $formTarget
      * @param string|null $url
@@ -258,14 +179,14 @@ abstract class DotpayApi {
      * @return string
      */
     protected function getAgreements($what) {
-        $resultStr = '';
-        $result = $this->getApiChannels();
-        if(false !== $result) {
-            if(isset($result['forms']) && is_array($result['forms'])) {
+        $resultJson = $this->getApiChannels();
+        if(false !== $resultJson) {
+            $result = json_decode($resultJson, true);
+            if (isset($result['forms']) && is_array($result['forms'])) {
                 foreach ($result['forms'] as $forms) {
-                    if(isset($forms['fields']) && is_array($forms['fields'])) {
+                    if (isset($forms['fields']) && is_array($forms['fields'])) {
                         foreach ($forms['fields'] as $forms1) {
-                            if($forms1['name'] == $what) {
+                            if ($forms1['name'] == $what) {
                                 $resultStr = $forms1['description_html'];
                             }
                         }
@@ -307,11 +228,13 @@ abstract class DotpayApi {
      * @return array|false
      */
     public function getChannelData($id, $pv = false) {
-        $result = $this->getApiChannels($pv);
-        if(false != $result) {
-            if(isset($result['channels']) && is_array($result['channels'])) {
+    $resultJson = $this->getApiChannels($pv);
+        if(false !== $resultJson) {
+            $result = json_decode($resultJson, true);
+
+            if (isset($result['channels']) && is_array($result['channels'])) {
                 foreach ($result['channels'] as $channel) {
-                    if(isset($channel['id']) && $channel['id']==$id) {
+                    if (isset($channel['id']) && $channel['id']==$id) {
                         return $channel;
                     }
                 }
@@ -325,17 +248,6 @@ abstract class DotpayApi {
      * @return string|boolean
      */
     protected function getApiChannels($pv=false) {
-        if(empty($this->channelsData[$pv])) {
-            $this->channelsData[$pv] = $this->getApiChannelsFromServer($pv);
-        }
-        return $this->channelsData[$pv];
-    }
-    
-    /**
-     * Returns string with channels data JSON from Dotpay server
-     * @return string|boolean
-     */
-    private function getApiChannelsFromServer($pv=false) {
         $dotpayUrl = $this->config->getDotpayTargetUrl();
         $paymentCurrency = $this->parent->getDotCurrency();
         
@@ -369,10 +281,11 @@ abstract class DotpayApi {
         if($curl) {
             $curl->close();
         }
-        return json_decode($resultJson, true);
+        
+        return $resultJson;
     }
 
-    /**
+        /**
      * Returns one hidden field for Dotpay Helper Form
      * @param string $name
      * @param string $value
@@ -387,38 +300,6 @@ abstract class DotpayApi {
     }
     
     /**
-     * Adds field with Bylaw agreement of Dotpay to form
-     * @return array
-     */
-    protected function addBylawField() {
-        $byLawAgreements = $this->getByLaw();
-        return array(
-            'type' => 'checkbox',
-            'name' => 'bylaw',
-            'value' => '1',
-            'checked' => true,
-            'label' => $byLawAgreements,
-            'required' => true
-        );
-    }
-    
-    /**
-     * Adds field with Personal data agreement of Dotpay to form
-     * @return array
-     */
-    protected function addPersonalDataField() {
-        $personalDataAgreements = $this->getPersonalData();
-        return array(
-            'type' => 'checkbox',
-            'name' => 'personal_data',
-            'value' => '1',
-            'checked' => true,
-            'label' => $personalDataAgreements,
-            'required' => true
-        );
-    }
-
-        /**
      * Returns submit field for Dotpay Helper Form
      * @return array
      */
@@ -430,14 +311,5 @@ abstract class DotpayApi {
             'label' => '</p>',
             'llabel' => '<p class="cart_navigation clearfix">'
         );
-    }
-    
-    /**
-     * Adds a channel to list of separated channels
-     * @param int $id Id of channel
-     */
-    protected function addSeparatedChannel($id) {
-        if(array_search($id, $this->enabledSeparatedChannels) === false)
-            $this->enabledSeparatedChannels[] = $id;
     }
 }

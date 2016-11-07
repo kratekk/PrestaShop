@@ -31,9 +31,7 @@ require_once(__DIR__.'/dotpay.php');
  * Controller for managing card saved by One Click
  */
 class dotpayocmanageModuleFrontController extends DotpayController {
-    /**
-     * Displays a page with saved credit cards
-     */
+
     public function initContent() {
         $this->display_column_left = false;
         parent::initContent();

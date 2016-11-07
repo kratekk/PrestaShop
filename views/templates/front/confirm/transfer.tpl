@@ -1,7 +1,7 @@
 <section id="instruction">
     <div class="row">
         <div class="col-xs-12">
-            <p id="instruction-content">{l s='To pay by cash you need login to your bank system and make a money transfer, entering the following data:' mod='dotpay'}</p>
+            <p id="instruction-content">{l s='In order to pay login to your bank system and make a money transfer, using the following data:' mod='dotpay'}</p>
         </div>
         <div class="col-md-4 col-md-offset-1">
             <label>

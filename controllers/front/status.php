@@ -31,7 +31,9 @@ require_once(__DIR__.'/dotpay.php');
  * Controller for handling return address
  */
 class dotpaystatusModuleFrontController extends DotpayController {
-
+    /**
+     * Checks a payment status of order in shop
+     */
     public function initContent() {
         $cookie = new Cookie('lastOrder');
         if($cookie->orderId != null) {

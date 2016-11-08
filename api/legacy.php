@@ -155,7 +155,7 @@ class DotpayLegacyApi extends DotpayApi {
         if(Tools::getValue('order_id'))
             $formFields[] = $this->getHiddenField('order_id', Tools::getValue('order_id'));
         return array(
-			'form'=> $this->getFormHeader('dotpay')
+	    'form'=> $this->getFormHeader('dotpay'),
             'fields' => $formFields
         );
     }

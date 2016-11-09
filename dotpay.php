@@ -73,9 +73,9 @@ class dotpay extends PaymentModule {
     public function __construct() {
         $this->name = 'dotpay';
         $this->tab = 'payments_gateways';
-        $this->version = '2.1.0';
+        $this->version = '2.1.1';
         $this->author = 'tech@dotpay.pl';
-        $this->ps_versions_compliancy = array('min' => '1.6', 'max' => _PS_VERSION_); 
+        $this->ps_versions_compliancy = array('min' => '1.6', 'max' => '1.6.9'); 
         $this->bootstrap = true;
         $this->controllers = array('payment', 'preparing', 'callback', 'back', 'status', 'confirm', 'ocmanage', 'ocremove');
         $this->is_eu_compatible = 1;

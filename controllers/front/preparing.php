@@ -26,6 +26,7 @@
 */
 
 require_once(__DIR__.'/dotpay.php');
+require_once(mydirname(__DIR__,3).'/classes/SellerApi.php');
 
 /**
  * Controller for handling preparing form for Dotpay
@@ -92,9 +93,11 @@ class dotpaypreparingModuleFrontController extends DotpayController {
             'customer' => $this->context->customer->id
         ));
         
+        $sa = new DotpaySellerApi($this->config->getDotpaySellerApiUrl());
         if($this->config->isDotpayDispInstruction() &&
            $this->config->isApiConfigOk() && 
-           $this->api->isChannelInGroup(Tools::getValue('channel'), array(DotpayApi::cashGroup, DotpayApi::transfersGroup))
+           $this->api->isChannelInGroup(Tools::getValue('channel'), array(DotpayApi::cashGroup, DotpayApi::transfersGroup)) && 
+           $sa->isAccountRight($this->config->getDotpayApiUsername(), $this->config->getDotpayApiPassword(), $this->config->getDotpayApiVersion())
         ) {
             $this->context->cookie->dotpay_channel = Tools::getValue('channel');
             Tools::redirect($this->context->link->getModuleLink($this->module->name, 'confirm', array('order_id'=>Order::getOrderByCartId($cartId))));

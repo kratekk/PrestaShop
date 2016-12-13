@@ -1,8 +1,5 @@
 <?php
-
 /**
-*
-*
 * NOTICE OF LICENSE
 *
 * This source file is subject to the Academic Free License (AFL 3.0)
@@ -22,13 +19,13 @@
 *  @author    Dotpay Team <tech@dotpay.pl>
 *  @copyright Dotpay
 *  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
-*
 */
 
 /**
  * Manage the configuration
  */
-class DotpayConfig {
+class DotpayConfig
+{
     /**
      *
      * @var string Dotpay target url for legacy api 
@@ -63,13 +60,15 @@ class DotpayConfig {
      * Returns Dotpay target url
      * @return string
      */
-    public function getDotpayTargetUrl() {
-        if($this->getDotpayApiVersion()=='legacy')
+    public function getDotpayTargetUrl()
+    {
+        if ($this->getDotpayApiVersion()=='legacy') {
             return self::$DOTPAY_TARGET_URL_LEGACY;
-        else if($this->isDotpayTestMode())
+        } elseif ($this->isDotpayTestMode()) {
             return self::$DOTPAY_TARGET_URL_TEST_DEV;
-        else
+        } else {
             return self::$DOTPAY_TARGET_URL_DEV;
+        }
     }
     
     /**
@@ -79,7 +78,7 @@ class DotpayConfig {
     public function getDotpaySellerApiUrl()
     {
         $dotSellerApi = self::$DOTPAY_SELLER_API_URL;
-        if($this->isDotpayTestMode()) {
+        if ($this->isDotpayTestMode()) {
             $dotSellerApi = self::$DOTPAY_TEST_SELLER_API_URL;
         }
         
@@ -90,7 +89,8 @@ class DotpayConfig {
      * returns Dotpay IP address
      * @return string
      */
-    public function getDotpayIp() {
+    public function getDotpayIp()
+    {
         return '195.150.9.37';
     }
     
@@ -98,412 +98,531 @@ class DotpayConfig {
      * returns Dotpay office address
      * @return string
      */
-    public function getOfficeIp() {
+    public function getOfficeIp()
+    {
         return '77.79.195.34';
     }
     
-    public function getDotpayEnabledFN() {
+    public function getDotpayEnabledFN()
+    {
         return 'DP_GATEWAY_EN';
     }
-    public function setDotpayEnabled($enable) {
+    public function setDotpayEnabled($enable)
+    {
         Configuration::updateValue($this->getDotpayEnabledFN(), $enable);
         return $this;
     }
-    public function isDotpayEnabled() {
+    public function isDotpayEnabled()
+    {
         return Configuration::get($this->getDotpayEnabledFN());
     }
     
-    public function getDotpayApiVersionFN() {
+    public function getDotpayApiVersionFN()
+    {
         return 'DP_API_VERSION';
     }
-    public function setDotpayApiVersion($apiVersion) {
+    public function setDotpayApiVersion($apiVersion)
+    {
         Configuration::updateValue($this->getDotpayApiVersionFN(), $apiVersion);
         return $this;
     }
-    public function getDotpayApiVersion() {
+    public function getDotpayApiVersion()
+    {
         return Configuration::get($this->getDotpayApiVersionFN());
     }
     
-    public function getDotpayRenewFN() {
+    public function getDotpayRenewFN()
+    {
         return 'DP_TEST_RENEW';
     }
-    public function setDotpayRenew($renew) {
+    public function setDotpayRenew($renew)
+    {
         Configuration::updateValue($this->getDotpayRenewFN(), $renew);
         return $this;
     }
-    public function isDotpayRenewEn() {
-		if($this->getDotpayApiVersion() === 'legacy')
+    public function isDotpayRenewEn()
+    {
+        if ($this->getDotpayApiVersion() === 'legacy') {
             return false;
+        }
         return Configuration::get($this->getDotpayRenewFN());
     }
     
-    public function getDotpayRefundFN() {
+    public function getDotpayRefundFN()
+    {
         return 'DP_REFUND_EN';
     }
-    public function setDotpayRefund($refund) {
+    public function setDotpayRefund($refund)
+    {
         Configuration::updateValue($this->getDotpayRefundFN(), $refund);
         return $this;
     }
-    public function isDotpayRefundEn() {
-		if($this->getDotpayApiVersion() === 'legacy')
+    public function isDotpayRefundEn()
+    {
+        if ($this->getDotpayApiVersion() === 'legacy') {
             return false;
+        }
         return Configuration::get($this->getDotpayRefundFN());
     }
     
-    public function getDotpayTestModeFN() {
+    public function getDotpayTestModeFN()
+    {
         return 'DP_TEST_ENV';
     }
-    public function setDotpayTestMode($test) {
+    public function setDotpayTestMode($test)
+    {
         Configuration::updateValue($this->getDotpayTestModeFN(), $test);
         return $this;
     }
-    public function isDotpayTestMode() {
-        if($this->getDotpayApiVersion() === 'legacy')
+    public function isDotpayTestMode()
+    {
+        if ($this->getDotpayApiVersion() === 'legacy') {
             return false;
+        }
         return Configuration::get($this->getDotpayTestModeFN());
     }
     
-    public function getDotpayIdFN() {
+    public function getDotpayIdFN()
+    {
         return 'DP_USER_ID';
     }
-    public function setDotpayId($id) {
+    public function setDotpayId($id)
+    {
         Configuration::updateValue($this->getDotpayIdFN(), $id);
         return $this;
     }
-    public function getDotpayId() {
+    public function getDotpayId()
+    {
         return Configuration::get($this->getDotpayIdFN());
     }
     
-    public function getDotpayPINFN() {
+    public function getDotpayPINFN()
+    {
         return 'DP_USER_PIN';
     }
-    public function setDotpayPIN($pin) {
+    public function setDotpayPIN($pin)
+    {
         Configuration::updateValue($this->getDotpayPINFN(), $pin);
         return $this;
     }
-    public function getDotpayPIN() {
+    public function getDotpayPIN()
+    {
         return Configuration::get($this->getDotpayPINFN());
     }
     
-    public function getDotpayWidgetModeFN() {
+    public function getDotpayWidgetModeFN()
+    {
         return 'DP_WIDGET_MODE';
     }
-    public function setDotpayWidgetMode($wm) {
+    public function setDotpayWidgetMode($wm)
+    {
         Configuration::updateValue($this->getDotpayWidgetModeFN(), $wm);
         return $this;
     }
-    public function isDotpayWidgetMode() {
-        if($this->getDotpayApiVersion() === 'legacy')
+    public function isDotpayWidgetMode()
+    {
+        if ($this->getDotpayApiVersion() === 'legacy') {
             return false;
+        }
         return Configuration::get($this->getDotpayWidgetModeFN());
     }
-    public function getDotpayAdvancedModeFN() {
+    public function getDotpayAdvancedModeFN()
+    {
         return 'DP_ADVANCED_MODE';
     }
-    public function setDotpayAdvancedMode($advancedMode) {
+    public function setDotpayAdvancedMode($advancedMode)
+    {
         Configuration::updateValue($this->getDotpayAdvancedModeFN(), $advancedMode);
         return $this;
     }
-    public function isDotpayAdvancedMode() {
+    public function isDotpayAdvancedMode()
+    {
         return Configuration::get($this->getDotpayAdvancedModeFN());
     }
     
-    public function getDotpayDispInstructionFN() {
+    public function getDotpayDispInstructionFN()
+    {
         return 'DP_DISP_INSTRUCTION';
     }
-    public function setDotpayDispInstruction($dispInstruction) {
+    public function setDotpayDispInstruction($dispInstruction)
+    {
         Configuration::updateValue($this->getDotpayDispInstructionFN(), $dispInstruction);
         return $this;
     }
-    public function isDotpayDispInstruction() {
-        if($this->getDotpayApiVersion() === 'legacy')
+    public function isDotpayDispInstruction()
+    {
+        if ($this->getDotpayApiVersion() === 'legacy') {
             return false;
+        }
         return Configuration::get($this->getDotpayDispInstructionFN());
     }
     
-    public function getDotpayWidgetDisCurrFN() {
+    public function getDotpayWidgetDisCurrFN()
+    {
         return 'DP_WIDGET_DIS_CURR';
     }
-    public function setDotpayWidgetDisCurr($disableCurrencies) {
+    public function setDotpayWidgetDisCurr($disableCurrencies)
+    {
         Configuration::updateValue($this->getDotpayWidgetDisCurrFN(), $disableCurrencies);
         return $this;
     }
-    public function getDotpayWidgetDisCurr() {
-        if($this->getDotpayApiVersion() === 'legacy')
+    public function getDotpayWidgetDisCurr()
+    {
+        if ($this->getDotpayApiVersion() === 'legacy') {
             return '';
+        }
         return Configuration::get($this->getDotpayWidgetDisCurrFN());
     }
     
-    public function getDotpayMasterPassFN() {
+    public function getDotpayMasterPassFN()
+    {
         return 'DP_MP_MODE';
     }
-    public function setDotpayMasterPass($mp) {
+    public function setDotpayMasterPass($mp)
+    {
         Configuration::updateValue($this->getDotpayMasterPassFN(), $mp);
         return $this;
     }
-    public function isDotpayMasterPass() {
-		if($this->getDotpayApiVersion() === 'legacy')
+    public function isDotpayMasterPass()
+    {
+        if ($this->getDotpayApiVersion() === 'legacy') {
             return false;
+        }
         return Configuration::get($this->getDotpayMasterPassFN());
     }
     
-    public function getDotpayBlikFN() {
+    public function getDotpayBlikFN()
+    {
         return 'DP_BLIK_MODE';
     }
-    public function setDotpayBlik($blik) {
+    public function setDotpayBlik($blik)
+    {
         Configuration::updateValue($this->getDotpayBlikFN(), $blik);
         return $this;
     }
-    public function isDotpayBlik() {
-		if($this->getDotpayApiVersion() === 'legacy')
+    public function isDotpayBlik()
+    {
+        if ($this->getDotpayApiVersion() === 'legacy') {
             return false;
+        }
         return Configuration::get($this->getDotpayBlikFN());
     }
     
-    public function getDotpayOneClickFN() {
+    public function getDotpayOneClickFN()
+    {
         return 'DP_ONECLICK_MODE';
     }
-    public function setDotpayOneClick($oc) {
+    public function setDotpayOneClick($oc)
+    {
         Configuration::updateValue($this->getDotpayOneClickFN(), $oc);
         return $this;
     }
-    public function isDotpayOneClick() {
-		if($this->getDotpayApiVersion() === 'legacy')
+    public function isDotpayOneClick()
+    {
+        if ($this->getDotpayApiVersion() === 'legacy') {
             return false;
+        }
         return Configuration::get($this->getDotpayOneClickFN());
     }
     
-    public function getDotpayCreditCardFN() {
+    public function getDotpayCreditCardFN()
+    {
         return 'DP_CREDIT_CARD_MODE';
     }
-    public function setDotpayCreditCard($cc) {
+    public function setDotpayCreditCard($cc)
+    {
         Configuration::updateValue($this->getDotpayCreditCardFN(), $cc);
         return $this;
     }
-    public function isDotpayCreditCard() {
-		if($this->getDotpayApiVersion() === 'legacy')
+    public function isDotpayCreditCard()
+    {
+        if ($this->getDotpayApiVersion() === 'legacy') {
             return false;
+        }
         return Configuration::get($this->getDotpayCreditCardFN());
     }
     
-    public function getDotpayPVFN() {
+    public function getDotpayPVFN()
+    {
         return 'DP_PV_MODE';
     }
-    public function setDotpayPV($pv) {
+    public function setDotpayPV($pv)
+    {
         Configuration::updateValue($this->getDotpayPVFN(), $pv);
         return $this;
     }
-    public function isDotpayPV() {
-		if($this->getDotpayApiVersion() === 'legacy')
+    public function isDotpayPV()
+    {
+        if ($this->getDotpayApiVersion() === 'legacy') {
             return false;
+        }
         return Configuration::get($this->getDotpayPVFN());
     }
     
-    public function getDotpayPvIdFN() {
+    public function getDotpayPvIdFN()
+    {
         return 'DP_PV_ID';
     }
-    public function setDotpayPvId($id) {
+    public function setDotpayPvId($id)
+    {
         Configuration::updateValue($this->getDotpayPvIdFN(), $id);
         return $this;
     }
-    public function getDotpayPvId() {
-		if($this->getDotpayApiVersion() === 'legacy')
+    public function getDotpayPvId()
+    {
+        if ($this->getDotpayApiVersion() === 'legacy') {
             return '';
+        }
         return Configuration::get($this->getDotpayPvIdFN());
     }
     
-    public function getDotpayPvPINFN() {
+    public function getDotpayPvPINFN()
+    {
         return 'DP_PV_PIN';
     }
-    public function setDotpayPvPIN($pin) {
+    public function setDotpayPvPIN($pin)
+    {
         Configuration::updateValue($this->getDotpayPvPINFN(), $pin);
         return $this;
     }
-    public function getDotpayPvPIN() {
-		if($this->getDotpayApiVersion() === 'legacy')
+    public function getDotpayPvPIN()
+    {
+        if ($this->getDotpayApiVersion() === 'legacy') {
             return '';
+        }
         return Configuration::get($this->getDotpayPvPINFN());
     }
     
-    public function getDotpayPvCurrenciesFN() {
+    public function getDotpayPvCurrenciesFN()
+    {
         return 'DP_PV_CUR';
     }
-    public function setDotpayPvCurrencies($currencies) {
+    public function setDotpayPvCurrencies($currencies)
+    {
         Configuration::updateValue($this->getDotpayPvCurrenciesFN(), $currencies);
         return $this;
     }
-    public function getDotpayPvCurrencies() {
-		if($this->getDotpayApiVersion() === 'legacy')
+    public function getDotpayPvCurrencies()
+    {
+        if ($this->getDotpayApiVersion() === 'legacy') {
             return '';
+        }
         return Configuration::get($this->getDotpayPvCurrenciesFN());
     }
     
-    public function getDotpayExChFN() {
+    public function getDotpayExChFN()
+    {
         return 'DP_EXCH_EN';
     }
-    public function setDotpayExCh($excharge) {
+    public function setDotpayExCh($excharge)
+    {
         Configuration::updateValue($this->getDotpayExChFN(), $excharge);
         return $this;
     }
-    public function getDotpayExCh() {
-		if($this->getDotpayApiVersion() === 'legacy')
+    public function getDotpayExCh()
+    {
+        if ($this->getDotpayApiVersion() === 'legacy') {
             return false;
+        }
         return Configuration::get($this->getDotpayExChFN());
     }
     
-    public function setDotpayExchVPid($id) {
+    public function setDotpayExchVPid($id)
+    {
         Configuration::updateValue('PAYMENT_DP_NEW_VPRODUCT_PAYMENT', $id);
         return $this;
     }
-    public function getDotpayExchVPid() {
+    public function getDotpayExchVPid()
+    {
         return Configuration::get('PAYMENT_DP_NEW_VPRODUCT_PAYMENT');
     }
     
-    public function getDotpayExPercentageFN() {
+    public function getDotpayExPercentageFN()
+    {
         return 'DP_EXCH_PERC';
     }
-    public function setDotpayExPercentage($percentage) {
+    public function setDotpayExPercentage($percentage)
+    {
         Configuration::updateValue($this->getDotpayExPercentageFN(), $percentage);
         return $this;
     }
-    public function getDotpayExPercentage() {
-		if($this->getDotpayApiVersion() === 'legacy')
+    public function getDotpayExPercentage()
+    {
+        if ($this->getDotpayApiVersion() === 'legacy') {
             return '0';
+        }
         return Configuration::get($this->getDotpayExPercentageFN());
     }
     
-    public function getDotpayExAmountFN() {
+    public function getDotpayExAmountFN()
+    {
         return 'DP_EXCH_AM';
     }
-    public function setDotpayExAmount($amount) {
+    public function setDotpayExAmount($amount)
+    {
         Configuration::updateValue($this->getDotpayExAmountFN(), $amount);
         return $this;
     }
-    public function getDotpayExAmount() {
-		if($this->getDotpayApiVersion() === 'legacy')
+    public function getDotpayExAmount()
+    {
+        if ($this->getDotpayApiVersion() === 'legacy') {
             return '0';
+        }
         return Configuration::get($this->getDotpayExAmountFN());
     }
     
-    public function getDotpayDiscountFN() {
+    public function getDotpayDiscountFN()
+    {
         return 'DP_DISC_EN';
     }
-    public function setDotpayDiscount($discount) {
+    public function setDotpayDiscount($discount)
+    {
         Configuration::updateValue($this->getDotpayDiscountFN(), $discount);
         return $this;
     }
-    public function getDotpayDiscount() {
-		if($this->getDotpayApiVersion() === 'legacy')
+    public function getDotpayDiscount()
+    {
+        if ($this->getDotpayApiVersion() === 'legacy') {
             return false;
+        }
         return Configuration::get($this->getDotpayDiscountFN());
     }
     
-    public function setDotpayDiscountId($id) {
+    public function setDotpayDiscountId($id)
+    {
         Configuration::updateValue('PAYMENT_DP_NEW_DISCOUNT_PAYMENT', $id);
         return $this;
     }
-    public function getDotpayDiscountId() {
+    public function getDotpayDiscountId()
+    {
         $id = Configuration::get('PAYMENT_DP_NEW_DISCOUNT_PAYMENT');
-        return ($id===false)?NULL:$id;
+        return ($id===false)?null:$id;
     }
 
-    public function getDotpayDiscAmountFN() {
+    public function getDotpayDiscAmountFN()
+    {
         return 'DP_DISC_AM';
     }
-    public function setDotpayDiscAmount($amount) {
+    public function setDotpayDiscAmount($amount)
+    {
         Configuration::updateValue($this->getDotpayDiscAmountFN(), $amount);
         return $this;
     }
-    public function getDotpayDiscAmount() {
-		if($this->getDotpayApiVersion() === 'legacy')
+    public function getDotpayDiscAmount()
+    {
+        if ($this->getDotpayApiVersion() === 'legacy') {
             return '0';
+        }
         return Configuration::get($this->getDotpayDiscAmountFN());
     }
 
-    public function getDotpayDiscPercentageFN() {
+    public function getDotpayDiscPercentageFN()
+    {
         return 'DP_DISC_PERC';
     }
-    public function setDotpayDiscPercentage($percentage) {
+    public function setDotpayDiscPercentage($percentage)
+    {
         Configuration::updateValue($this->getDotpayDiscPercentageFN(), $percentage);
         return $this;
     }
-    public function getDotpayDiscPercentage() {
-		if($this->getDotpayApiVersion() === 'legacy')
+    public function getDotpayDiscPercentage()
+    {
+        if ($this->getDotpayApiVersion() === 'legacy') {
             return '0';
+        }
         return Configuration::get($this->getDotpayDiscPercentageFN());
     }
     
-    public function getDotpayApiUsernameFN() {
+    public function getDotpayApiUsernameFN()
+    {
         return 'DP_DISC_API_UNAME';
     }
-    public function setDotpayApiUsername($username) {
+    public function setDotpayApiUsername($username)
+    {
         Configuration::updateValue($this->getDotpayApiUsernameFN(), $username);
         return $this;
     }
-    public function getDotpayApiUsername() {
-		if($this->getDotpayApiVersion() === 'legacy')
+    public function getDotpayApiUsername()
+    {
+        if ($this->getDotpayApiVersion() === 'legacy') {
             return '';
+        }
         return Configuration::get($this->getDotpayApiUsernameFN());
     }
     
-    public function getDotpayApiPasswordFN() {
+    public function getDotpayApiPasswordFN()
+    {
         return 'DP_DISC_API_PASSWD';
     }
-    public function setDotpayApiPassword($password) {
+    public function setDotpayApiPassword($password)
+    {
         Configuration::updateValue($this->getDotpayApiPasswordFN(), $password);
         return $this;
     }
-    public function getDotpayApiPassword() {
-		if($this->getDotpayApiVersion() === 'legacy')
+    public function getDotpayApiPassword()
+    {
+        if ($this->getDotpayApiVersion() === 'legacy') {
             return '';
+        }
         return Configuration::get($this->getDotpayApiPasswordFN());
     }
     
-    public function setDotpayNewStatusId($id) {
+    public function setDotpayNewStatusId($id)
+    {
         return Configuration::updateValue('PAYMENT_DP_NEW_ORDER_STATUS', $id);
     }
-    public function getDotpayNewStatusId() {
+    public function getDotpayNewStatusId()
+    {
         $id = Configuration::get('PAYMENT_DP_NEW_ORDER_STATUS');
-        return ($id===false)?NULL:$id;
+        return ($id===false)?null:$id;
     }
     
-    public function setDotpayTotalRefundStatusId($id) {
+    public function setDotpayTotalRefundStatusId($id)
+    {
         return Configuration::updateValue('PAYMENT_DP_TOTAL_REFUND_STATUS', $id);
     }
-    public function getDotpayTotalRefundStatusId() {
+    public function getDotpayTotalRefundStatusId()
+    {
         $id = Configuration::get('PAYMENT_DP_TOTAL_REFUND_STATUS');
-        return ($id===false)?NULL:$id;
+        return ($id===false)?null:$id;
     }
     
-    public function setDotpayPartialRefundStatusId($id) {
+    public function setDotpayPartialRefundStatusId($id)
+    {
         return Configuration::updateValue('PAYMENT_DP_PARTIAL_REFUND_STATUS', $id);
     }
-    public function getDotpayPartialRefundStatusId() {
+    public function getDotpayPartialRefundStatusId()
+    {
         $id = Configuration::get('PAYMENT_DP_PARTIAL_REFUND_STATUS');
-        return ($id===false)?NULL:$id;
+        return ($id===false)?null:$id;
     }
     
-    public function setDotpayWaitingRefundStatusId($id) {
+    public function setDotpayWaitingRefundStatusId($id)
+    {
         return Configuration::updateValue('PAYMENT_DP_WAITING_REFUND_STATUS', $id);
     }
-    public function getDotpayWaitingRefundStatusId() {
+    public function getDotpayWaitingRefundStatusId()
+    {
         $id = Configuration::get('PAYMENT_DP_WAITING_REFUND_STATUS');
-        return ($id===false)?NULL:$id;
+        return ($id===false)?null:$id;
     }
     
-    public function setDotpayFailedRefundStatusId($id) {
+    public function setDotpayFailedRefundStatusId($id)
+    {
         return Configuration::updateValue('PAYMENT_DP_FAILED_REFUND_STATUS', $id);
     }
-    public function getDotpayFailedRefundStatusId() {
+    public function getDotpayFailedRefundStatusId()
+    {
         $id = Configuration::get('PAYMENT_DP_FAILED_REFUND_STATUS');
-        return ($id===false)?NULL:$id;
+        return ($id===false)?null:$id;
     }
     
     /**
      * Check if account configuration is correct
      * @return bool
      */
-    public function isApiConfigOk() {
+    public function isApiConfigOk()
+    {
         return ($this->getDotpayApiUsername()!='' && $this->getDotpayApiPassword()!='');
     }
 
@@ -511,7 +630,8 @@ class DotpayConfig {
      * Check if account configuration is correct
      * @return bool
      */
-    public function isAccountConfigOk() {
+    public function isAccountConfigOk()
+    {
         $pin = $this->getDotpayPIN();
         return (!empty($pin) && $this->checkId());
     }
@@ -520,7 +640,8 @@ class DotpayConfig {
      * 
      * @return array
      */
-    public function getDotpayAvailableCurrency() {
+    public function getDotpayAvailableCurrency()
+    {
         return array( 'EUR', 'USD', 'GBP', 'JPY','CZK', 'SEK', 'PLN' );
     }
     
@@ -528,7 +649,8 @@ class DotpayConfig {
      * 
      * @return array
      */
-    public function getDotpayAvailableLanguage() {
+    public function getDotpayAvailableLanguage()
+    {
         return array( 'pl', 'en', 'de', 'it','fr', 'es', 'cz', 'ru', 'bg' );
     }
     
@@ -536,7 +658,8 @@ class DotpayConfig {
      * Check, if Dotpay ID is correct
      * @return bool
      */
-    private function checkId() {
+    private function checkId()
+    {
         return (bool)preg_match("/^\d{5,6}$/", $this->getDotpayId());
     }
 }

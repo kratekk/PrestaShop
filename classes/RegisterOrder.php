@@ -1,8 +1,5 @@
 <?php
-
 /**
-*
-*
 * NOTICE OF LICENSE
 *
 * This source file is subject to the Academic Free License (AFL 3.0)
@@ -22,14 +19,14 @@
 *  @author    Dotpay Team <tech@dotpay.pl>
 *  @copyright Dotpay
 *  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
-*
 */
 
-require_once(mydirname(__DIR__,2).'/models/Config.php');
-require_once(mydirname(__DIR__,2).'/controllers/front/dotpay.php');
-require_once(mydirname(__DIR__,2).'/classes/SellerApi.php');
+require_once(DOTPAY_PLUGIN_DIR.'/models/Config.php');
+require_once(DOTPAY_PLUGIN_DIR.'/controllers/front/dotpay.php');
+require_once(DOTPAY_PLUGIN_DIR.'/classes/SellerApi.php');
 
-abstract class DotpayRegisterOrder {
+abstract class DotpayRegisterOrder
+{
     /**
      *
      * @var DotpayController Controller object
@@ -52,7 +49,8 @@ abstract class DotpayRegisterOrder {
      * Initialize Register Order mechanism
      * @param DotpayController $parent Owner of the object API.
      */
-    public static function init(DotpayController $parent = NULL) {
+    public static function init(DotpayController $parent = null)
+    {
         self::$parent = $parent;
         self::$config = new DotpayConfig();
     }
@@ -62,12 +60,13 @@ abstract class DotpayRegisterOrder {
      * @param type $channelId Channel identifier
      * @return null|array
      */
-    public static function create($channelId) {
-        $data = str_replace('\\/', '/', json_encode(self::prepareData($channelId)));
-        if(!self::checkIfCompletedControlExist(self::$parent->getDotControl(), $channelId)) {
+    public static function create($channelId)
+    {
+        $data = str_replace('\\/', '/', Tools::jsonEncode(self::prepareData($channelId)));
+        if (!self::checkIfCompletedControlExist(self::$parent->getDotControl(), $channelId)) {
             return self::createRequest($data);
         }
-        return NULL;
+        return null;
     }
     
     /**
@@ -75,11 +74,12 @@ abstract class DotpayRegisterOrder {
      * @param array $data
      * @return boolean
      */
-    private static function createRequest($data) {
+    private static function createRequest($data)
+    {
         try {
             $curl = new DotpayCurl();
             $curl->addOption(CURLOPT_URL, self::$config->getDotpayTargetUrl().self::$target)
-                 ->addOption(CURLOPT_SSL_VERIFYPEER, TRUE)
+                 ->addOption(CURLOPT_SSL_VERIFYPEER, true)
                  ->addOption(CURLOPT_SSL_VERIFYHOST, 2)
                  ->addOption(CURLOPT_RETURNTRANSFER, 1)
                  ->addOption(CURLOPT_TIMEOUT, 100)
@@ -95,12 +95,12 @@ abstract class DotpayRegisterOrder {
             $resultJson = false;
         }
         
-        if($curl) {
+        if ($curl) {
             $curl->close();
         }
         
-        if(false !== $resultJson && $resultStatus['http_code'] == 201) {
-            return json_decode($resultJson, true);
+        if (false !== $resultJson && $resultStatus['http_code'] == 201) {
+            return Tools::jsonDecode($resultJson, true);
         }
         
         return false;
@@ -111,13 +111,15 @@ abstract class DotpayRegisterOrder {
      * @param int $control Order id from control field
      * @return boolean
      */
-    private static function checkIfCompletedControlExist($control, $channel) {
+    private static function checkIfCompletedControlExist($control, $channel)
+    {
         $api = new DotpaySellerApi(self::$config->getDotpaySellerApiUrl());
         $payments = $api->getPaymentByOrderId(self::$config->getDotpayApiUsername(), self::$config->getDotpayApiPassword(), $control);
-        foreach($payments as $payment) {
+        foreach ($payments as $payment) {
             $onePayment = $api->getPaymentByNumber(self::$config->getDotpayApiUsername(), self::$config->getDotpayApiPassword(), $payment->number);
-            if($onePayment->control == $control && $onePayment->payment_method->channel_id == $channel && $payment->status == 'completed')
+            if ($onePayment->control == $control && $onePayment->payment_method->channel_id == $channel && $payment->status == 'completed') {
                 return true;
+            }
         }
         return false;
     }
@@ -127,7 +129,8 @@ abstract class DotpayRegisterOrder {
      * @param int $channelId
      * @return array
      */
-    private static function prepareData($channelId) {
+    private static function prepareData($channelId)
+    {
         $streetData = self::$parent->getDotStreetAndStreetN1();
         return array (
             'order' => array (

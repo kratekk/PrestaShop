@@ -44,7 +44,7 @@
 <div class="panel">
     <div class="dotpay-config">
         <h3>{l s='Inforation' mod='dotpay'}</h3>
-        <a href="http://www.dotpay.pl" target="_blank" title="www.dotpay.pl"><img src="{$moduleMainDir}web/img/dotpay_logo85.png" width="85px" height="50px" border="0" /></a>
+        <a href="http://www.dotpay.pl" target="_blank" title="www.dotpay.pl"><img src="{$moduleMainDir|escape:'htmlall':'UTF-8'}views/img/dotpay_logo85.png" width="85px" height="50px" border="0" /></a>
         {if $confOK}
             <div class="bootstrap">
                 <div class="alert alert-success">
@@ -92,7 +92,7 @@
 
         <p>{l s='Thanks to Dotpay payment module the only activities needed for integration are: ID and PIN numbers and URLC confirmation configuration.' mod='dotpay'}</p>
         <p>{l s='ID and PIN can be found in Dotpay panel in Settings in the top bar. ID number is a 6-digit string after # in a "Shop" column.' mod='dotpay'}</p>
-        <p>{l s='URLC configuration is just setting an address to which information about payment should be directed. This address is:' mod='dotpay'} <b>{$targetForUrlc}</b></p>
+        <p>{l s='URLC configuration is just setting an address to which information about payment should be directed. This address is:' mod='dotpay'} <b>{$targetForUrlc|escape:'htmlall':'UTF-8'}</b></p>
         <p>{l s='Your shop is going to automatically send URLC address to Dotpay.' mod='dotpay'}</p><br>
         <p><b style="color: brown;">{l s='Only thing You have to do is log in to the Dotpay user panel and untick "Block external URLC" option in Settings -> Notifications -> Urlc configuration -> Edit.' mod='dotpay'}</b></p>
         <p><b style="color: brown;">{l s='If your shop does not use HTTPS protocol you should also disable HTTPS verify and SSL certificate verify.' mod='dotpay'}</b></p>
@@ -101,7 +101,7 @@
 
 <div class="panel"><div class="dotpay-config-state">
     <h3>{l s='Updates' mod='dotpay'}</h3>
-    <h4>{l s='Version of this module is: ' mod='dotpay'}<strong>{$moduleVersion}</strong>.</h4>
+    <h4>{l s='Version of this module is: ' mod='dotpay'}<strong>{$moduleVersion|escape:'htmlall':'UTF-8'}</strong>.</h4>
     {if $obsoletePlugin}
         <div class="bootstrap">
             <div class="alert alert-danger">
@@ -110,7 +110,7 @@
                 <br />
                 <p style="color: #555;">
                     {l s='You can download the latest version from' mod='dotpay'}
-                    <a href="{$urlWithNewVersion}" target="_blank">{l s='this page' mod='dotpay'}</a>.
+                    <a href="{$urlWithNewVersion|escape:'htmlall':'UTF-8'}" target="_blank">{l s='this page' mod='dotpay'}</a>.
                 </p>
             </div>
         </div>
@@ -142,22 +142,23 @@
         <div class="bootstrap">
             <div class="alert alert-danger">
                 <button type="button" class="close" data-dismiss="alert">&times;</button>
-                <h2 style="margin-left: 10px; margin-top: 0px;">{l s='Your PHP version is obsolete:' mod='dotpay'}&nbsp;{$phpVersion}</h2>
+                <h2 style="margin-left: 10px; margin-top: 0px;">{l s='Your PHP version is obsolete:' mod='dotpay'}&nbsp;{$phpVersion|escape:'htmlall':'UTF-8'}</h2>
                 <br />
-                <p style="color: #555;"><b>{l s='This plugin might work incorrectly. Please update your PHP version to at least' mod='dotpay'}&nbsp;{$minorPhpVersion}</b></p>
+                <p style="color: #555;"><b>{l s='This plugin might work incorrectly. Please update your PHP version to at least' mod='dotpay'}&nbsp;{$minorPhpVersion|escape:'htmlall':'UTF-8'}</b></p>
                 <br />
             </div>
         </div>
     {/if}
+	  <br><br><h3>{l s='Check manual before configuration:'  mod='dotpay'}<a href="{l s='https://github.com/dotpay/PrestaShop/releases/download/v2.1.0/Dotpay_PrestaShop_module-manual_v2.1.0_en.pdf'  mod='dotpay'}" Title="{l s='Get manual for this module' mod='dotpay'}" target="_blank"> {l s='download manual' mod='dotpay'}</a></h3>
 </div></div>
 
 {literal}
 <script type="text/javascript">
-    var badNewID = '{/literal}{$badNewIdMessage}{literal}';
-    var badOldID = '{/literal}{$badOldIdMessage}{literal}';
-    var badNewPIN = '{/literal}{$badNewPinMessage}{literal}';
-    var badOldPIN = '{/literal}{$badOldPinMessage}{literal}';
-    var valueLowerThanZero = '{/literal}{$valueLowerThanZero}{literal}';
+    var badNewID = '{/literal}{$badNewIdMessage|escape:'htmlall':'UTF-8'}{literal}';
+    var badOldID = '{/literal}{$badOldIdMessage|escape:'htmlall':'UTF-8'}{literal}';
+    var badNewPIN = '{/literal}{$badNewPinMessage|escape:'htmlall':'UTF-8'}{literal}';
+    var badOldPIN = '{/literal}{$badOldPinMessage|escape:'htmlall':'UTF-8'}{literal}';
+    var valueLowerThanZero = '{/literal}{$valueLowerThanZero|escape:'htmlall':'UTF-8'}{literal}';
     var badID = '';
     var badPin = '';
                   

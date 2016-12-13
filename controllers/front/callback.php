@@ -1,8 +1,5 @@
 <?php
-
 /**
-*
-*
 * NOTICE OF LICENSE
 *
 * This source file is subject to the Academic Free License (AFL 3.0)
@@ -22,15 +19,15 @@
 *  @author    Dotpay Team <tech@dotpay.pl>
 *  @copyright Dotpay
 *  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
-*
 */
 
-require_once(__DIR__.'/dotpay.php');
+require_once(DOTPAY_PLUGIN_DIR.'/controllers/front/dotpay.php');
 
 /**
  * Controller for handling callback from Dotpay
  */
-class dotpaycallbackModuleFrontController extends DotpayController {
+class dotpaycallbackModuleFrontController extends DotpayController
+{
     /**
      * Defined IP address of localhost
      */
@@ -39,9 +36,10 @@ class dotpaycallbackModuleFrontController extends DotpayController {
     /**
      * Confirm payment based on Dotpay URLC
      */
-    public function displayAjax() {
-		$sellerApiCallback = new DotpaySellerApi($this->config->getDotpaySellerApiUrl());
-        if($_SERVER['REMOTE_ADDR'] == $this->config->getOfficeIp() && $_SERVER['REQUEST_METHOD'] == 'GET')
+    public function displayAjax()
+    {
+        $sellerApiCallback = new DotpaySellerApi($this->config->getDotpaySellerApiUrl());
+        if ($_SERVER['REMOTE_ADDR'] == $this->config->getOfficeIp() && $_SERVER['REQUEST_METHOD'] == 'GET') {
             die("--- Dotpay PrestaShop ---"."<br>".
                 "Active: ".(int)$this->config->isDotpayEnabled()."<br><br>".
                 "--- System Info ---"."<br>".
@@ -81,40 +79,46 @@ class dotpaycallbackModuleFrontController extends DotpayController {
                 "Discount Flat: ".$this->config->getDotpayDiscAmount()."<br>".
                 "Discount Percentage: ".$this->config->getDotpayDiscPercentage()
             );
-        
-        if(
+        }
+        if (
             !($_SERVER['REMOTE_ADDR'] == $this->config->getDotpayIp() ||
-                ($this->config->isDotpayTestMode() && 
+                ($this->config->isDotpayTestMode() &&
                  ($_SERVER['REMOTE_ADDR'] == $this->config->getOfficeIp() ||
                   $_SERVER['REMOTE_ADDR'] == self::LOCAL_IP
                  )
                 )
             )
-        )
+        ) {
             die("PrestaShop - ERROR (REMOTE ADDRESS: ".$_SERVER['REMOTE_ADDR'].")");
+        }
 
-        if($_SERVER['REQUEST_METHOD'] != 'POST')
+        if ($_SERVER['REQUEST_METHOD'] != 'POST') {
             die("PrestaShop - ERROR (METHOD <> POST)");
+        }
         
-        if(!$this->api->checkConfirm())
+        if (!$this->api->checkConfirm()) {
             die("PrestaShop - ERROR SIGNATURE - CHECK PIN");
+        }
         
         $api = $this->api;
-        if($api->getOperationType() == $api::paymentOperation)
+        if ($api->getOperationType() == $api::PAYMENT_OPERATION) {
             $this->makePayment();
-        else if($api->getOperationType() == $api::refundOperation)
+        } elseif ($api->getOperationType() == $api::REFUND_OPERATION) {
             $this->makeRefund();
-        else
+        } else {
             die('PrestaShop - ERROR STATUS');
+        }
     }
     
     /**
      * Function which is used to making payments
      */
-    private function makePayment() {
+    private function makePayment()
+    {
         $id = ($this->api->isSelectedPvChannel())?$this->config->getDotpayPvId():$this->config->getDotpayId();
-        if(Tools::getValue('id') != $id)
+        if (Tools::getValue('id') != $id) {
             die("PrestaShop - ERROR ID");
+        }
         
         $order = new Order((int)$this->getDotControl(Tools::getValue('control')));
         $currency = new Currency($order->id_currency);
@@ -122,26 +126,27 @@ class dotpaycallbackModuleFrontController extends DotpayController {
         $receivedCurrency = $this->api->getOperationCurrency();
         $orderCurrency = $currency->iso_code;
         
-        if($receivedCurrency != $orderCurrency) 
+        if ($receivedCurrency != $orderCurrency) {
             die('PrestaShop - NO MATCH OR WRONG CURRENCY - '.$receivedCurrency.' <> '.$orderCurrency);
+        }
         
-        $receivedAmount = floatval($this->api->getTotalAmount());
+        $receivedAmount = (float)$this->api->getTotalAmount();
         $orderAmount = Tools::displayPrice($order->total_paid, $currency, false);
-        $orderAmount = floatval(
-            $this->getCorrectAmount(
-                preg_replace("/[^-0-9\.]/","",str_replace(',','.',$orderAmount))
-            )
+        $orderAmount = (float)$this->getCorrectAmount(
+            preg_replace("/[^-0-9\.]/", '', str_replace(',', '.', $orderAmount))
         );
         
-        if($receivedAmount != $orderAmount) 
+        if ($receivedAmount != $orderAmount) {
             die('PrestaShop - NO MATCH OR WRONG AMOUNT - '.$receivedAmount.' <> '.$orderAmount);
+        }
         
         $newOrderState = $this->api->getNewOrderState();
-        if($newOrderState===NULL)
+        if ($newOrderState===null) {
             die ('PrestaShop - WRONG TRANSACTION STATUS');
+        }
         
         $cc = DotpayCreditCard::getCreditCardByOrder($order->id);
-        if($cc !== NULL && $cc->id !== NULL && $cc->card_id == NULL) {
+        if ($cc !== null && $cc->id !== null && $cc->card_id == null) {
             $sellerApi = new DotpaySellerApi($this->config->getDotpaySellerApiUrl());
             $ccInfo = $sellerApi->getCreditCardInfo(
                 $this->config->getDotpayApiUsername(),
@@ -161,22 +166,22 @@ class dotpaycallbackModuleFrontController extends DotpayController {
         $history = new OrderHistory();
         $history->id_order = $order->id;
         $lastOrderState = OrderHistory::getLastOrderState($history->id_order);
-        if($lastOrderState->id != $newOrderState) {
+        if ($lastOrderState->id != $newOrderState) {
             $history->changeIdOrderState($newOrderState, $history->id_order);
             $history->addWithemail(true);
-            if($newOrderState == _PS_OS_PAYMENT_) {
+            if ($newOrderState == _PS_OS_PAYMENT_) {
                 $payments = OrderPayment::getByOrderId($order->id);
-                if(count($payments)) {
+                if (count($payments)) {
                     $payments[0]->transaction_id = $this->api->getOperationNumber();
                     $payments[0]->payment_method = $this->module->displayName;
                     $payments[0]->update();
                 }
                 $instruction = DotpayInstruction::getByOrderId($order->id);
-                if($instruction !== NULL)
+                if ($instruction !== null) {
                     $instruction->delete();
+                }
             }
-        }
-        else if($lastOrderState->id == $newOrderState && $newOrderState == _PS_OS_PAYMENT_) {
+        } elseif ($lastOrderState->id == $newOrderState && $newOrderState == _PS_OS_PAYMENT_) {
             die ('PrestaShop - ORDER IS ALERADY PAID');
         }
         die('OK');
@@ -185,39 +190,44 @@ class dotpaycallbackModuleFrontController extends DotpayController {
     /**
      * Function which is used to making refunds
      */
-    private function makeRefund() {
+    private function makeRefund()
+    {
         $api = $this->api;
         $statusName = $this->api->getOperationStatusName();
-        if($statusName != $api::operationCompleted && $statusName != $api::operationRejected)
+        if ($statusName != $api::OPERATION_COMPLETED && $statusName != $api::OPERATION_REJECTED) {
             die('OK');
+        }
         
         $order = new Order((int)$this->getDotControl(Tools::getValue('control')));
-        $currency = new Currency($order->id_currency);
         
         $payments = OrderPayment::getByOrderId($order->id);
         $foundPaymet = false;
         $sumOfPayments = 0.0;
-        foreach($payments as $payment) {
-            $currency = Currency::getCurrency($order->id_currency);
-            if($payment->transaction_id == $this->api->getOperationNumber())
+        foreach ($payments as $payment) {
+            if ($payment->transaction_id == $this->api->getOperationNumber()) {
                 die('PrestaShop - PAYMENT '.$this->api->getOperationNumber().' IS ALREADY SAVED');
-            else if($payment->transaction_id == $this->api->getRelatedOperationNumber())
+            } elseif ($payment->transaction_id == $this->api->getRelatedOperationNumber()) {
                 $foundPaymet = true;
-            if($payment->payment_method == $this->module->displayName)
+            }
+            if ($payment->payment_method == $this->module->displayName) {
                 $sumOfPayments += (float)$payment->amount;
+            }
         }
-        if(!$foundPaymet)
+        if (!$foundPaymet) {
             die('PrestaShop - PAYMENT '.$this->api->getRelatedOperationNumber().' IS NOT SAVED');
-        $receivedAmount = floatval($this->api->getTotalAmount());
+        }
+        $receivedAmount = (float)($this->api->getTotalAmount());
         
-        if($receivedAmount - $sumOfPayments >= 0.01) 
+        if ($receivedAmount - $sumOfPayments >= 0.01) {
             die('PrestaShop - NO MATCH OR WRONG AMOUNT - '.$receivedAmount.' > '.$sumOfPayments);
+        }
         
         $lastOrderState = OrderHistory::getLastOrderState($order->id);
-        if($lastOrderState->id != $this->config->getDotpayWaitingRefundStatusId())
+        if ($lastOrderState->id != $this->config->getDotpayWaitingRefundStatusId()) {
             die('PrestaShop - REFUND HAVEN\'T BEEN SUBMITTED');
+        }
         
-        if($this->api->getOperationStatusName() == $api::operationCompleted) {
+        if ($this->api->getOperationStatusName() == $api::OPERATION_COMPLETED) {
             $payment = new OrderPayment();
             $payment->order_reference = $order->reference;
             $payment->amount = (float)('-'.Tools::getValue('operation_original_amount'));
@@ -228,16 +238,17 @@ class dotpaycallbackModuleFrontController extends DotpayController {
             $payment->date_add = new \DateTime();
             $payment->add();
 
-            if($receivedAmount < $sumOfPayments)
+            if ($receivedAmount < $sumOfPayments) {
                 $state = $this->config->getDotpayPartialRefundStatusId();
-            else
+            } else {
                 $state = $this->config->getDotpayTotalRefundStatusId();
+            }
             
             $history = new OrderHistory();
             $history->id_order = $order->id;
             $history->changeIdOrderState($state, $history->id_order);
             $history->addWithemail(true);
-        } else if($this->api->getOperationStatusName() == $api::operationRejected) {
+        } elseif ($this->api->getOperationStatusName() == $api::OPERATION_REJECTED) {
             $state = $this->config->getDotpayFailedRefundStatusId();
             $history = new OrderHistory();
             $history->id_order = $order->id;
@@ -253,11 +264,12 @@ class dotpaycallbackModuleFrontController extends DotpayController {
      * @param float $amount Amount of order
      * @return float
      */
-    private function getCorrectAmount($amount) {
+    private function getCorrectAmount($amount)
+    {
         $count = 0;
         do {
             $amount = preg_replace("/(\d+)\.(\d{3,})/", "$1$2", $amount, -1, $count);
-        } while($count > 0);
+        } while ($count > 0);
         return $amount;
     }
 }

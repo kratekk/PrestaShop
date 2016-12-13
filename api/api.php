@@ -1,8 +1,5 @@
 <?php
-
 /**
-*
-*
 * NOTICE OF LICENSE
 *
 * This source file is subject to the Academic Free License (AFL 3.0)
@@ -13,7 +10,7 @@
 * obtain it through the world-wide-web, please send an email
 * to license@prestashop.com so we can send you a copy immediately.
 *
-* DISCLAIMER 
+* DISCLAIMER
 *
 * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
 * versions in the future. If you wish to customize PrestaShop for your
@@ -22,16 +19,17 @@
 *  @author    Dotpay Team <tech@dotpay.pl>
 *  @copyright Dotpay
 *  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
-*
 */
-require_once(mydirname(__DIR__,2).'/models/Config.php');
-require_once(mydirname(__DIR__,2).'/controllers/front/dotpay.php');
-require_once(mydirname(__DIR__,2).'/classes/Curl.php');
+
+require_once(DOTPAY_PLUGIN_DIR.'/models/Config.php');
+require_once(DOTPAY_PLUGIN_DIR.'/controllers/front/dotpay.php');
+require_once(DOTPAY_PLUGIN_DIR.'/classes/Curl.php');
 
 /**
  * Interface and common functionality of the API.
  */
-abstract class DotpayApi {
+abstract class DotpayApi
+{
     /**
      *
      * @var int Number of One Click card channel
@@ -77,23 +75,23 @@ abstract class DotpayApi {
      *
      * Channels group for cash method 
      */
-    const cashGroup = 'cash';
+    const CASH_GROUP = 'cash';
     
     /**
      *
      * Channels group for transfers method
      */
-    const transfersGroup = 'transfers';
+    const TRANSFERS_GROUP = 'transfers';
     
     /**
      * Payment mode of operation
      */
-    const paymentOperation = 'payment';
+    const PAYMENT_OPERATION = 'payment';
     
     /**
      * Refund mode of operation
      */
-    const refundOperation = 'refund';
+    const REFUND_OPERATION = 'refund';
     
     /**
      *
@@ -111,7 +109,8 @@ abstract class DotpayApi {
      * 
      * @param DotpayController $parent Owner of the object API.
      */
-    public function __construct(DotpayController $parent = NULL) {
+    public function __construct(DotpayController $parent = null)
+    {
         $this->parent = $parent;
         $this->config = new DotpayConfig();
     }
@@ -121,10 +120,11 @@ abstract class DotpayApi {
      * @param float $amount
      * @return string
      */
-    public function getFormatAmount($amount) {
+    public function getFormatAmount($amount)
+    {
         $currency = Currency::getCurrency(Context::getContext()->cart->id_currency);
-        if(isset($currency['decimals']) && $currency['decimals']==0) {
-            if(Configuration::get('PS_PRICE_ROUND_MODE')!=null) {
+        if (isset($currency['decimals']) && $currency['decimals']==0) {
+            if (Configuration::get('PS_PRICE_ROUND_MODE')!=null) {
                 switch (Configuration::get('PS_PRICE_ROUND_MODE')) {
                     case 0:
                         $amount = ceil($amount);
@@ -231,7 +231,8 @@ abstract class DotpayApi {
      * Returns array with enabled separated channels
      * @return array
      */
-    public function getSeparatedChannelsList() {
+    public function getSeparatedChannelsList()
+    {
         return $this->enabledSeparatedChannels;
     }
     
@@ -241,9 +242,11 @@ abstract class DotpayApi {
      * @param string|null $url
      * @return array
      */
-    protected function getFormHeader($formTarget, $url = NULL) {
-        if($url == NULL)
+    protected function getFormHeader($formTarget, $url = null)
+    {
+        if ($url == null) {
             $url = $this->config->getDotpayTargetUrl();
+        }
         return array(
             'action' => $url,
             'method' => 'post',
@@ -257,15 +260,16 @@ abstract class DotpayApi {
      * @param string $what
      * @return string
      */
-    protected function getAgreements($what) {
+    protected function getAgreements($what)
+    {
         $resultStr = '';
         $result = $this->getApiChannels();
-        if(false !== $result) {
-            if(isset($result['forms']) && is_array($result['forms'])) {
+        if (false !== $result) {
+            if (isset($result['forms']) && is_array($result['forms'])) {
                 foreach ($result['forms'] as $forms) {
-                    if(isset($forms['fields']) && is_array($forms['fields'])) {
+                    if (isset($forms['fields']) && is_array($forms['fields'])) {
                         foreach ($forms['fields'] as $forms1) {
-                            if($forms1['name'] == $what) {
+                            if ($forms1['name'] == $what) {
                                 $resultStr = $forms1['description_html'];
                             }
                         }
@@ -280,9 +284,10 @@ abstract class DotpayApi {
      * Returns bylaw agreements
      * @return string
      */
-    public function getByLaw() {
+    public function getByLaw()
+    {
         $byLawAgreements = $this->getAgreements('bylaw');
-        if(trim($byLawAgreements) == ''){
+        if (trim($byLawAgreements) == '') {
             $byLawAgreements = 'I accept Dotpay S.A. <a title="regulations of payments" target="_blank" href="https://ssl.dotpay.pl/files/regulamin_dotpay_sa_dokonywania_wplat_w_serwisie_dotpay_en.pdf">Regulations of Payments</a>.';
         }
         return $byLawAgreements;
@@ -292,9 +297,10 @@ abstract class DotpayApi {
      * Returns personal data agreements
      * @return string
      */
-    public function getPersonalData() {
+    public function getPersonalData()
+    {
         $personalDataAgreements = $this->getAgreements('personal_data');
-        if(trim($personalDataAgreements) == ''){
+        if (trim($personalDataAgreements) == '') {
             $personalDataAgreements = 'I agree to the use of my personal data by Dotpay S.A. 30-552 Kraków (Poland), Wielicka 72 for the purpose of	conducting a process of payments in accordance with applicable Polish laws (Act of 29.08.1997 for the protection of personal data, Dz. U. No 133, pos. 883, as amended). I have the right to inspect and correct my data.';
         }
         return $personalDataAgreements;
@@ -306,12 +312,13 @@ abstract class DotpayApi {
      * @param type $id channel id
      * @return array|false
      */
-    public function getChannelData($id, $pv = false) {
+    public function getChannelData($id, $pv = false)
+    {
         $result = $this->getApiChannels($pv);
-        if(false != $result) {
-            if(isset($result['channels']) && is_array($result['channels'])) {
+        if (false != $result) {
+            if (isset($result['channels']) && is_array($result['channels'])) {
                 foreach ($result['channels'] as $channel) {
-                    if(isset($channel['id']) && $channel['id']==$id) {
+                    if (isset($channel['id']) && $channel['id']==$id) {
                         return $channel;
                     }
                 }
@@ -324,8 +331,9 @@ abstract class DotpayApi {
      * Returns string with channels data JSON
      * @return string|boolean
      */
-    protected function getApiChannels($pv=false) {
-        if(empty($this->channelsData[$pv])) {
+    protected function getApiChannels($pv = false)
+    {
+        if (empty($this->channelsData[$pv])) {
             $this->channelsData[$pv] = $this->getApiChannelsFromServer($pv);
         }
         return $this->channelsData[$pv];
@@ -335,14 +343,16 @@ abstract class DotpayApi {
      * Returns string with channels data JSON from Dotpay server
      * @return string|boolean
      */
-    private function getApiChannelsFromServer($pv=false) {
+    private function getApiChannelsFromServer($pv = false)
+    {
         $dotpayUrl = $this->config->getDotpayTargetUrl();
         $paymentCurrency = $this->parent->getDotCurrency();
         
-        if($pv)
+        if ($pv) {
             $dotpayId = $this->config->getDotpayPvId();
-        else
+        } else {
             $dotpayId = $this->config->getDotpayId();
+        }
         
         $orderAmount = $this->parent->getDotAmount();
         
@@ -366,10 +376,10 @@ abstract class DotpayApi {
             $resultJson = false;
         }
         
-        if($curl) {
+        if ($curl) {
             $curl->close();
         }
-        return json_decode($resultJson, true);
+        return Tools::jsonDecode($resultJson, true);
     }
 
     /**
@@ -378,7 +388,8 @@ abstract class DotpayApi {
      * @param string $value
      * @return array
      */
-    protected function getHiddenField($name, $value) {
+    protected function getHiddenField($name, $value)
+    {
         return array(
             'type' => 'hidden',
             'name' => $name,
@@ -390,7 +401,8 @@ abstract class DotpayApi {
      * Adds field with Bylaw agreement of Dotpay to form
      * @return array
      */
-    protected function addBylawField() {
+    protected function addBylawField()
+    {
         $byLawAgreements = $this->getByLaw();
         return array(
             'type' => 'checkbox',
@@ -406,7 +418,8 @@ abstract class DotpayApi {
      * Adds field with Personal data agreement of Dotpay to form
      * @return array
      */
-    protected function addPersonalDataField() {
+    protected function addPersonalDataField()
+    {
         $personalDataAgreements = $this->getPersonalData();
         return array(
             'type' => 'checkbox',
@@ -422,7 +435,8 @@ abstract class DotpayApi {
      * Returns submit field for Dotpay Helper Form
      * @return array
      */
-    protected function getSubmitField() {
+    protected function getSubmitField()
+    {
         return array(
             'type' => 'submit',
             'value' => '<span>'.$this->parent->module->l('Continue payment').'<i class="icon-chevron-right right"></i></span>',
@@ -436,8 +450,10 @@ abstract class DotpayApi {
      * Adds a channel to list of separated channels
      * @param int $id Id of channel
      */
-    protected function addSeparatedChannel($id) {
-        if(array_search($id, $this->enabledSeparatedChannels) === false)
+    protected function addSeparatedChannel($id)
+    {
+        if (array_search($id, $this->enabledSeparatedChannels) === false) {
             $this->enabledSeparatedChannels[] = $id;
+        }
     }
 }

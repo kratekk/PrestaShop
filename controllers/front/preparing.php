@@ -1,8 +1,5 @@
 <?php
-
 /**
-*
-*
 * NOTICE OF LICENSE
 *
 * This source file is subject to the Academic Free License (AFL 3.0)
@@ -22,32 +19,33 @@
 *  @author    Dotpay Team <tech@dotpay.pl>
 *  @copyright Dotpay
 *  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
-*
 */
 
-require_once(__DIR__.'/dotpay.php');
-require_once(mydirname(__DIR__,3).'/classes/SellerApi.php');
+require_once(DOTPAY_PLUGIN_DIR.'/controllers/front/dotpay.php');
+require_once(DOTPAY_PLUGIN_DIR.'/classes/SellerApi.php');
 
 /**
  * Controller for handling preparing form for Dotpay
  */
-class dotpaypreparingModuleFrontController extends DotpayController {
+class dotpaypreparingModuleFrontController extends DotpayController
+{
     /**
      * Preparing hidden form with payment data before sending it to Dotpay
      */
-    public function initContent() {
+    public function initContent()
+    {
         parent::initContent();
         $this->display_column_left = false;
         $this->display_header = false;
         $this->display_footer = false;
         $cartId = 0;
         
-        if(Tools::getValue('order_id') == false) {
+        if (Tools::getValue('order_id') == false) {
             $cartId = $this->context->cart->id;
             $exAmount = $this->api->getExtrachargeAmount(true);
-            if($exAmount > 0 && !$this->isExVPinCart()) {
+            if ($exAmount > 0 && !$this->isExVPinCart()) {
                 $productId = $this->config->getDotpayExchVPid();
-                if($productId != 0) {
+                if ($productId != 0) {
                     $product = new Product($productId, true);
                     $product->price = $exAmount;
                     $product->save();
@@ -60,7 +58,7 @@ class dotpaypreparingModuleFrontController extends DotpayController {
             }
             
             $discAmount = $this->api->getDiscountAmount();
-            if($discAmount > 0) {
+            if ($discAmount > 0) {
                 $discount = new CartRule($this->config->getDotpayDiscountId());
                 $discount->reduction_amount = $this->api->getDiscountAmount();
                 $discount->reduction_currency = $this->context->cart->id_currency;
@@ -71,14 +69,14 @@ class dotpaypreparingModuleFrontController extends DotpayController {
                 $this->context->cart->getPackageList(true);
             }
             
-            $result = $this->module->validateOrder(
+            $this->module->validateOrder(
                 $this->context->cart->id,
                 (int)$this->config->getDotpayNewStatusId(),
                 $this->getDotAmount(),
                 $this->module->displayName,
-                NULL,
+                null,
                 array(),
-                NULL,
+                null,
                 false,
                 $this->customer->secure_key
             );
@@ -94,9 +92,9 @@ class dotpaypreparingModuleFrontController extends DotpayController {
         ));
         
         $sa = new DotpaySellerApi($this->config->getDotpaySellerApiUrl());
-        if($this->config->isDotpayDispInstruction() &&
-           $this->config->isApiConfigOk() && 
-           $this->api->isChannelInGroup(Tools::getValue('channel'), array(DotpayApi::cashGroup, DotpayApi::transfersGroup)) && 
+        if ($this->config->isDotpayDispInstruction() &&
+           $this->config->isApiConfigOk() &&
+           $this->api->isChannelInGroup(Tools::getValue('channel'), array(DotpayApi::CASH_GROUP, DotpayApi::TRANSFERS_GROUP)) &&
            $sa->isAccountRight($this->config->getDotpayApiUsername(), $this->config->getDotpayApiPassword(), $this->config->getDotpayApiVersion())
         ) {
             $this->context->cookie->dotpay_channel = Tools::getValue('channel');

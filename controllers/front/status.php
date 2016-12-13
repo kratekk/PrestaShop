@@ -1,8 +1,5 @@
 <?php
-
 /**
-*
-*
 * NOTICE OF LICENSE
 *
 * This source file is subject to the Academic Free License (AFL 3.0)
@@ -22,26 +19,28 @@
 *  @author    Dotpay Team <tech@dotpay.pl>
 *  @copyright Dotpay
 *  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
-*
 */
 
-require_once(__DIR__.'/dotpay.php');
+require_once(DOTPAY_PLUGIN_DIR.'/controllers/front/dotpay.php');
 
 /**
  * Controller for handling return address
  */
-class dotpaystatusModuleFrontController extends DotpayController {
+class dotpaystatusModuleFrontController extends DotpayController
+{
     /**
      * Checks a payment status of order in shop
      */
-    public function initContent() {
+    public function initContent()
+    {
         $cookie = new Cookie('lastOrder');
-        if($cookie->orderId != null) {
+        if ($cookie->orderId != null) {
             $lastOrderState = OrderHistory::getLastOrderState($cookie->orderId);
-            switch($lastOrderState->id) {
+            switch ($lastOrderState->id) {
                 case $this->config->getDotpayNewStatusId():
-                    if(Tools::getValue('lastRequest')===true)
+                    if (Tools::getValue('lastRequest')===true) {
                         $cookie->logout();
+                    }
                     die('0');
                 case _PS_OS_PAYMENT_:
                     $cookie->logout();

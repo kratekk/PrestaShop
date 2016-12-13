@@ -1,8 +1,5 @@
 <?php
-
 /**
-*
-*
 * NOTICE OF LICENSE
 *
 * This source file is subject to the Academic Free License (AFL 3.0)
@@ -22,14 +19,13 @@
 *  @author    Dotpay Team <tech@dotpay.pl>
 *  @copyright Dotpay
 *  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
-*
 */
 
 /**
  * Model of Credit Card
  */
-
-class DotpayCreditCard extends ObjectModel {
+class DotpayCreditCard extends ObjectModel
+{
     /**
      *
      * @var int Card id in shop database
@@ -102,17 +98,18 @@ class DotpayCreditCard extends ObjectModel {
      * Create table for this model
      * @return boolean
      */
-    public static function create() {
-        return Db::getInstance()->execute('
-            CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.self::$definition['table'].'` (
-                `cc_id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-                `order_id` INT UNSIGNED NOT NULL,
-                `customer_id` INT UNSIGNED NOT NULL,
-                `mask` varchar(20) DEFAULT NULL,
-                `brand` varchar(20) DEFAULT NULL,
-                `hash` varchar(100) NOT NULL,
-                `card_id` VARCHAR(128) DEFAULT NULL,
-                `register_date` DATE DEFAULT NULL,
+    public static function create()
+    {
+        return Db::getInstance()->execute(
+            'CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.self::$definition['table'].'` (
+                `cc_id` BIGINT(20) UNSIGNED NOT null AUTO_INCREMENT,
+                `order_id` INT UNSIGNED NOT null,
+                `customer_id` INT UNSIGNED NOT null,
+                `mask` varchar(20) DEFAULT null,
+                `brand` varchar(20) DEFAULT null,
+                `hash` varchar(100) NOT null,
+                `card_id` VARCHAR(128) DEFAULT null,
+                `register_date` DATE DEFAULT null,
                 PRIMARY KEY (`cc_id`),
                 UNIQUE KEY `hash` (`hash`),
                 UNIQUE KEY `cc_order` (`order_id`),
@@ -122,17 +119,19 @@ class DotpayCreditCard extends ObjectModel {
                     FOREIGN KEY (customer_id)
                     REFERENCES `'._DB_PREFIX_.Customer::$definition['table'].'` (`'.Customer::$definition['primary'].'`)
                     ON DELETE CASCADE
-            ) DEFAULT CHARSET=utf8;');
+            ) DEFAULT CHARSET=utf8;'
+        );
     }
     
     /**
      * Drop table for this model
      * @return boolean
      */
-    public static function drop() {
-        return Db::getInstance()->execute('
-            DROP TABLE IF EXISTS `'._DB_PREFIX_.self::$definition['table'].'`;
-        ');
+    public static function drop()
+    {
+        return Db::getInstance()->execute(
+            'DROP TABLE IF EXISTS `'._DB_PREFIX_.self::$definition['table'].'`;'
+        );
     }
     
     /**
@@ -143,11 +142,12 @@ class DotpayCreditCard extends ObjectModel {
      * @return bool Insertion result
      * @throws PrestaShopException
      */
-    public function save($null_values = true, $auto_date = true) {
+    public function save($null_values = true, $auto_date = true)
+    {
         $this->register_date = DotpayCreditCard::reverseDate($this->register_date);
-        if($this->hash == NULL) {
+        if ($this->hash == null) {
             $hash = $this->getUniqueCardHash();
-            if($hash) {
+            if ($hash) {
                 $this->hash = $hash;
             } else {
                 return false;
@@ -162,17 +162,18 @@ class DotpayCreditCard extends ObjectModel {
      * @param boolean $empty
      * @return array
      */
-    public static function getAllCardsForCustomer($userId, $empty = false) {
+    public static function getAllCardsForCustomer($userId, $empty = false)
+    {
         $not = ($empty) ? '' : 'NOT';
-        $ids = Db::getInstance()->ExecuteS('
-            SELECT cc_id as id
+        $ids = Db::getInstance()->ExecuteS(
+            'SELECT cc_id as id
             FROM `'._DB_PREFIX_.self::$definition['table'].'` 
             WHERE customer_id = '.(int)$userId.' 
             AND 
-            card_id IS '.$not.' NULL
-        ');
+            card_id IS '.$not.' null'
+        );
         $cards = array();
-        foreach($ids as $id) {
+        foreach ($ids as $id) {
             $cards[] = new DotpayCreditCard($id['id']);
         }
         return $cards;
@@ -183,14 +184,16 @@ class DotpayCreditCard extends ObjectModel {
      * @param int $order Order id
      * @return \DotpayCreditCard
      */
-    public static function getCreditCardByOrder($order) {
-        $card = Db::getInstance()->ExecuteS('
-            SELECT cc_id as id
+    public static function getCreditCardByOrder($order)
+    {
+        $card = Db::getInstance()->ExecuteS(
+            'SELECT cc_id as id
             FROM `'._DB_PREFIX_.self::$definition['table'].'` 
             WHERE order_id = '.(int)$order
         );
-        if(!count($card))
-            return NULL;
+        if (!count($card)) {
+            return null;
+        }
         return new DotpayCreditCard($card[0]['id']);
     }
 
@@ -200,7 +203,8 @@ class DotpayCreditCard extends ObjectModel {
      * @param boolean $empty
      * @return boolean
      */
-    public static function deleteAllCardsForCustomer($userId) {
+    public static function deleteAllCardsForCustomer($userId)
+    {
         return Db::getInstance()->delete(self::$definition['table'], '`customer_id` = '.(int)$userId);
     }
     
@@ -208,15 +212,16 @@ class DotpayCreditCard extends ObjectModel {
      * Delete all cards for non existing customers
      * @return boolean
      */
-    public static function deleteAllCardsForNonExistingCustomers() {
-        return Db::getInstance()->execute('
-            DELETE 
+    public static function deleteAllCardsForNonExistingCustomers()
+    {
+        return Db::getInstance()->execute(
+            'DELETE 
             FROM `'._DB_PREFIX_.self::$definition['table'].'` 
             WHERE customer_id NOT IN (
                 SELECT id_customer 
                 FROM `'._DB_PREFIX_.Customer::$definition['table'].'`
-            )
-        ');
+            )'
+        );
     }
     
     /**
@@ -224,7 +229,8 @@ class DotpayCreditCard extends ObjectModel {
      * @param string $date Source date
      * @return string
      */
-    public static function reverseDate($date) {
+    public static function reverseDate($date)
+    {
         $tmp = explode('-', $date);
         return implode('-', array_reverse($tmp));
     }
@@ -233,18 +239,19 @@ class DotpayCreditCard extends ObjectModel {
      * Generate card hash for OneClick
      * @return string
      */
-    private function generateCardHash() {
+    private function generateCardHash()
+    {
         $microtime = '' . microtime(true);
         $md5 = md5($microtime);
 
         $mtRand = mt_rand(0, 11);
 
-        $md5Substr = substr($md5, $mtRand, 21);
+        $md5Substr = Tools::substr($md5, $mtRand, 21);
 
-        $a = substr($md5Substr, 0, 6);
-        $b = substr($md5Substr, 6, 5);
-        $c = substr($md5Substr, 11, 6);
-        $d = substr($md5Substr, 17, 4);
+        $a = Tools::substr($md5Substr, 0, 6);
+        $b = Tools::substr($md5Substr, 6, 5);
+        $c = Tools::substr($md5Substr, 11, 6);
+        $d = Tools::substr($md5Substr, 17, 4);
 
         return "{$a}-{$b}-{$c}-{$d}";
     }
@@ -253,18 +260,19 @@ class DotpayCreditCard extends ObjectModel {
      * Check, if generated card hash is unique
      * @return string|boolean
      */
-    private function getUniqueCardHash() {
+    private function getUniqueCardHash()
+    {
         $count = 200;
         $result = false;
         do {
             $cardHash = $this->generateCardHash();
-            $test = Db::getInstance()->ExecuteS('
-                SELECT count(*) as count  
+            $test = Db::getInstance()->ExecuteS(
+                'SELECT count(*) as count  
                 FROM `'._DB_PREFIX_.self::$definition['table'].'` 
-                WHERE hash = \''.$cardHash.'\'
-            ');
+                WHERE hash = \''.$cardHash.'\''
+            );
             
-            if($test[0]['count'] == 0) {
+            if ($test[0]['count'] == 0) {
                 $result = $cardHash;
                 break;
             }
@@ -279,7 +287,8 @@ class DotpayCreditCard extends ObjectModel {
      * 
      * @param int|null $id Credit card object id
      */
-    public function __construct($id = null) {
+    public function __construct($id = null)
+    {
         parent::__construct($id);
         $this->register_date = DotpayCreditCard::reverseDate($this->register_date);
         $this->card_brand = new DotpayCardBrand($this->brand);

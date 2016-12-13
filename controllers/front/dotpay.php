@@ -1,8 +1,5 @@
 <?php
-
 /**
-*
-*
 * NOTICE OF LICENSE
 *
 * This source file is subject to the Academic Free License (AFL 3.0)
@@ -22,15 +19,15 @@
 *  @author    Dotpay Team <tech@dotpay.pl>
 *  @copyright Dotpay
 *  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
-*
 */
 
-require_once(mydirname(__DIR__,3).'/models/Config.php');
+require_once(DOTPAY_PLUGIN_DIR.'/models/Config.php');
 
 /**
  * Abstract controller for other Dotpay plugin controllers
  */
-abstract class DotpayController extends ModuleFrontController {
+abstract class DotpayController extends ModuleFrontController
+{
     /**
      *
      * @var DotpayConfig Dotpay configuration 
@@ -58,13 +55,14 @@ abstract class DotpayController extends ModuleFrontController {
     /**
      * Prepares environment for all Dotpay controllers
      */
-    public function __construct() {
+    public function __construct()
+    {
         parent::__construct();
         $this->config = new DotpayConfig();
         
         $this->initPersonalData();
         
-        if($this->config->getDotpayApiVersion()=='legacy') {
+        if ($this->config->getDotpayApiVersion()=='legacy') {
             $this->api = new DotpayLegacyApi($this);
         } else {
             $this->api = new DotpayDevApi($this);
@@ -77,7 +75,8 @@ abstract class DotpayController extends ModuleFrontController {
      * Returns seller ID
      * @return string
      */
-    public function getDotId() {
+    public function getDotId()
+    {
         return $this->config->getDotpayId();
     }
     
@@ -85,7 +84,8 @@ abstract class DotpayController extends ModuleFrontController {
      * Returns last order number
      * @return string
      */
-    public function getLastOrderNumber() {
+    public function getLastOrderNumber()
+    {
         return Order::getOrderByCartId($this->context->cart->id);
     }
 
@@ -94,10 +94,11 @@ abstract class DotpayController extends ModuleFrontController {
      * Returns unique value for every order
      * @return string
      */
-    public function getDotControl($source = NULL) {
-        if($source == NULL)
+    public function getDotControl($source = null)
+    {
+        if ($source == null) {
             return $this->getLastOrderNumber().'|'.$_SERVER['SERVER_NAME'];
-        else {
+        } else {
             $tmp = explode('|', $source);
             return $tmp[0];
         }
@@ -107,7 +108,8 @@ abstract class DotpayController extends ModuleFrontController {
      * Returns title of shop
      * @return string
      */
-    public function getDotPinfo() {
+    public function getDotPinfo()
+    {
         return Configuration::get('PS_SHOP_NAME');
     }
     
@@ -115,10 +117,12 @@ abstract class DotpayController extends ModuleFrontController {
      * Returns amount of order
      * @return float
      */
-    public function getDotAmount() {
+    public function getDotAmount()
+    {
         return $this->api->getFormatAmount(
             Tools::displayPrice(
-                $this->context->cart->getOrderTotal(true, Cart::BOTH), new Currency($this->context->cart->id_currency)
+                $this->context->cart->getOrderTotal(true, Cart::BOTH),
+                new Currency($this->context->cart->id_currency)
             )
         );
     }
@@ -127,10 +131,12 @@ abstract class DotpayController extends ModuleFrontController {
      * Returns amount of shipping
      * @return float
      */
-    public function getDotShippingAmount() {
+    public function getDotShippingAmount()
+    {
         return $this->api->getFormatAmount(
             Tools::displayPrice(
-                $this->context->cart->getOrderTotal(true, Cart::ONLY_SHIPPING), new Currency($this->context->cart->id_currency)
+                $this->context->cart->getOrderTotal(true, Cart::ONLY_SHIPPING),
+                new Currency($this->context->cart->id_currency)
             )
         );
     }
@@ -139,7 +145,8 @@ abstract class DotpayController extends ModuleFrontController {
      * Returns code of currency used in order
      * @return string
      */
-    public function getDotCurrency() {
+    public function getDotCurrency()
+    {
         $currency = Currency::getCurrency($this->context->cart->id_currency);
         return $currency["iso_code"];
     }
@@ -148,7 +155,8 @@ abstract class DotpayController extends ModuleFrontController {
      * Returns id of order currency
      * @return int
      */
-    public function getDotCurrencyId() {
+    public function getDotCurrencyId()
+    {
         $currency = Currency::getCurrency($this->context->cart->id_currency);
         return $currency["id_currency"];
     }
@@ -157,21 +165,24 @@ abstract class DotpayController extends ModuleFrontController {
      * Returns description of order
      * @return string
      */
-    public function getDotDescription() {
+    public function getDotDescription()
+    {
         $order = new Order(Order::getOrderByCartId($this->context->cart->id));
-        if($this->config->getDotpayApiVersion() == 'dev')
+        if ($this->config->getDotpayApiVersion() == 'dev') {
             return ($this->module->l("Order ID:").' '.$order->reference);
-        else
+        } else {
             return ($this->module->l("Your order ID:").' '.$order->reference);
+        }
     }
     
     /**
      * Returns language code for customer language
      * @return string
      */
-    public function getDotLang() {
-        $lang = strtolower(LanguageCore::getIsoById($this->context->cookie->id_lang));
-        if(in_array($lang, $this->config->getDotpayAvailableLanguage())) {
+    public function getDotLang()
+    {
+        $lang = Tools::strtolower(LanguageCore::getIsoById($this->context->cookie->id_lang));
+        if (in_array($lang, $this->config->getDotpayAvailableLanguage())) {
             return $lang;
         } else {
             return "en";
@@ -182,10 +193,11 @@ abstract class DotpayController extends ModuleFrontController {
      * Returns name of server protocol, using by shop
      * @return string
      */
-    public function getServerProtocol() {
+    public function getServerProtocol()
+    {
         $result = 'http';
         
-        if($this->module->isSSLEnabled()) {
+        if ($this->module->isSSLEnabled()) {
             $result = 'https';
         }
         
@@ -196,7 +208,8 @@ abstract class DotpayController extends ModuleFrontController {
      * Returns URL of site where Dotpay redirect after payment
      * @return string
      */
-    public function getDotUrl() {
+    public function getDotUrl()
+    {
         return $this->context->link->getModuleLink('dotpay', 'back', array('control' => $this->context->cart->id), $this->module->isSSLEnabled());
     }
     
@@ -204,7 +217,8 @@ abstract class DotpayController extends ModuleFrontController {
      * Returns URL of site where Dotpay send URLC confirmations
      * @return string
      */
-    public function getDotUrlC() {
+    public function getDotUrlC()
+    {
         return $this->context->link->getModuleLink('dotpay', 'callback', array('ajax' => '1'), $this->module->isSSLEnabled());
     }
     
@@ -212,7 +226,8 @@ abstract class DotpayController extends ModuleFrontController {
      * Returns firstname of customer
      * @return string
      */
-    public function getDotFirstname() {
+    public function getDotFirstname()
+    {
         return $this->customer->firstname;
     }
     
@@ -220,7 +235,8 @@ abstract class DotpayController extends ModuleFrontController {
      * Returns lastname of customer
      * @return string
      */
-    public function getDotLastname() {
+    public function getDotLastname()
+    {
         return $this->customer->lastname;
     }
     
@@ -228,7 +244,8 @@ abstract class DotpayController extends ModuleFrontController {
      * Returns email of customer
      * @return string
      */
-    public function getDotEmail() {
+    public function getDotEmail()
+    {
         return $this->customer->email;
     }
     
@@ -236,12 +253,14 @@ abstract class DotpayController extends ModuleFrontController {
      * Returns phone of customer
      * @return string
      */
-    public function getDotPhone() {
+    public function getDotPhone()
+    {
         $phone = '';
-        if($this->address->phone != '')
+        if ($this->address->phone != '') {
             $phone = $this->address->phone;
-        else if($this->address->phone_mobile != '')
+        } else if ($this->address->phone_mobile != '') {
             $phone = $this->address->phone_mobile;
+        }
         return $phone;
     }
     
@@ -249,20 +268,17 @@ abstract class DotpayController extends ModuleFrontController {
      * Returns street and building number even if customer didn't get a value of building number
      * @return array
      */
-    public function getDotStreetAndStreetN1() {
+    public function getDotStreetAndStreetN1()
+    {
         $street = $this->address->address1;
         $street_n1 = $this->address->address2;
-        
-        if(empty($street_n1))
-        {
+        if (empty($street_n1)) {
             preg_match("/\s[\w\d\/_\-]{0,30}$/", $street, $matches);
-            if(count($matches)>0)
-            {
+            if (count($matches)>0) {
                 $street_n1 = trim($matches[0]);
                 $street = str_replace($matches[0], '', $street);
             }
         }
-        
         return array(
             'street' => $street,
             'street_n1' => $street_n1
@@ -273,7 +289,8 @@ abstract class DotpayController extends ModuleFrontController {
      * Returns a city of customer
      * @return string 
      */
-    public function getDotCity() {
+    public function getDotCity()
+    {
         return $this->address->city;
     }
     
@@ -281,7 +298,8 @@ abstract class DotpayController extends ModuleFrontController {
      * Returns a postcode of customer
      * @return string 
      */
-    public function getDotPostcode() {
+    public function getDotPostcode()
+    {
         return $this->address->postcode;
     }
     
@@ -289,9 +307,10 @@ abstract class DotpayController extends ModuleFrontController {
      * Checks if PV card channel for separated currencies is enabled
      * @return boolean
      */
-    public function isDotpayPVEnabled() {
+    public function isDotpayPVEnabled()
+    {
         $result = $this->config->isDotpayPV();
-        if(!$this->isDotSelectedCurrency($this->config->getDotpayPvCurrencies())) {
+        if (!$this->isDotSelectedCurrency($this->config->getDotpayPvCurrencies())) {
             $result = false;
         }
         return $result;
@@ -301,8 +320,9 @@ abstract class DotpayController extends ModuleFrontController {
      * Checks if main channel is enabled
      * @return boolean
      */
-    public function isMainChannelEnabled() {
-        if($this->isDotSelectedCurrency($this->config->getDotpayWidgetDisCurr())) {
+    public function isMainChannelEnabled()
+    {
+        if ($this->isDotSelectedCurrency($this->config->getDotpayWidgetDisCurr())) {
             return false;
         }
         return true;
@@ -312,7 +332,8 @@ abstract class DotpayController extends ModuleFrontController {
      * Returns a country of customer
      * @return string 
      */
-    public function getDotCountry() {
+    public function getDotCountry()
+    {
         $country = new Country((int)($this->address->id_country));
         return $country->iso_code;
     }
@@ -321,64 +342,73 @@ abstract class DotpayController extends ModuleFrontController {
      * Returns an URL to Blik channel logo
      * @return string
      */
-    public function getDotBlikLogo() {
-        return $this->module->getPath().'web/img/BLIK.png';
+    public function getDotBlikLogo()
+    {
+        return $this->module->getPath().'views/img/BLIK.png';
     }
     
     /**
      * Returns an URL to MasterPass channel logo
      * @return string
      */
-    public function getDotMasterPassLogo() {
-        return $this->module->getPath().'web/img/MasterPass.png';
+    public function getDotMasterPassLogo()
+    {
+        return $this->module->getPath().'views/img/MasterPass.png';
     }
     
     /**
      * Returns an URL to One click card channel logo
      * @return string
      */
-    public function getDotOneClickLogo() {
-        return $this->module->getPath().'web/img/oneclick.png';
+    public function getDotOneClickLogo()
+    {
+        return $this->module->getPath().'views/img/oneclick.png';
     }
     
     /**
      * Returns an URL to PV card channel logo
      * @return string
      */
-    public function getDotPVLogo() {
-        return $this->module->getPath().'web/img/oneclick.png';
+    public function getDotPVLogo()
+    {
+        return $this->module->getPath().'views/img/oneclick.png';
     }
     
     /**
      * Returns an URL to card channel logo
      * @return string
      */
-    public function getDotCreditCardLogo() {
-        return $this->module->getPath().'web/img/oneclick.png';
+    public function getDotCreditCardLogo()
+    {
+        return $this->module->getPath().'views/img/oneclick.png';
     }
     
     /**
      * Returns an URL to main channel logo
      * @return string
      */
-    public function getDotpayLogo() {
-        return $this->module->getPath().'web/img/dotpay.png';
+    public function getDotpayLogo()
+    {
+        return $this->module->getPath().'views/img/dotpay.png';
     }
     
     /**
      * Returns URL of site where is creating an request to Dotpay
      * @return string
      */
-    public function getPreparingUrl() {
-        return $this->context->link->getModuleLink($this->module->name,'preparing',array(), $this->module->isSSLEnabled());
+    public function getPreparingUrl()
+    {
+        return $this->context->link->getModuleLink($this->module->name, 'preparing', array(), $this->module->isSSLEnabled());
     }
     
     /**
      * Init personal data about cart, customer adn adress
      */
-    protected function initPersonalData() {
-        if($this->context->cart==NULL)
+    protected function initPersonalData()
+    {
+        if ($this->context->cart==null) {
             $this->context->cart = new Cart($this->context->cookie->id_cart);
+        }
         
         $this->address = new Address($this->context->cart->id_address_invoice);
         $this->customer = new Customer($this->context->cart->id_customer);
@@ -390,15 +420,17 @@ abstract class DotpayController extends ModuleFrontController {
      * @param string|null $paymentCurrency
      * @return boolean
      */
-    public function isDotSelectedCurrency($allowCurrencyForm, $paymentCurrency=NULL) {
+    public function isDotSelectedCurrency($allowCurrencyForm, $paymentCurrency = null)
+    {
         $result = false;
-        if($paymentCurrency==NULL)
+        if ($paymentCurrency==null) {
             $paymentCurrency = $this->getDotCurrency();
+        }
         $allowCurrency = str_replace(';', ',', $allowCurrencyForm);
-        $allowCurrency = strtoupper(str_replace(' ', '', $allowCurrency));
-        $allowCurrencyArray =  explode(",",trim($allowCurrency));
+        $allowCurrency = Tools::strtoupper(str_replace(' ', '', $allowCurrency));
+        $allowCurrencyArray =  explode(",", trim($allowCurrency));
         
-        if(in_array(strtoupper($paymentCurrency), $allowCurrencyArray)) {
+        if (in_array(Tools::strtoupper($paymentCurrency), $allowCurrencyArray)) {
             $result = true;
         }
         
@@ -409,11 +441,13 @@ abstract class DotpayController extends ModuleFrontController {
      * Check, if Virtual Product from Dotpay additional payment is in card
      * @return boolean
      */
-    protected function isExVPinCart() {
+    protected function isExVPinCart()
+    {
         $products = $this->context->cart->getProducts(true);
-        foreach($products as $product) {
-            if($product['id_product'] == $this->config->getDotpayExchVPid())
+        foreach ($products as $product) {
+            if ($product['id_product'] == $this->config->getDotpayExchVPid()) {
                 return true;
+            }
         }
         return false;
     }

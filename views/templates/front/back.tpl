@@ -26,7 +26,7 @@
     {l s='Dotpay payment end' mod='dotpay'}
 {/capture}
 
-<h2 class="page-heading">{l s='Status of payment of the order:' mod='dotpay'}&nbsp;{$orderReference}</h2>
+<h2 class="page-heading">{l s='Status of payment of the order:' mod='dotpay'}&nbsp;{$orderReference|escape:'htmlall':'UTF-8'}</h2>
 
 {literal}
     <style type="text/css">
@@ -84,8 +84,8 @@
     </style>
 {/literal}     
 <div id="statusMessageContainer">
-    {if $message != NULL}
-        <p class="alert alert-danger">{$message}</p>
+    {if $message != null}
+        <p class="alert alert-danger">{$message|escape:'htmlall':'UTF-8'}</p>
         {literal}
             <script type="text/javascript">
                 setTimeout(function(){location.href="{/literal}{$redirectUrl}{literal}";}, 4000);
@@ -94,19 +94,19 @@
     {/if}
 </div>
 
-{if $message == NULL}
+{if $message == null}
     {literal}
         <script type="text/javascript">
             window.checkStatusConfig = {
                 "url": "{/literal}{$checkStatusUrl}{literal}",
                 "waitingMessage": "{/literal}{$waitingMessage}{literal}",
-                "successMessage": "{/literal}{$successMessage}{literal}",
-                "errorMessage": "{/literal}{$errorMessage}{literal}",
-                "timeoutMessage": "{/literal}{$timeoutMessage}{literal}",
+                "successMessage": "{/literal}{$successMessage|escape:'htmlall':'UTF-8'}{literal}",
+                "errorMessage": "{/literal}{$errorMessage|escape:'htmlall':'UTF-8'}{literal}",
+                "timeoutMessage": "{/literal}{$timeoutMessage|escape:'htmlall':'UTF-8'}{literal}",
                 "redirectUrl": "{/literal}{$redirectUrl}{literal}"
             };
         </script>
     {/literal}
     {include file='./scripts/checkStatus.tpl'}
 {/if}
-<a href="{$link->getPageLink('index', true, NULL)|escape:'html'}" class="button_large">{l s='Back to main mage' mod='dotpay'}</a>
+<a href="{$link->getPageLink('index', true, null)}" class="button_large">{l s='Back to main mage' mod='dotpay'}</a>

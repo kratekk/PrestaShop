@@ -1,8 +1,5 @@
 <?php
-
 /**
-*
-*
 * NOTICE OF LICENSE
 *
 * This source file is subject to the Academic Free License (AFL 3.0)
@@ -22,20 +19,20 @@
 *  @author    Dotpay Team <tech@dotpay.pl>
 *  @copyright Dotpay
 *  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
-*
 */
 
-require_once(__DIR__.'/Curl.php');
+require_once(DOTPAY_PLUGIN_DIR.'/classes/Curl.php');
 
 /**
  * Provides the functionality of seller API
  */
-class DotpaySellerApi {
-    private $_baseurl;
-    private $_test;
+class DotpaySellerApi
+{
+    private $baseurl;
     
-    public function __construct($url) {
-        $this->_baseurl = $url;
+    public function __construct($url)
+    {
+        $this->baseurl = $url;
     }
     
     /**
@@ -45,10 +42,12 @@ class DotpaySellerApi {
      * @param string $number
      * @return \stdClass
      */
-    public function getCreditCardInfo($username, $password, $number) {
+    public function getCreditCardInfo($username, $password, $number)
+    {
         $payment = $this->getPaymentByNumber($username, $password, $number);
-        if($payment->payment_method->channel_id!=248)
-            return NULL;
+        if ($payment->payment_method->channel_id!=248) {
+            return null;
+        }
         return $payment->payment_method->credit_card;
     }
     
@@ -59,12 +58,15 @@ class DotpaySellerApi {
      * @param string $version Version of used Dotpay Api
      * @return boolean|null
      */
-    public function isAccountRight($username, $password, $version) {
-        if($version == 'legacy')
-            return NULL;
-        if(empty($username) && empty($password))
-            return NULL;
-        $url = $this->_baseurl.$this->getDotPaymentApi()."payments/";
+    public function isAccountRight($username, $password, $version)
+    {
+        if ($version == 'legacy') {
+            return null;
+        }
+        if (empty($username) && empty($password)) {
+            return null;
+        }
+        $url = $this->baseurl.$this->getDotPaymentApi()."payments/";
         $curl = new DotpayCurl();
         $curl->addOption(CURLOPT_URL, $url)
              ->addOption(CURLOPT_USERPWD, $username.':'.$password);
@@ -81,13 +83,14 @@ class DotpaySellerApi {
      * @param string $number
      * @return \stdClass
      */
-    public function getPaymentByNumber($username, $password, $number) {
-        $url = $this->_baseurl.$this->getDotPaymentApi()."payments/$number/";
+    public function getPaymentByNumber($username, $password, $number)
+    {
+        $url = $this->baseurl.$this->getDotPaymentApi()."payments/$number/";
         $curl = new DotpayCurl();
         $curl->addOption(CURLOPT_URL, $url)
              ->addOption(CURLOPT_USERPWD, $username.':'.$password);
         $this->setCurlOption($curl);
-        $response = json_decode($curl->exec());
+        $response = Tools::jsonDecode($curl->exec());
         return $response;
     }
     
@@ -98,13 +101,14 @@ class DotpaySellerApi {
      * @param int $orderId
      * @return \stdClass
      */
-    public function getPaymentByOrderId($username, $password, $orderId) {
-        $url = $this->_baseurl.$this->getDotPaymentApi().'payments/?control='.$orderId;
+    public function getPaymentByOrderId($username, $password, $orderId)
+    {
+        $url = $this->baseurl.$this->getDotPaymentApi().'payments/?control='.$orderId;
         $curl = new DotpayCurl();
         $curl->addOption(CURLOPT_URL, $url)
              ->addOption(CURLOPT_USERPWD, $username.':'.$password);
         $this->setCurlOption($curl);
-        $response = json_decode($curl->exec());
+        $response = Tools::jsonDecode($curl->exec());
         return $response->results;
     }
     
@@ -118,8 +122,9 @@ class DotpaySellerApi {
      * @param type $description
      * @return type
      */
-    public function makeReturnMoney($username, $password, $payment, $amount, $control, $description) {
-        $url = $this->_baseurl.$this->getDotPaymentApi().'payments/'.$payment.'/refund/';
+    public function makeReturnMoney($username, $password, $payment, $amount, $control, $description)
+    {
+        $url = $this->baseurl.$this->getDotPaymentApi().'payments/'.$payment.'/refund/';
         $data = array(
             'amount' => str_replace(',', '.', $amount),
             'description' => $description,
@@ -129,15 +134,15 @@ class DotpaySellerApi {
         $curl->addOption(CURLOPT_URL, $url)
              ->addOption(CURLOPT_USERPWD, $username.':'.$password)
              ->addOption(CURLOPT_POST, 1)
-             ->addOption(CURLOPT_POSTFIELDS, json_encode($data))
-             ->addOption(CURLOPT_SSL_VERIFYPEER, TRUE)
+             ->addOption(CURLOPT_POSTFIELDS, Tools::jsonEncode($data))
+             ->addOption(CURLOPT_SSL_VERIFYPEER, true)
              ->addOption(CURLOPT_SSL_VERIFYHOST, 2)
              ->addOption(CURLOPT_RETURNTRANSFER, 1)
              ->addOption(CURLOPT_TIMEOUT, 100)
              ->addOption(CURLOPT_HTTPHEADER, array(
                 'Accept: application/json; indent=4',
                 'content-type: application/json'));
-        $resp = json_decode($curl->exec(), true);
+        $resp = Tools::jsonDecode($curl->exec(), true);
         return $curl->getInfo()+$resp;
     }
     
@@ -145,7 +150,8 @@ class DotpaySellerApi {
      * Returns path for payment API
      * @return string
      */
-    private function getDotPaymentApi() {
+    private function getDotPaymentApi()
+    {
         return "api/";
     }
 
@@ -153,8 +159,9 @@ class DotpaySellerApi {
      * Sets option for cUrl and return cUrl resource
      * @param resource $curl
      */
-    private function setCurlOption($curl) {
-        $curl->addOption(CURLOPT_SSL_VERIFYPEER, TRUE)
+    private function setCurlOption($curl)
+    {
+        $curl->addOption(CURLOPT_SSL_VERIFYPEER, true)
              ->addOption(CURLOPT_SSL_VERIFYHOST, 2)
              ->addOption(CURLOPT_RETURNTRANSFER, 1)
              ->addOption(CURLOPT_TIMEOUT, 100)

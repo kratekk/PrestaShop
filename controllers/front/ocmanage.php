@@ -1,8 +1,5 @@
 <?php
-
 /**
-*
-*
 * NOTICE OF LICENSE
 *
 * This source file is subject to the Academic Free License (AFL 3.0)
@@ -22,19 +19,20 @@
 *  @author    Dotpay Team <tech@dotpay.pl>
 *  @copyright Dotpay
 *  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
-*
 */
 
-require_once(__DIR__.'/dotpay.php');
+require_once(DOTPAY_PLUGIN_DIR.'/controllers/front/dotpay.php');
 
 /**
  * Controller for managing card saved by One Click
  */
-class dotpayocmanageModuleFrontController extends DotpayController {
+class dotpayocmanageModuleFrontController extends DotpayController
+{
     /**
      * Displays a page with saved credit cards
      */
-    public function initContent() {
+    public function initContent()
+    {
         $this->display_column_left = false;
         parent::initContent();
 

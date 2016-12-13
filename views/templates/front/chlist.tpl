@@ -25,13 +25,13 @@
 {literal}
     <script type="text/javascript" language="JavaScript">
         window.dotpayConfig = {
-            "isWidget": Boolean({/literal}{$isWidget}{literal})
+            "isWidget": Boolean({/literal}{$isWidget|escape:'htmlall':'UTF-8'}{literal})
         };
     </script>
 {/literal}
 
 {if $inCheckout}
-<link rel="stylesheet" href="{$modules_dir}dotpay/web/css/front.css" type="text/css" media="all" />
+<link rel="stylesheet" href="{$modules_dir|escape:'htmlall':'UTF-8'}dotpay/views/css/front.css" type="text/css" media="all" />
 {include file='./scripts/noConflict.tpl'}
 {/if}
 
@@ -41,18 +41,18 @@
 {if $goodCurency }
     
     {if $isWidget}
-        <link href="{$dotpayUrl}widget/payment_widget.min.css" rel="stylesheet">
+        <link href="{$dotpayUrl|escape:'htmlall':'UTF-8'}widget/payment_widget.min.css" rel="stylesheet">
         <script type="text/javascript">
         {literal}
             var dotpayWidgetConfig = {
-                sellerAccountId: {/literal}{$userId}{literal},
-                amount: {/literal}{$amount}{literal},
-                currency: '{/literal}{$currency}{literal}',
-                lang: '{/literal}{$lang}{literal}',
+                sellerAccountId: {/literal}{$userId|escape:'htmlall':'UTF-8'}{literal},
+                amount: {/literal}{$amount|escape:'htmlall':'UTF-8'}{literal},
+                currency: '{/literal}{$currency|escape:'htmlall':'UTF-8'}{literal}',
+                lang: '{/literal}{$lang|escape:'htmlall':'UTF-8'}{literal}',
                 widgetFormContainerClass: 'my-form-widget-container',
                 offlineChannel: 'mark',
                 offlineChannelTooltip: true,
-                disabledChannels: [{/literal}{$disabledChannels}{literal}],
+                disabledChannels: [{/literal}{$disabledChannels|escape:'htmlall':'UTF-8'}{literal}],
                 host: '{/literal}{$channelApiUrl}{literal}'
             };
         {/literal}
@@ -65,18 +65,18 @@
         <div class="col-xs-12 col-md-12">
             <p class="dotpay_unsigned_channel payment_module">
                 <a class="dotpay dropbtn"{if $directPayment and $channel=='dotpay'} data-type="dotpay_payment_link"{/if}>
-                    <label display-cell form-target="{$channel}">
-                        <img class="{$channel}" src="{$form['image']}">
+                    <label display-cell form-target="{$channel|escape:'htmlall':'UTF-8'}">
+                        <img class="{$channel|escape:'htmlall':'UTF-8'}" src="{$form['image']}">
                         {$form['description']}
                     </label>
                 </a>
                 <div class="dotpay-channels-list">
                     {if $exAmount > 0}
-                        <p class="alert alert-danger">{$exMessage}: {$exAmount}&nbsp;{$currency}.</p>
+                        <p class="alert alert-danger">{$exMessage|escape:'htmlall':'UTF-8'}: {$exAmount|escape:'htmlall':'UTF-8'}&nbsp;{$currency|escape:'htmlall':'UTF-8'}.</p>
                     {/if}
 
                     {if $discAmount > 0}
-                        <p class="alert alert-success">{$discMessage}: {$discAmount}&nbsp;{$currency}.</p>
+                        <p class="alert alert-success">{$discMessage|escape:'htmlall':'UTF-8'}: {$discAmount|escape:'htmlall':'UTF-8'}&nbsp;{$currency|escape:'htmlall':'UTF-8'}.</p>
                     {/if}
                     {dotpayGenerateForm form=$form}
                 </div>

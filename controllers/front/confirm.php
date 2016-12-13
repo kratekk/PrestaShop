@@ -1,8 +1,5 @@
 <?php
-
 /**
-*
-*
 * NOTICE OF LICENSE
 *
 * This source file is subject to the Academic Free License (AFL 3.0)
@@ -22,25 +19,25 @@
 *  @author    Dotpay Team <tech@dotpay.pl>
 *  @copyright Dotpay
 *  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
-*
 */
 
-require_once(__DIR__.'/dotpay.php');
-require_once(mydirname(__DIR__,3).'/classes/RegisterOrder.php');
+require_once(DOTPAY_PLUGIN_DIR.'/controllers/front/dotpay.php');
+require_once(DOTPAY_PLUGIN_DIR.'/classes/RegisterOrder.php');
 
 /**
  * Controller for display confirm from Register Order
  */
-class dotpayconfirmModuleFrontController extends DotpayController {
+class dotpayconfirmModuleFrontController extends DotpayController
+{
     /**
      * Display payment instruction for cash or transfer payments
      */
-    public function initContent() {
+    public function initContent()
+    {
         $this->display_column_left = false;
         parent::initContent();
-        $errorMessage = NULL;
 
-        if(Tools::getValue('order_id')) {
+        if (Tools::getValue('order_id')) {
             $this->context->cart = Cart::getCartByOrderId(Tools::getValue('order_id'));
             $this->initPersonalData();
         }
@@ -49,16 +46,16 @@ class dotpayconfirmModuleFrontController extends DotpayController {
         unset($this->context->cookie->dotpay_channel);
         DotpayRegisterOrder::init($this);
         $payment = DotpayRegisterOrder::create($channel);
-        if($payment===NULL) {
+        if ($payment===null) {
             $instruction = DotpayInstruction::getByOrderId(Tools::getValue('order_id'));
-            if(!empty($instruction) && $instruction->id == NULL) {
+            if (!empty($instruction) && $instruction->id == null) {
                 $this->context->smarty->assign(array(
                     'isOk' => false
                 ));
             }
         } else {
-            if(isset($payment['instruction']) && isset($payment['operation'])) {
-                if($this->api->isChannelInGroup($payment['operation']['payment_method']['channel_id'], array(DotpayApi::cashGroup))) {
+            if (isset($payment['instruction']) && isset($payment['operation'])) {
+                if ($this->api->isChannelInGroup($payment['operation']['payment_method']['channel_id'], array(DotpayApi::CASH_GROUP))) {
                     $isCash = true;
                 } else {
                     $isCash = false;
@@ -73,13 +70,13 @@ class dotpayconfirmModuleFrontController extends DotpayController {
                 $instruction->order_id = Tools::getValue('order_id');
                 $instruction->channel = $payment['operation']['payment_method']['channel_id'];
                 
-                if(isset($payment['instruction']['recipient'])) {
+                if (isset($payment['instruction']['recipient'])) {
                     $instruction->bank_account = $payment['instruction']['recipient']['bank_account_number'];
                 }
                 
-                try{
+                try {
                     $instruction->save();
-                } catch(Exception $e){
+                } catch (Exception $e) {
                     $this->context->smarty->assign(array(
                         'errorMessage' => $this->module->l("Unable to save instructions.".$e->getMessage())
                     ));
@@ -87,11 +84,10 @@ class dotpayconfirmModuleFrontController extends DotpayController {
             }
         }
         
-        if(!empty($instruction) && $instruction->id != NULL) {
-            if($instruction->is_cash) {
+        if (!empty($instruction) && $instruction->id != null) {
+            if ($instruction->is_cash) {
                 $template = 'cash.tpl';
                 $address = $instruction->getPdfUrl($this->config->getDotpayTargetUrl());
-                $bankImage = '';
             } else {
                 $template = 'transfer.tpl';
                 $address = $instruction->getBankPage($this->config->getDotpayTargetUrl());

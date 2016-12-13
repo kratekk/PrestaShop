@@ -1,8 +1,5 @@
 <?php
-
 /**
-*
-*
 * NOTICE OF LICENSE
 *
 * This source file is subject to the Academic Free License (AFL 3.0)
@@ -22,22 +19,25 @@
 *  @author    Dotpay Team <tech@dotpay.pl>
 *  @copyright Dotpay
 *  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
-*
 */
 
-require_once(__DIR__.'/DotpayFormHelper.php');
-require_once(__DIR__.'/models/Config.php');
-require_once(__DIR__.'/api/dev.php');
-require_once(__DIR__.'/api/legacy.php');
-require_once(__DIR__.'/controllers/front/payment.php');
-require_once(__DIR__.'/models/Instruction.php');
-require_once(__DIR__.'/models/CreditCard.php');
-require_once(__DIR__.'/models/CardBrand.php');
-require_once(__DIR__.'/classes/SellerApi.php');
-require_once(__DIR__.'/classes/GithubApi.php');
-
-if(!defined('_PS_VERSION_'))
+if (!defined('_PS_VERSION_')) {
     exit;
+}
+
+define('DOTPAY_MODULE_NAME', 'dotpay');
+define('DOTPAY_PLUGIN_DIR', _PS_ROOT_DIR_.'/modules/'.DOTPAY_MODULE_NAME);
+
+require_once(DOTPAY_PLUGIN_DIR.'/DotpayFormHelper.php');
+require_once(DOTPAY_PLUGIN_DIR.'/models/Config.php');
+require_once(DOTPAY_PLUGIN_DIR.'/api/dev.php');
+require_once(DOTPAY_PLUGIN_DIR.'/api/legacy.php');
+require_once(DOTPAY_PLUGIN_DIR.'/controllers/front/payment.php');
+require_once(DOTPAY_PLUGIN_DIR.'/models/Instruction.php');
+require_once(DOTPAY_PLUGIN_DIR.'/models/CreditCard.php');
+require_once(DOTPAY_PLUGIN_DIR.'/models/CardBrand.php');
+require_once(DOTPAY_PLUGIN_DIR.'/classes/SellerApi.php');
+require_once(DOTPAY_PLUGIN_DIR.'/classes/GithubApi.php');
 
 /**
  * Function adds Dotpay Form Helper to Smarty tags
@@ -45,7 +45,8 @@ if(!defined('_PS_VERSION_'))
  * @param type $smarty
  * @return string
  */
-function dotpayGenerateForm(Array $params, $smarty) {
+function dotpayGenerateForm(Array $params, $smarty)
+{
     $data = (isset($params['form']))?$params['form']:array();
     return DotpayFormHelper::generate($data);
 }
@@ -53,7 +54,8 @@ function dotpayGenerateForm(Array $params, $smarty) {
 /**
  * Dotpay payment module
  */
-class dotpay extends PaymentModule {
+class dotpay extends PaymentModule
+{
     
     /**
      *
@@ -70,21 +72,23 @@ class dotpay extends PaymentModule {
     /**
      * Initialize module
      */
-    public function __construct() {
+    public function __construct()
+    {
         $this->name = 'dotpay';
         $this->tab = 'payments_gateways';
-        $this->version = '2.1.2';
+        $this->version = '2.2.0';
         $this->author = 'tech@dotpay.pl';
-        $this->ps_versions_compliancy = array('min' => '1.6', 'max' => '1.6.9'); 
+        $this->ps_versions_compliancy = array('min' => '1.6', 'max' => '1.6.9');
         $this->bootstrap = true;
         $this->controllers = array('payment', 'preparing', 'callback', 'back', 'status', 'confirm', 'ocmanage', 'ocremove');
         $this->is_eu_compatible = 1;
         $this->currencies = true;
         $this->currencies_mode = 'checkbox';
+        $this->module_key = '6d94a731ae299ada80355d0236bdb727';
         parent::__construct();
 
         $this->displayName = $this->l('Dotpay');
-        if(_PS_VERSION_ < 1.6 ) {
+        if (_PS_VERSION_ < 1.6) {
             $this->description = $this->l('WARNING! This Dotpay payment module is designed only for the PrestaShop 1.6 and later. For older version PrestaShop use an older version of the Dotpay payment module  available to download from the following address: https://github.com/dotpay/PrestaShop/tags');
             parent::uninstall();
         } else {
@@ -95,7 +99,7 @@ class dotpay extends PaymentModule {
         
         $this->config = new DotpayConfig();
         
-        if($this->config->getDotpayApiVersion()=='legacy') {
+        if ($this->config->getDotpayApiVersion()=='legacy') {
             $this->api = new DotpayLegacyApi();
         } else {
             $this->api = new DotpayDevApi();
@@ -106,7 +110,8 @@ class dotpay extends PaymentModule {
      * Return relative module path
      * @return string
      */
-    public function getPath() {
+    public function getPath()
+    {
         return $this->_path;
     }
     
@@ -114,11 +119,11 @@ class dotpay extends PaymentModule {
      * Installing module
      * @return bool
      */
-    public function install() {
-        if(!parent::install() OR
-           !$this->update())
-                return false;
-
+    public function install()
+    {
+        if (!parent::install() || !$this->update()) {
+            return false;
+        }
         return true;
     }
     
@@ -126,28 +131,30 @@ class dotpay extends PaymentModule {
      * Updating module
      * @return bool
      */
-    public function update() {
-        if(!$this->setDefaultConfig() OR
-           !$this->registerHook('payment') OR
-           !$this->registerHook('paymentReturn') OR
-           !$this->registerHook('header') OR
-           !$this->registerHook('backOfficeHeader') OR
-           !$this->registerHook('displayPaymentEU') OR
-           !$this->registerHook('displayOrderDetail') OR
-           !$this->registerHook('displayCustomerAccount') OR
-           !$this->registerHook('displayShoppingCart') OR
-           !$this->registerHook('displayAdminOrder') OR
-           !$this->registerHook('displayAdminOrder') OR
-           !$this->addDotpayNewStatus() OR
-           !$this->addDotpayWaitingRefundStatus() OR
-           !$this->addDotpayFailedRefundStatus() OR
-           !$this->addDotpayTotalRefundStatus() OR
-           !$this->addDotpayPartialRefundStatus() OR
-           !$this->addReturnTab() OR
-           !DotpayInstruction::create() OR
-           !DotpayCreditCard::create() OR
-           !DotpayCardBrand::create())
+    public function update()
+    {
+        if (!$this->setDefaultConfig() ||
+            !$this->registerHook('payment') ||
+            !$this->registerHook('paymentReturn') ||
+            !$this->registerHook('header') ||
+            !$this->registerHook('backOfficeHeader') ||
+            !$this->registerHook('displayPaymentEU') ||
+            !$this->registerHook('displayOrderDetail') ||
+            !$this->registerHook('displayCustomerAccount') ||
+            !$this->registerHook('displayShoppingCart') ||
+            !$this->registerHook('displayAdminOrder') ||
+            !$this->registerHook('displayAdminOrder') ||
+            !$this->addDotpayNewStatus() ||
+            !$this->addDotpayWaitingRefundStatus() ||
+            !$this->addDotpayFailedRefundStatus() ||
+            !$this->addDotpayTotalRefundStatus() ||
+            !$this->addDotpayPartialRefundStatus() ||
+            !$this->addReturnTab() ||
+            !DotpayInstruction::create() ||
+            !DotpayCreditCard::create() ||
+            !DotpayCardBrand::create()) {
                 return false;
+        }
         return true;
     }
     
@@ -155,7 +162,8 @@ class dotpay extends PaymentModule {
      * Uninstalling module
      * @return bool
      */
-    public function uninstall() {
+    public function uninstall()
+    {
         return DotpayCreditCard::drop() && $this->removeDotpayFee() && parent::uninstall();
     }
     
@@ -163,9 +171,10 @@ class dotpay extends PaymentModule {
      * Removes Dotpay Fee product if it exists in shop's database
      * @return boolean
      */
-    public function removeDotpayFee() {
-        if(Validate::isInt($this->config->getDotpayExchVPid()) AND
-           (Validate::isLoadedObject($product = new Product($this->config->getDotpayExchVPid()))) AND
+    public function removeDotpayFee()
+    {
+        if (Validate::isInt($this->config->getDotpayExchVPid()) &&
+           (Validate::isLoadedObject($product = new Product($this->config->getDotpayExchVPid()))) &&
            Validate::isInt($product->id)
         ) {
             $product->delete();
@@ -177,7 +186,8 @@ class dotpay extends PaymentModule {
      * Returns HTML for module settings
      * @return string
      */
-    public function getContent() {
+    public function getContent()
+    {
         $this->saveConfiguration();
         $sellerApi = new DotpaySellerApi($this->config->getDotpaySellerApiUrl());
         
@@ -203,7 +213,7 @@ class dotpay extends PaymentModule {
             'testApiAccount' => $sellerApi->isAccountRight($this->config->getDotpayApiUsername(), $this->config->getDotpayApiPassword(), $this->config->getDotpayApiVersion()),
             'urlWithNewVersion' => $version['url'],
             'obsoletePlugin' => version_compare($version['version'], $this->version, '>'),
-            'canNotCheckPlugin' => $version['version'] === NULL
+            'canNotCheckPlugin' => $version['version'] === null
         ));
         $template = $this->context->smarty->fetch($this->local_path.'views/templates/admin/configure.tpl');
         return $template.$this->renderForm();
@@ -212,27 +222,30 @@ class dotpay extends PaymentModule {
     /**
      * Hook for header section in admin area
      */
-    public function hookBackOfficeHeader() {
-        $this->context->controller->addCSS($this->_path.'web/css/back.css');
+    public function hookBackOfficeHeader()
+    {
+        $this->context->controller->addCSS($this->_path.'views/css/back.css');
     }
     
     /**
      * Hook for header section in front area
      */
-    public function hookHeader() {
-        $this->context->controller->addCSS($this->_path.'web/css/front.css');
-        $this->context->controller->addJS($this->_path.'web/js/noConflict.js');
+    public function hookHeader()
+    {
+        $this->context->controller->addCSS($this->_path.'views/css/front.css');
     }
     
     /**
      * Hook for payment gateways list in checkout site
      * @return string
      */
-    public function hookPayment() {
-        if(!$this->config->isDotpayEnabled())
-            return;
+    public function hookPayment()
+    {
+        if (!$this->config->isDotpayEnabled()) {
+            return '';
+        }
         
-        if($this->active && $this->config->isAccountConfigOk() ) {
+        if ($this->active && $this->config->isAccountConfigOk()) {
             $this->smarty->assign($this->getSmartyVars());
             return $this->display(__FILE__, 'payment.tpl');
         }
@@ -243,24 +256,27 @@ class dotpay extends PaymentModule {
      * @param array $params Details of displayed shopping card
      * @return type
      */
-    public function hookDisplayShoppingCart($params) {
-        if(!$this->config->getDotpayExCh() || $this->config->getDotpayExchVPid()===NULL)
-            return;
+    public function hookDisplayShoppingCart($params)
+    {
+        if (!$this->config->getDotpayExCh() || $this->config->getDotpayExchVPid()===null) {
+            return '';
+        }
         foreach ($params['products'] as $product) {
-            if($product["id_product"] == $this->config->getDotpayExchVPid()) {
+            if ($product["id_product"] == $this->config->getDotpayExchVPid()) {
                 $this->context->cart->deleteProduct($product["id_product"]);
-                header('Location: '.$this->getUrl());
+                Tools::redirect($this->getUrl());
                 die();
             }
         }
-        return;
+        return '';
     }
     
     /**
      * Hook for payment gateways list in checkout site
      * @return string
      */
-    public function hookDisplayCustomerAccount() {
+    public function hookDisplayCustomerAccount()
+    {
         $this->smarty->assign(array(
             'actionUrl' => $this->context->link->getModuleLink('dotpay', 'ocmanage'),
         ));
@@ -272,16 +288,19 @@ class dotpay extends PaymentModule {
      * @param array $params
      * @return string
      */
-    public function hookDisplayPaymentEU($params) {
-        if(!$this->active)
-            return;
+    public function hookDisplayPaymentEU($params)
+    {
+        if (!$this->active) {
+            return '';
+        }
 
-        if(!$this->checkCurrency($params['cart']))
-            return;
+        if (!$this->checkCurrency($params['cart'])) {
+            return '';
+        }
         
         $payment_options = array(
                 'cta_text' => $this->l('Fast and secure internet payments'),
-                'logo' => $this->_path.'web/img/dotpay_logo85.png',
+                'logo' => $this->_path.'views/img/dotpay_logo85.png',
                 'action' => $this->context->link->getModuleLink($this->name, 'payment', array(), true)
         );
 
@@ -293,18 +312,20 @@ class dotpay extends PaymentModule {
      * @param array $params Details of current order
      * @return string
      */
-    public function hookDisplayOrderDetail($params) {
-        if(!$this->config->isDotpayRenewEn())
+    public function hookDisplayOrderDetail($params)
+    {
+        if (!$this->config->isDotpayRenewEn()) {
             return '';
+        }
         $order = new Order(Tools::getValue('id_order'));
         $instruction = DotpayInstruction::getByOrderId($order->id);
         $context =  Context::getContext();
         $context->cookie->dotpay_channel = $instruction->channel;
-        if($order->module=='dotpay') {
+        if ($order->module=='dotpay') {
             $this->smarty->assign(array(
                 'isRenew' => $order->current_state == $this->config->getDotpayNewStatusId(),
                 'paymentUrl' => $this->context->link->getModuleLink('dotpay', 'payment', array('order_id'=>$order->id)),
-                'isInstruction' => ($instruction->id!=NULL),
+                'isInstruction' => ($instruction->id!=null),
                 'instructionUrl' => $this->context->link->getModuleLink('dotpay', 'confirm', array('order_id'=>$order->id)),
             ));
             return $this->display(__FILE__, 'renew.tpl');
@@ -316,29 +337,34 @@ class dotpay extends PaymentModule {
      * @param array $params Details of displayed order
      * @return type
      */
-    public function hookDisplayAdminOrder($params) {
-        if(!$this->config->isDotpayRefundEn())
-            return;
-        if(Tools::getValue('dotpay_refund')!==false) {
-            if(Tools::getValue('dotpay_refund')=='success') {
+    public function hookDisplayAdminOrder($params)
+    {
+        if (!$this->config->isDotpayRefundEn()) {
+            return '';
+        }
+        if (Tools::getValue('dotpay_refund')!==false) {
+            if (Tools::getValue('dotpay_refund')=='success') {
                 $this->context->controller->confirmations[] = $this->l('Request of refund was sent');
-            } else if(Tools::getValue('dotpay_refund')=='error') {
+            } else if (Tools::getValue('dotpay_refund')=='error') {
                 $this->context->controller->errors[] = $this->l('An error occurred during request of refund').'<br /><i>'.$this->context->cookie->dotpay_error.'</i>';
             }
         }
         $order = new Order($params['id_order']);
         $payments = OrderPayment::getByOrderId($order->id);
-        foreach($payments as $key => $payment)
-            if($payment->amount < 0)
+        foreach ($payments as $key => $payment) {
+            if ($payment->amount < 0) {
                 unset($payments[$key]);
+            }
+        }
         $paidViaDotpay = false;
-        foreach($payments as $payment) {
+        foreach ($payments as $payment) {
             $currency = Currency::getCurrency($order->id_currency);
-            if($payment->payment_method === $this->displayName && $currency["iso_code"] === 'PLN')
+            if ($payment->payment_method === $this->displayName && $currency["iso_code"] === 'PLN') {
                 $paidViaDotpay = true;
+            }
             break;
         }
-        if($paidViaDotpay) {
+        if ($paidViaDotpay) {
             $this->smarty->assign(array(
                 'orderId' => $order->id,
                 'payments' => $payments,
@@ -346,15 +372,16 @@ class dotpay extends PaymentModule {
             ));
             return $this->display(__FILE__, 'orderDetails.tpl');
         }
-        return;
+        return '';
     }
     
     /**
      * Register Dotpay Form Helper in Smarty engine
      */
-    public function registerFormHelper() {
-        $this->context->smarty->unregisterPlugin("function","dotpayGenerateForm");
-        $this->context->smarty->registerPlugin("function","dotpayGenerateForm", "dotpayGenerateForm");
+    public function registerFormHelper()
+    {
+        $this->context->smarty->unregisterPlugin("function", "dotpayGenerateForm");
+        $this->context->smarty->registerPlugin("function", "dotpayGenerateForm", "dotpayGenerateForm");
     }
     
     /**
@@ -362,14 +389,18 @@ class dotpay extends PaymentModule {
      * @param \Cart $cart
      * @return boolean
      */
-    private function checkCurrency(Cart $cart) {
+    private function checkCurrency(Cart $cart)
+    {
         $currency_order = new Currency($cart->id_currency);
         $currencies_module = $this->getCurrency($cart->id_currency);
 
-        if(is_array($currencies_module))
-            foreach ($currencies_module as $currency_module)
-                if($currency_order->id == $currency_module['id_currency'])
+        if (is_array($currencies_module)) {
+            foreach ($currencies_module as $currency_module) {
+                if ($currency_order->id == $currency_module['id_currency']) {
                     return true;
+                }
+            }
+        }
         return false;
     }
     
@@ -377,14 +408,15 @@ class dotpay extends PaymentModule {
      * Returns HTML code for module settings form
      * @return string
      */
-    private function renderForm() {
+    private function renderForm()
+    {
         $helper = new HelperForm();
 
         $helper->show_toolbar = false;
         $helper->table = $this->table;
         $helper->module = $this;
         $helper->default_form_language = $this->context->language->id;
-        $helper->allow_employee_form_lang = Configuration::get('PS_BO_ALLOW_EMPLOYEE_FORM_LANG', 0);
+        $helper->allow_employee_form_lang = Configuration::get('PS_BO_ALLOW_EMPLOYEE_F||M_LANG', 0);
 
         $helper->identifier = $this->identifier;
         $helper->submit_action = 'saveDotpayConfig';
@@ -407,25 +439,16 @@ class dotpay extends PaymentModule {
      * Returns array data for Prestashop Form Helper
      * @return array
      */
-    private function getConfigForm() {
+    private function getConfigForm()
+    {
         $optionsApi = array(
             array(
-              'id_option2' => 'dev', 
-              'name2' => $this->l('dev (ID has 6 digits)') 
+              'id_option2' => 'dev',
+              'name2' => $this->l('dev (ID has 6 digits)')
             ),
             array(
               'id_option2' => 'legacy',
               'name2' => $this->l('legacy (ID has max 5 digits)')
-            )
-        );
-        $optionsCalculateMethod = array(
-            array(
-              'id_option2' => '1', 
-              'name2' => $this->l('%') 
-            ),
-            array(
-              'id_option2' => '0',
-              'name2' => $this->l('amount')
             )
         );
         return array(
@@ -440,7 +463,7 @@ class dotpay extends PaymentModule {
                         'label' => $this->l('Enable this payment module'),
                         'name' => $this->config->getDotpayEnabledFN(),
                         'is_bool' => true,
-                        'required' => true, 
+                        'required' => true,
                         'desc' => $this->l('You can hide Dotpay gateway without uninstalling'),
                         'values' => array(
                             array(
@@ -465,7 +488,7 @@ class dotpay extends PaymentModule {
                         'class' => 'api-select',
                         'options' => array(
                             'query' => $optionsApi,
-                            'id' => 'id_option2', 
+                            'id' => 'id_option2',
                             'name' => 'name2'
                         ),
                     ),
@@ -473,10 +496,10 @@ class dotpay extends PaymentModule {
                         'type' => 'text',
                         'name' => $this->config->getDotpayIdFN(),
                         'label' => $this->l('ID'),
-                        'size' => 6, 
+                        'size' => 6,
                         'class' => 'fixed-width-sm',
                         'desc' => $this->l('Copy from Dotpay user panel').' <div id="infoID" /></div>',
-                        'required' => true						
+                        'required' => true
                     ),
                     array(
                         'type' => 'text',
@@ -492,7 +515,7 @@ class dotpay extends PaymentModule {
                         'name' => $this->config->getDotpayTestModeFN(),
                         'is_bool' => true,
                         'class' => 'dev-option',
-                        'desc' => $this->l('I\'m using Dotpay test account (test ID)').'<br><b>'.$this->l('Required Dotpay test account:').' <a href="https://ssl.dotpay.pl/test_seller/test/registration/" target="_blank" title="'.$this->l('Dotpay test account registration').'">'.$this->l('registration').'</b></a>',
+                        'desc' => $this->l('I\'m using Dotpay test account (test ID)').'<br><b>'.$this->l('Required Dotpay test account:').' <a href="https://ssl.dotpay.pl/test_seller/test/registration/?affilate_id=prestashop_module" target="_blank" title="'.$this->l('Dotpay test account registration').'">'.$this->l('registration').'</b></a>',
                         'values' => array(
                             array(
                                 'id' => 'active_on',
@@ -569,7 +592,7 @@ class dotpay extends PaymentModule {
                         'name' => $this->config->getDotpayWidgetDisCurrFN(),
                         'class' => 'fixed-width-xxl',
                         'desc' => $this->l('Enter currency codes separated by commas, for example: EUR,USD,GBP').'<br><b>'.$this->l('Leave this field blank to display for all currencies').'</b>',
-                    ),			
+                    ),
                     array(
                         'type' => 'switch',
                         'label' => '<span class="dev-option">'.$this->l('Credit card channel enabled').'</span>',
@@ -646,7 +669,7 @@ class dotpay extends PaymentModule {
                             )
                         )
                     ),
-					array(
+                    array(
                         'type' => 'switch',
                         'label' => '<span class="dev-option">'.$this->l('Refund payment enabled')."</span>",
                         'name' => $this->config->getDotpayRefundFN(),
@@ -730,10 +753,10 @@ class dotpay extends PaymentModule {
                         'type' => 'text',
                         'name' => $this->config->getDotpayPvIdFN(),
                         'label' => $this->l('ID for foreign currencies account'),
-                        'size' => 6, 
+                        'size' => 6,
                         'class' => 'fixed-width-sm dev-option pv-option',
                         'desc' => $this->l('Copy from Dotpay user panel').' <div id="infoID" /></div>',
-                        'required' => true						
+                        'required' => true
                     ),
                     array(
                         'type' => 'text',
@@ -750,7 +773,7 @@ class dotpay extends PaymentModule {
                         'class' => 'fixed-width-xxl dev-option pv-option lastInSection',
                         'desc' => $this->l('Enter currency codes separated by commas, for example: EUR,USD,GBP').'<br><b>'.$this->l('It is recommended to hide main channel for entered currencies').'</b>',
                     ),
-					
+
                     array(
                         'type' => 'radio',
                         'label' => $this->l('Extracharge options'),
@@ -832,7 +855,8 @@ class dotpay extends PaymentModule {
      * Returns settings values
      * @return array
      */
-    private function getConfigFormValues() {
+    private function getConfigFormValues()
+    {
         return array(
             $this->config->getDotpayEnabledFN() => $this->config->isDotpayEnabled(),
             $this->config->getDotpayApiVersionFN() => $this->config->getDotpayApiVersion(),
@@ -861,16 +885,16 @@ class dotpay extends PaymentModule {
             $this->config->getDotpayDiscPercentageFN() => $this->config->getDotpayDiscPercentage(),
             $this->config->getDotpayApiUsernameFN() => $this->config->getDotpayApiUsername(),
             $this->config->getDotpayApiPasswordFN() => $this->config->getDotpayApiPassword(),
-			'API_DATA_DESC' => '',
+            'API_DATA_DESC' => '',
         );
     }
     
     /**
      * Save configuration
      */
-    private function saveConfiguration() {
-        if(Tools::isSubmit('saveDotpayConfig')) 
-        {
+    private function saveConfiguration()
+    {
+        if (Tools::isSubmit('saveDotpayConfig')) {
             $discountFlagBefore = $this->config->getDotpayDiscount();
             $extrachargeFlagBefore = $this->config->getDotpayExCh();
             $values = $this->getConfigFormValues();
@@ -882,17 +906,20 @@ class dotpay extends PaymentModule {
             );
             foreach (array_keys($values) as $key) {
                 $value = trim(Tools::getValue($key));
-                if(in_array($key, $keysToCorrect))
+                if (in_array($key, $keysToCorrect)) {
                     $value = $this->makeCorrectNumber($value);
+                }
                 Configuration::updateValue($key, $value);
             }
             $discountFlagAfter = $this->config->getDotpayDiscount();
             $extrachargeFlagAfter = $this->config->getDotpayExCh();
             
-            if($extrachargeFlagBefore == false && $extrachargeFlagAfter == true)
+            if ($extrachargeFlagBefore == false && $extrachargeFlagAfter == true) {
                 $this->addDotpayVirtualProduct();
-            if($discountFlagBefore == false && $discountFlagAfter == true)
+            }
+            if ($discountFlagBefore == false && $discountFlagAfter == true) {
                 $this->addDotpayDiscount();
+            }
         }
     }
     
@@ -901,7 +928,8 @@ class dotpay extends PaymentModule {
      * @param float $input
      * @return float
      */
-    private function makeCorrectNumber($input) {
+    private function makeCorrectNumber($input)
+    {
         return preg_replace('/[^0-9\.]/', "", str_replace(',', '.', trim($input)));
     }
     
@@ -911,24 +939,28 @@ class dotpay extends PaymentModule {
      * @param type $dest
      * @return bool
      */
-    private function copyStatusImage($source, $dest) {
-        $target = mydirname(__DIR__, 3);
-        return copy(__DIR__.'/img/'.$source.'.gif', $target.'/img/os/'.$dest.'.gif');
+    private function copyStatusImage($source, $dest)
+    {
+        $target = mydirname(DOTPAY_PLUGIN_DIR, 3);
+        return copy(DOTPAY_PLUGIN_DIR.'/views/img/'.$source.'.gif', $target.'/img/os/'.$dest.'.gif');
     }
 
     /**
      * Adds Dotpay new payment status if not exist
      * @return bool
      */
-    private function addDotpayNewStatus() {
-        if(Validate::isInt($this->config->getDotpayNewStatusId()) AND
-           (Validate::isLoadedObject($order_state_new = new OrderState($this->config->getDotpayNewStatusId()))) AND
+    private function addDotpayNewStatus()
+    {
+        if (Validate::isInt($this->config->getDotpayNewStatusId()) &&
+           (Validate::isLoadedObject($order_state_new = new OrderState($this->config->getDotpayNewStatusId()))) &&
            Validate::isInt($order_state_new->id)
-        )
+        ) {
             return true;
+        }
         $stateId = $this->addDotpayOrderStatus('Oczekuje na potwierdzenie płatności z Dotpay', 'Awaiting for Dotpay Payment confirmation', '#00abf4');
-        if($stateId === false)
+        if ($stateId === false) {
             return false;
+        }
         $this->config->setDotpayNewStatusId($stateId);
         $this->copyStatusImage('wait', $stateId);
         return true;
@@ -938,15 +970,18 @@ class dotpay extends PaymentModule {
      * Adds Dotpay total refund status if not exist
      * @return bool
      */
-    private function addDotpayTotalRefundStatus() {
-        if(Validate::isInt($this->config->getDotpayTotalRefundStatusId()) AND
-           (Validate::isLoadedObject($order_state_new = new OrderState($this->config->getDotpayTotalRefundStatusId()))) AND
+    private function addDotpayTotalRefundStatus()
+    {
+        if (Validate::isInt($this->config->getDotpayTotalRefundStatusId()) &&
+           (Validate::isLoadedObject($order_state_new = new OrderState($this->config->getDotpayTotalRefundStatusId()))) &&
            Validate::isInt($order_state_new->id)
-        )
+        ) {
             return true;
+        }
         $stateId = $this->addDotpayOrderStatus('Całkowity zwrot płatności', 'Total refund of payment', '#f8d700');
-        if($stateId === false)
+        if ($stateId === false) {
             return false;
+        }
         $this->config->setDotpayTotalRefundStatusId($stateId);
         $this->copyStatusImage('refund', $stateId);
         return true;
@@ -956,15 +991,18 @@ class dotpay extends PaymentModule {
      * Adds Dotpay partial refund status if not exist
      * @return bool
      */
-    private function addDotpayPartialRefundStatus() {
-        if(Validate::isInt($this->config->getDotpayPartialRefundStatusId()) AND
-           (Validate::isLoadedObject($order_state_new = new OrderState($this->config->getDotpayPartialRefundStatusId()))) AND
+    private function addDotpayPartialRefundStatus()
+    {
+        if (Validate::isInt($this->config->getDotpayPartialRefundStatusId()) &&
+           (Validate::isLoadedObject($order_state_new = new OrderState($this->config->getDotpayPartialRefundStatusId()))) &&
            Validate::isInt($order_state_new->id)
-        )
+        ) {
             return true;
+        }
         $stateId = $this->addDotpayOrderStatus('Częściowy zwrot płatności', 'Partial refund of payment', '#f7ff59');
-        if($stateId === false)
+        if ($stateId === false) {
             return false;
+        }
         $this->config->setDotpayPartialRefundStatusId($stateId);
         $this->copyStatusImage('refund', $stateId);
         return true;
@@ -974,15 +1012,18 @@ class dotpay extends PaymentModule {
      * Adds Dotpay waiting for refund status if not exist
      * @return bool
      */
-    private function addDotpayWaitingRefundStatus() {
-        if(Validate::isInt($this->config->getDotpayWaitingRefundStatusId()) AND
-           (Validate::isLoadedObject($order_state_new = new OrderState($this->config->getDotpayWaitingRefundStatusId()))) AND
+    private function addDotpayWaitingRefundStatus()
+    {
+        if (Validate::isInt($this->config->getDotpayWaitingRefundStatusId()) &&
+           (Validate::isLoadedObject($order_state_new = new OrderState($this->config->getDotpayWaitingRefundStatusId()))) &&
            Validate::isInt($order_state_new->id)
-        )
+        ) {
             return true;
+        }
         $stateId = $this->addDotpayOrderStatus('Zwrot oczekuje na potwierdzenie', 'Refund is waiting for confirmation', '#ffe5d1');
-        if($stateId === false)
+        if ($stateId === false) {
             return false;
+        }
         $this->config->setDotpayWaitingRefundStatusId($stateId);
         $this->copyStatusImage('waitrefund', $stateId);
         return true;
@@ -992,15 +1033,18 @@ class dotpay extends PaymentModule {
      * Adds Dotpay waiting for refund status if not exist
      * @return bool
      */
-    private function addDotpayFailedRefundStatus() {
-        if(Validate::isInt($this->config->getDotpayFailedRefundStatusId()) AND
-           (Validate::isLoadedObject($order_state_new = new OrderState($this->config->getDotpayFailedRefundStatusId()))) AND
+    private function addDotpayFailedRefundStatus()
+    {
+        if (Validate::isInt($this->config->getDotpayFailedRefundStatusId()) &&
+           (Validate::isLoadedObject($order_state_new = new OrderState($this->config->getDotpayFailedRefundStatusId()))) &&
            Validate::isInt($order_state_new->id)
-        )
+        ) {
             return true;
+        }
         $stateId = $this->addDotpayOrderStatus('Zwrot został odrzucony', 'Refund has rejected', '#ff6059');
-        if($stateId === false)
+        if ($stateId === false) {
             return false;
+        }
         $this->config->setDotpayFailedRefundStatusId($stateId);
         $this->copyStatusImage('failrefund', $stateId);
         return true;
@@ -1013,15 +1057,16 @@ class dotpay extends PaymentModule {
      * @param string $color $Color of status in hexadecimal form
      * @return int|boolean
      */
-    private function addDotpayOrderStatus($plName, $engName, $color) {
+    private function addDotpayOrderStatus($plName, $engName, $color)
+    {
         $newOrderState = new OrderState();
-
         $newOrderState->name = array();
         foreach (Language::getLanguages() as $language) {
-            if(strtolower($language['iso_code']) == 'pl')
+            if (Tools::strtolower($language['iso_code']) == 'pl') {
                 $newOrderState->name[$language['id_lang']] = $plName;
-            else
+            } else {
                 $newOrderState->name[$language['id_lang']] = $engName;
+            }
         }
 
         $newOrderState->module_name = $this->name;
@@ -1029,8 +1074,9 @@ class dotpay extends PaymentModule {
         $newOrderState->invoice = false;
         $newOrderState->unremovable = false;
         $newOrderState->color = $color;
-        if(!$newOrderState->add())
+        if (!$newOrderState->add()) {
             return false;
+        }
         return $newOrderState->id;
     }
     
@@ -1038,12 +1084,14 @@ class dotpay extends PaymentModule {
      * Added Dotpay virtual product for extracharge option
      * @return bool
      */
-    private function addDotpayVirtualProduct() {
-        if(Validate::isInt($this->config->getDotpayExchVPid()) AND
-           (Validate::isLoadedObject($product = new Product($this->config->getDotpayExchVPid()))) AND
+    private function addDotpayVirtualProduct()
+    {
+        if (Validate::isInt($this->config->getDotpayExchVPid()) &&
+           (Validate::isLoadedObject($product = new Product($this->config->getDotpayExchVPid()))) &&
            Validate::isInt($product->id)
-        )
+        ) {
             return true;
+        }
             
         $product = new Product();
         $product->name = array((int)Configuration::get('PS_LANG_DEFAULT') => 'Online payment');
@@ -1060,23 +1108,26 @@ class dotpay extends PaymentModule {
         $product->meta_keywords = 'payment';
         $product->id_category = 1;
         $product->id_category_default = 1;
-        if(!$product->add())
-                return false;
+        if (!$product->add()) {
+            return false;
+        }
         $product->addToCategories(array(1));
-        StockAvailable::setQuantity($product->id,NULL,$product->quantity);
+        StockAvailable::setQuantity($product->id, null, $product->quantity);
         $this->config->setDotpayExchVPid($product->id);
 
         return true;
     }
     
-    private function addReturnTab() {
+    private function addReturnTab()
+    {
         // Prepare tab
         $tab = new Tab();
         $tab->active = 1;
         $tab->class_name = 'AdminDotpayRefund';
         $tab->name = array();
-        foreach (Language::getLanguages(true) as $lang)
+        foreach (Language::getLanguages(true) as $lang) {
             $tab->name[$lang['id_lang']] = 'Dotpay Refunds';
+        }
         $tab->id_parent = -1;
         $tab->module = $this->name;
         return $tab->add();
@@ -1086,8 +1137,9 @@ class dotpay extends PaymentModule {
      * Added Dotpay discount for reducing shipping cost
      * @return bool
      */
-    private function addDotpayDiscount() {
-        if(!Validate::isInt($this->config->getDotpayDiscountId())) {
+    private function addDotpayDiscount()
+    {
+        if (!Validate::isInt($this->config->getDotpayDiscountId())) {
             $voucher = new Discount();
             $voucher->id_discount_type = Discount::AMOUNT;
             $voucher->name = array((int)Configuration::get('PS_LANG_DEFAULT') => 'Discount for online shopping');
@@ -1103,8 +1155,9 @@ class dotpay extends PaymentModule {
             $now = time();
             $voucher->date_from = date('Y-m-d H:i:s', $now);
             $voucher->date_to = date('Y-m-d H:i:s', $now + (3600 * 24 * 365.25)*50);
-            if(!$voucher->add())
+            if (!$voucher->add()) {
                 return false;
+            }
             $this->config->setDotpayDiscountId($voucher->id);
         }
         return true;
@@ -1114,7 +1167,8 @@ class dotpay extends PaymentModule {
      * Set default configuration during installation
      * @return bool
      */
-    private function setDefaultConfig() {
+    private function setDefaultConfig()
+    {
         $this->config->setDotpayEnabled(false)
                      ->setDotpayApiVersion('dev')
                      ->setDotpayId('')
@@ -1149,10 +1203,10 @@ class dotpay extends PaymentModule {
      * Returns variables required by Smarty channel list template
      * @return array
      */
-    private function getSmartyVars() {
+    private function getSmartyVars()
+    {
         $_GET['module'] = $this->name;
         $pc = FrontController::getController('dotpaypaymentModuleFrontController');
-
         return $pc->getArrayForSmarty();
     }
     
@@ -1160,11 +1214,13 @@ class dotpay extends PaymentModule {
      * Checks, if SSL is enabled during current connection
      * @return boolean
      */
-    public function isSSLEnabled() {
-        if(isset($_SERVER['HTTPS'])) {
-            if('on' == strtolower($_SERVER['HTTPS']))
+    public function isSSLEnabled()
+    {
+        if (isset($_SERVER['HTTPS'])) {
+            if ('on' == Tools::strtolower($_SERVER['HTTPS'])) {
                 return true;
-        } else if(isset($_SERVER['SERVER_PORT']) && ('443' == $_SERVER['SERVER_PORT'])) {
+            }
+        } elseif (isset($_SERVER['SERVER_P||T']) && ('443' == $_SERVER['SERVER_P||T'])) {
             return true;
         }
         return false;
@@ -1174,9 +1230,10 @@ class dotpay extends PaymentModule {
      * Returns URL of current page
      * @return string
      */
-    function getUrl() {
+    public function getUrl()
+    {
         $url = 'http';
-        if($_SERVER["HTTPS"] == "on") {
+        if ($_SERVER["HTTPS"] == "on") {
             $url .= "s";
         }
         $url .= "://".$_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"];
@@ -1190,8 +1247,10 @@ class dotpay extends PaymentModule {
  * @param int $levels
  * @return string
  */
-function mydirname($dir, $levels) {
-    while(--$levels)
+function mydirname($dir, $levels)
+{
+    while (--$levels) {
         $dir = dirname($dir);
+    }
     return $dir;
 }

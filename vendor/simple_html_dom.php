@@ -221,7 +221,7 @@ class simple_html_dom_node
 		}
 		else
 		{
-			$string .= ' NULL ';
+			$string .= ' null ';
 		}
 
 		$string .= " children: " . count($this->children);
@@ -437,8 +437,8 @@ class simple_html_dom_node
 		if(strcasecmp($this->tag, 'style')===0) return '';
 
 		$ret = '';
-		// In rare cases, (always node type 1 or HDOM_TYPE_ELEMENT - observed for some span tags, and some p tags) $this->nodes is set to NULL.
-		// NOTE: This indicates that there is a problem where it's set to NULL without a clear happening.
+		// In rare cases, (always node type 1 or HDOM_TYPE_ELEMENT - observed for some span tags, and some p tags) $this->nodes is set to null.
+		// NOTE: This indicates that there is a problem where it's set to null without a clear happening.
 		// WHY is this happening?
 		if(!is_null($this->nodes))
 		{
@@ -868,7 +868,7 @@ class simple_html_dom_node
 
 	/**
 	 * Function to try a few tricks to determine the displayed size of an img on the page.
-	 * NOTE: This will ONLY work on an IMG tag. Returns FALSE on all other tag types.
+	 * NOTE: This will ONLY work on an IMG tag. Returns false on all other tag types.
 	 *
 	 * @author John Schlick
 	 * @version April 19 2012

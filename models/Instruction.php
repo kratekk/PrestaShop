@@ -1,8 +1,5 @@
 <?php
-
 /**
-*
-*
 * NOTICE OF LICENSE
 *
 * This source file is subject to the Academic Free License (AFL 3.0)
@@ -22,16 +19,15 @@
 *  @author    Dotpay Team <tech@dotpay.pl>
 *  @copyright Dotpay
 *  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
-*
 */
 
-require_once(mydirname(__DIR__,2).'/vendor/simple_html_dom.php');
+require_once(DOTPAY_PLUGIN_DIR.'/vendor/simple_html_dom.php');
 
 /**
  * Model of payment instruction
  */
-
-class DotpayInstruction extends ObjectModel {
+class DotpayInstruction extends ObjectModel
+{
     /**
      *
      * @var inte Instruction id
@@ -120,20 +116,22 @@ class DotpayInstruction extends ObjectModel {
      * Create table for this model
      * @return boolean
      */
-    public static function create() {
-        return Db::getInstance()->execute('
-            CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.self::$definition['table'].'` (
-                `instruction_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-                `order_id` INT UNSIGNED NOT NULL,
-                `number` varchar(64) NOT NULL,
-                `hash` varchar(128) NOT NULL,
+    public static function create()
+    {
+        return Db::getInstance()->execute(
+            'CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.self::$definition['table'].'` (
+                `instruction_id` INT UNSIGNED NOT null AUTO_INCREMENT,
+                `order_id` INT UNSIGNED NOT null,
+                `number` varchar(64) NOT null,
+                `hash` varchar(128) NOT null,
                 `bank_account` VARCHAR(64),
-                `is_cash` int(1) NOT NULL,
-                `amount` decimal(10,2) NOT NULL,
-                `currency` varchar(3) NOT NULL,
-                `channel` INT UNSIGNED NOT NULL,
+                `is_cash` int(1) NOT null,
+                `amount` decimal(10,2) NOT null,
+                `currency` varchar(3) NOT null,
+                `channel` INT UNSIGNED NOT null,
                 PRIMARY KEY (`instruction_id`)
-            ) DEFAULT CHARSET=utf8;');
+            ) DEFAULT CHARSET=utf8;'
+        );
     }
     
     /**
@@ -141,14 +139,16 @@ class DotpayInstruction extends ObjectModel {
      * @param int $orderId Order id
      * @return \DotpayInstruction
      */
-    public static function getByOrderId($orderId) {
-        $result = Db::getInstance()->executeS('
-            SELECT instruction_id as id 
+    public static function getByOrderId($orderId)
+    {
+        $result = Db::getInstance()->executeS(
+            'SELECT instruction_id as id 
             FROM `'._DB_PREFIX_.self::$definition['table'].'` 
             WHERE order_id = '.(int)$orderId
         );
-        if(!is_array($result) || count($result)<1)
-            return NULL;
+        if (!is_array($result) || count($result)<1) {
+            return null;
+        }
         return new DotpayInstruction($result[count($result)-1]['id']);
     }
     
@@ -157,8 +157,9 @@ class DotpayInstruction extends ObjectModel {
      * @param array $payment Details of payment
      * @return string
      */
-    public static function gethashFromPayment($payment) {
-        $parts = explode('/',$payment['instruction']['instruction_url']);
+    public static function gethashFromPayment($payment)
+    {
+        $parts = explode('/', $payment['instruction']['instruction_url']);
         return $parts[count($parts)-2];
     }
     
@@ -167,11 +168,13 @@ class DotpayInstruction extends ObjectModel {
      * @param string $baseUrl Base url of Dotpay
      * @return string
      */
-    public function getBankPage($baseUrl) {
+    public function getBankPage($baseUrl)
+    {
         $url = $this->buildInstructionUrl($baseUrl);
         $html = file_get_html($url);
-        if($html==false)
+        if ($html==false) {
             return null;
+        }
         return $html->getElementById('channel_container_')->firstChild()->getAttribute('href');
     }
     
@@ -180,7 +183,8 @@ class DotpayInstruction extends ObjectModel {
      * @param string $baseUrl Base url of Dotpay
      * @return string
      */
-    public function getPdfUrl($baseUrl) {
+    public function getPdfUrl($baseUrl)
+    {
         return $baseUrl.'instruction/pdf/'.$this->number.'/'.$this->hash.'/';
     }
     
@@ -189,7 +193,8 @@ class DotpayInstruction extends ObjectModel {
      * @param string $baseUrl Base url of Dotpay
      * @return string
      */
-    protected function buildInstructionUrl($baseUrl) {
+    protected function buildInstructionUrl($baseUrl)
+    {
         return $baseUrl.'instruction/'.$this->number.'/'.$this->hash.'/';
     }
 }

@@ -24,7 +24,7 @@
 *}
 
 {capture name=path}
-    <a href="{$link->getPageLink('my-account', true, NULL)|escape:'html':'UTF-8'}" title="{l s='My account' mod='dotpay'}">
+    <a href="{$link->getPageLink('my-account', true, null)}" title="{l s='My account' mod='dotpay'}">
         {l s='My account' mod='dotpay'}
     </a>
     <span class="navigation-pipe"></span>
@@ -46,11 +46,11 @@
     {foreach from=$cards item=card}
     <tr> 
         <td><img class="dotpay-card-brand-logo" src="{$card->card_brand->image}" /></td>
-        <td>{$card->brand}</td>
-        <td class="dotpay-card-mask">{$card->mask}</td>
-        <td>{$card->register_date}</td>
+        <td>{$card->brand|escape:'htmlall':'UTF-8'}</td>
+        <td class="dotpay-card-mask">{$card->mask|escape:'htmlall':'UTF-8'}</td>
+        <td>{$card->register_date|escape:'htmlall':'UTF-8'}</td>
         <td>
-            <button data-id="{$card->id}" class="card-remove" title="{l s='Deregister card' mod='dotpay'}">
+            <button data-id="{$card->id|escape:'htmlall':'UTF-8'}" class="card-remove" title="{l s='Deregister card' mod='dotpay'}">
                 <span class="icon-remove"></span>
             </button>
         </td>

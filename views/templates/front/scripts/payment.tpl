@@ -205,7 +205,7 @@ function standardStrategy(target) {
 }
 
 function strategyOneClick(target) {
-    if($('#saved_credit_cards option').length == 0) {
+    if($('#saved_credit_cards option').length === 0) {
         $('form[form-target="' + target + '"] input[name=dotpay_type]:last').click().prop('checked', true).parent().addClass('checked');
         $('#saved_credit_cards').attr('disabled', true).parents('label').hide().prev().hide().find('input').attr('disabled', true);
     } else {
@@ -214,7 +214,8 @@ function strategyOneClick(target) {
     }
     setVisibilityOcLogo();
     standardStrategy(target);
-    $('form[form-target="' + target + '"] button[type="submit"]').attr('disabled', false).goTo();
+    if(!$('input[name=oneclick_fault]').length)
+        $('form[form-target="' + target + '"] button[type="submit"]').attr('disabled', false).goTo();
 }
 
 function strategyMasterPass(target) {

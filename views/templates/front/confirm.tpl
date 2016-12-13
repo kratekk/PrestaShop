@@ -45,7 +45,7 @@
 {include file="$tpl_dir./order-steps.tpl"}
 
 {if $errorMessage}
-    <p class="alert alert-danger">{$errorMessage}</p>
+    <p class="alert alert-danger">{$errorMessage|escape:'htmlall':'UTF-8'}</p>
 {/if}
 
 {if $isOk}

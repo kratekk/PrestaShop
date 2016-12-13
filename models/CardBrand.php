@@ -1,8 +1,5 @@
 <?php
-
 /**
-*
-*
 * NOTICE OF LICENSE
 *
 * This source file is subject to the Academic Free License (AFL 3.0)
@@ -22,14 +19,13 @@
 *  @author    Dotpay Team <tech@dotpay.pl>
 *  @copyright Dotpay
 *  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
-* 
 */
 
 /**
  * Model of credit card brand
  */
-
-class DotpayCardBrand extends ObjectModel {
+class DotpayCardBrand extends ObjectModel
+{
     /**
      *
      * @var string Brand name
@@ -55,37 +51,41 @@ class DotpayCardBrand extends ObjectModel {
      * Create table for this model
      * @return boolean
      */
-    public static function create() {
-        return Db::getInstance()->execute('
-            CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.self::$definition['table'].'` (
-                `name` varchar(20) DEFAULT NULL,
-                `image` varchar(192) DEFAULT NULL,
+    public static function create()
+    {
+        return Db::getInstance()->execute(
+            'CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.self::$definition['table'].'` (
+                `name` varchar(20) DEFAULT null,
+                `image` varchar(192) DEFAULT null,
                 PRIMARY KEY (`name`),
                 UNIQUE KEY `brand_img` (`image`)
-            ) DEFAULT CHARSET=utf8;');
+            ) DEFAULT CHARSET=utf8;'
+        );
     }
     
     /**
      * Drop table for this model
      * @return boolean
      */
-    public static function drop() {
-        return Db::getInstance()->execute('
-            DROP TABLE IF EXISTS `'._DB_PREFIX_.self::$definition['table'].'`;
-        ');
+    public static function drop()
+    {
+        return Db::getInstance()->execute(
+            'DROP TABLE IF EXISTS `'._DB_PREFIX_.self::$definition['table'].'`;'
+        );
     }
     
     /**
      * Prepares an object, if it's in a database
      * @param string $name
      */
-    public function __construct($name) {
-        $brand = Db::getInstance()->ExecuteS('
-            SELECT *  
+    public function __construct($name)
+    {
+        $brand = Db::getInstance()->ExecuteS(
+            'SELECT *  
             FROM `'._DB_PREFIX_.self::$definition['table'].'` 
-            WHERE name = \''.$name.'\'
-        ');
-        if(count($brand)) {
+            WHERE name = \''.$name.'\''
+        );
+        if (count($brand)) {
             $this->name = $brand[0]['name'];
             $this->image = $brand[0]['image'];
         }
@@ -95,15 +95,16 @@ class DotpayCardBrand extends ObjectModel {
      * Saves a values to database
      * @return type
      */
-    public function save() {
-        return Db::getInstance()->execute('
-            INSERT INTO `'._DB_PREFIX_.self::$definition['table'].'`
+    public function save()
+    {
+        return Db::getInstance()->execute(
+            'INSERT INTO `'._DB_PREFIX_.self::$definition['table'].'`
                 (name, image)
             VALUES
                 (\''.$this->name.'\', \''.$this->image.'\')
             ON DUPLICATE KEY UPDATE
                 name  = \''.$this->name.'\',
-                image = \''.$this->image.'\'
-        ');
+                image = \''.$this->image.'\''
+        );
     }
 }

@@ -1,8 +1,5 @@
 <?php
-
 /**
-*
-*
 * NOTICE OF LICENSE
 *
 * This source file is subject to the Academic Free License (AFL 3.0)
@@ -22,26 +19,28 @@
 *  @author    Dotpay Team <tech@dotpay.pl>
 *  @copyright Dotpay
 *  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
-*
 */
 
-require_once(__DIR__.'/dotpay.php');
+require_once(DOTPAY_PLUGIN_DIR.'/controllers/front/dotpay.php');
 
 /**
  * Controller for handling payment view
  */
-class dotpaypaymentModuleFrontController extends DotpayController {
+class dotpaypaymentModuleFrontController extends DotpayController
+{
     /**
      * Displays template with Dotpay payment channels
      */
-    public function initContent() {
+    public function initContent()
+    {
         $this->display_column_left = false;
         parent::initContent();
         
-        if(Tools::getValue('order_id')) {
+        if (Tools::getValue('order_id')) {
             $cart = Cart::getCartByOrderId(Tools::getValue('order_id'));
-            if(empty($cart))
+            if (empty($cart)) {
                 $cart = new Cart();
+            }
             $this->context->cart = $cart;
             $this->context->cart->update();
         }
@@ -55,7 +54,8 @@ class dotpaypaymentModuleFrontController extends DotpayController {
      * @param boolean $inCheckout
      * @return array
      */
-    public function getArrayForSmarty($inCheckout = false) {
+    public function getArrayForSmarty($inCheckout = false)
+    {
         $channelList = $this->api->getChannelList();
         $target = '';
         $disabledChannels = $this->api->getSeparatedChannelsList();
@@ -78,7 +78,7 @@ class dotpaypaymentModuleFrontController extends DotpayController {
             'discAmount' => $this->api->getDiscountAmount(),
             'orderId' => Tools::getValue('order_id'),
             'goodCurency' => in_array($this->getDotCurrency(), $this->config->getDotpayAvailableCurrency()),
-            'disabledChannels' => implode(',',$disabledChannels),
+            'disabledChannels' => implode(',', $disabledChannels),
             'channelApiUrl' => $this->config->getDotpayTargetUrl().'payment_api/v1/channels/',
             'inCheckout' => $inCheckout,
             'directPayment' => (int)!$this->config->isDotpayWidgetMode()

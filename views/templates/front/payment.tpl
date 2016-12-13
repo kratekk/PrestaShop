@@ -24,7 +24,7 @@
 *}
 
 {capture name=path}
-	<a href="{$link->getPageLink('order', true, NULL, "step=3")|escape:'html':'UTF-8'}" title="{l s='Go back to the Checkout' mod='dotpay'}">{l s='Checkout' mod='dotpay'}</a><span class="navigation-pipe">{$navigationPipe}</span>{l s='Dotpay online payment' mod='dotpay'}
+	<a href="{$link->getPageLink('order', true, null, "step=3")}" title="{l s='Go back to the Checkout' mod='dotpay'}">{l s='Checkout' mod='dotpay'}</a><span class="navigation-pipe">{$navigationPipe}</span>{l s='Dotpay online payment' mod='dotpay'}
 {/capture}
 
 <h2 class="page-heading">{l s='Dotpay online payment' mod='dotpay'}</h2>

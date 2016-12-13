@@ -1,8 +1,5 @@
 <?php
-
 /**
-*
-*
 * NOTICE OF LICENSE
 *
 * This source file is subject to the Academic Free License (AFL 3.0)
@@ -22,95 +19,122 @@
 *  @author    Dotpay Team <tech@dotpay.pl>
 *  @copyright Dotpay
 *  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
-*
 */
-require_once(__DIR__.'/api.php');
 
-class DotpayDevApi extends DotpayApi {
+require_once(DOTPAY_PLUGIN_DIR.'/api/api.php');
+
+class DotpayDevApi extends DotpayApi
+{
     /**
      * Status name of rejected operation
      */
-    const operationRejected = 'rejected';
+    const OPERATION_REJECTED = 'rejected';
     
     /**
      * Status name of completed operation
      */
-    const operationCompleted = 'completed';
+    const OPERATION_COMPLETED = 'completed';
     
     /**
      * Returns list of payment channels
      * @return array
      */
-    public function getChannelList(){
+    public function getChannelList()
+    {
         $oneclickAgreements = $this->parent->module->l('I agree to repeated loading bill my credit card for the payment One-Click by way of purchase of goods or services offered by the store.');
         $channelList = array();
         $targetUrl = $this->parent->getPreparingUrl();
-        if($this->config->isDotpayOneClick() && $this->getChannelData(self::$ocChannel) && $this->parent->isMainChannelEnabled()) {
-            $this->addSeparatedChannel(self::$ocChannel);
-            $creditCards = DotpayCreditCard::getAllCardsForCustomer(Context::getContext()->customer->id);
-            $creditCardsValues = array();
-            $img = '<img class="dotpay-card-logo" ';
-            foreach($creditCards as $creditCard) {
-                $creditCardsValues[$creditCard->mask.' ('.$creditCard->brand.')'] = $creditCard->id;
-                $img .= 'data-card-'.$creditCard->cc_id.'="'.$creditCard->card_brand->image.'" ';
+        if ($this->config->isDotpayOneClick() && $this->getChannelData(self::$ocChannel) && $this->parent->isMainChannelEnabled()) {
+            if (Context::getContext()->customer->isLogged()) {
+                $this->addSeparatedChannel(self::$ocChannel);
+                $creditCards = DotpayCreditCard::getAllCardsForCustomer(Context::getContext()->customer->id);
+                $creditCardsValues = array();
+                $img = '<img class="dotpay-card-logo" ';
+                foreach ($creditCards as $creditCard) {
+                    $creditCardsValues[$creditCard->mask.' ('.$creditCard->brand.')'] = $creditCard->id;
+                    $img .= 'data-card-'.$creditCard->cc_id.'="'.$creditCard->card_brand->image.'" ';
+                }
+                $img .= '/>';
+                $ocManageLink = Context::getContext()->link->getModuleLink($this->parent->module->name, 'ocmanage');
+
+                $channelList['oneclick'] = array(
+                    'form' => $this->getFormHeader('oneclick', $targetUrl),
+                    'fields' => array(
+                        $this->getHiddenField('order_id', Tools::getValue('order_id')),
+                        array(
+                            'type' => 'radio',
+                            'name' => 'dotpay_type',
+                            'id' => 'select_saved_card',
+                            'value' => 'oneclick',
+                            'class' => 'oneclick-margin',
+                            'label' => $this->parent->module->l('Select a registered card').'&nbsp;(<a href="'.$ocManageLink.'" target="_blank">'.$this->parent->module->l('Manage your registered cards').'</a>)',
+                            'required' => true
+                        ),
+                        array(
+                            'type' => 'select',
+                            'name' => 'credit_card',
+                            'id' => 'saved_credit_cards',
+                            'class' => 'oneclick-margin',
+                            'values' => $creditCardsValues,
+                            'label' => $img
+                        ),
+                        array(
+                            'type' => 'radio',
+                            'name' => 'dotpay_type',
+                            'value' => 'oneclick_register',
+                            'class' => 'oneclick-margin',
+                            'label' => $this->parent->module->l('Register a new card'),
+                            'required' => true
+                        ),
+                        array(
+                            'type' => 'checkbox',
+                            'name' => 'oneclick_agreements',
+                            'value' => '1',
+                            'checked' => true,
+                            'label' => $oneclickAgreements,
+                            'required' => true
+                        ),
+                        $this->addBylawField(),
+                        $this->addPersonalDataField(),
+                        $this->getSubmitField(),
+                    ),
+                    'image' => $this->parent->getDotOneClickLogo(),
+                    'description' => "&nbsp;&nbsp;<strong>".$this->parent->module->l("Credit Card - One Click")."</strong>&nbsp;<span>".$this->parent->module->l("(via Dotpay.pl)")."</span>",
+                );
+            } else {
+                $channelList['oneclick'] = array(
+                    'form' => $this->getFormHeader('oneclick', $targetUrl),
+                    'fields' => array(
+                        array(
+                            'style' => 'display: none',
+                            'type' => 'input',
+                            'name' => 'oneclick_fault',
+                            'label' => '<p class="alert alert-warning" style="display: block;">'.$this->parent->module->l("You must be logged to use this channel").'</p>'
+                        ),
+                        array(
+                            'type' => 'submit',
+                            'disabled' => 'disabled',
+                            'value' => '<span>'.$this->parent->module->l('Continue payment').'<i class="icon-chevron-right right"></i></span>',
+                            'class' => 'button btn btn-default standard-checkout button-medium',
+                            'label' => '</p>',
+                            'llabel' => '<p class="cart_navigation clearfix">'
+                        )
+                    ),
+                    'image' => $this->parent->getDotOneClickLogo(),
+                    'description' => "&nbsp;&nbsp;<strong>".$this->parent->module->l("Credit Card - One Click")."</strong>&nbsp;<span>".$this->parent->module->l("(via Dotpay.pl)")."</span>",
+                );
             }
-            $img .= '/>';
-            $ocManageLink = Context::getContext()->link->getModuleLink($this->parent->module->name, 'ocmanage');
-            
-            $channelList['oneclick'] = array(
-                'form' => $this->getFormHeader('oneclick', $targetUrl),
-                'fields' => array(
-                    $this->getHiddenField('order_id', Tools::getValue('order_id')),
-                    array(
-                        'type' => 'radio',
-                        'name' => 'dotpay_type',
-                        'id' => 'select_saved_card',
-                        'value' => 'oneclick',
-                        'class' => 'oneclick-margin',
-                        'label' => $this->parent->module->l('Select a registered card').'&nbsp;(<a href="'.$ocManageLink.'" target="_blank">'.$this->parent->module->l('Manage your registered cards').'</a>)',
-                        'required' => true
-                    ),
-                    array(
-                        'type' => 'select',
-                        'name' => 'credit_card',
-                        'id' => 'saved_credit_cards',
-                        'class' => 'oneclick-margin',
-                        'values' => $creditCardsValues,
-                        'label' => $img
-                    ),
-                    array(
-                        'type' => 'radio',
-                        'name' => 'dotpay_type',
-                        'value' => 'oneclick_register',
-                        'class' => 'oneclick-margin',
-                        'label' => $this->parent->module->l('Register a new card'),
-                        'required' => true
-                    ),
-                    array(
-                        'type' => 'checkbox',
-                        'name' => 'oneclick_agreements',
-                        'value' => '1',
-                        'checked' => true,
-                        'label' => $oneclickAgreements,
-                        'required' => true
-                    ),
-                    $this->addBylawField(),
-                    $this->addPersonalDataField(),
-                    $this->getSubmitField(),
-                ),
-                'image' => $this->parent->getDotOneClickLogo(),
-                'description' => "&nbsp;&nbsp;<strong>".$this->parent->module->l("Credit Card - One Click")."</strong>&nbsp;<span>".$this->parent->module->l("(via Dotpay.pl)")."</span>",
-            );
         }
         
         $ccChannel = null;
         $availableCardChannels = array(self::$ocChannel, self::$ccChannel);
-        foreach($availableCardChannels as $channel)
-            if($this->getChannelData($channel)) {
+        foreach ($availableCardChannels as $channel) {
+            if ($this->getChannelData($channel)) {
                 $ccChannel = $channel;
                 break;
             }
-        if($this->config->isDotpayCreditCard() && $ccChannel !== null && $this->parent->isMainChannelEnabled()) {
+        }
+        if ($this->config->isDotpayCreditCard() && $ccChannel !== null && $this->parent->isMainChannelEnabled()) {
             $this->addSeparatedChannel($ccChannel);
             $channelList['cc'] = array(
                 'form' => $this->getFormHeader('cc', $targetUrl),
@@ -127,7 +151,7 @@ class DotpayDevApi extends DotpayApi {
             );
         }
         
-        if($this->parent->isDotpayPVEnabled() && $this->getChannelData(self::$pvChannel, true)) {
+        if ($this->parent->isDotpayPVEnabled() && $this->getChannelData(self::$pvChannel, true)) {
             $this->addSeparatedChannel(self::$pvChannel);
             $channelList['pv'] = array(
                 'form' => $this->getFormHeader('pv', $targetUrl),
@@ -144,7 +168,7 @@ class DotpayDevApi extends DotpayApi {
             );
         }
         
-        if($this->config->isDotpayBlik() && $this->getChannelData(self::$blikChannel) && strtoupper($this->parent->getDotCurrency() == 'PLN') && $this->parent->isMainChannelEnabled()) {
+        if ($this->config->isDotpayBlik() && $this->getChannelData(self::$blikChannel) && Tools::strtoupper($this->parent->getDotCurrency() == 'PLN') && $this->parent->isMainChannelEnabled()) {
             $this->addSeparatedChannel(self::$blikChannel);
             $blikText = $this->parent->module->l("BLIK code 6 digits");
             $channelList['blik'] = array(
@@ -168,7 +192,7 @@ class DotpayDevApi extends DotpayApi {
             );
         }
         
-        if($this->config->isDotpayMasterPass() && $this->getChannelData(self::$mpChannel) && $this->parent->isMainChannelEnabled()) {
+        if ($this->config->isDotpayMasterPass() && $this->getChannelData(self::$mpChannel) && $this->parent->isMainChannelEnabled()) {
             $this->addSeparatedChannel(self::$mpChannel);
             $channelList['mp'] = array(
                 'form' => $this->getFormHeader('mp', $targetUrl),
@@ -184,7 +208,7 @@ class DotpayDevApi extends DotpayApi {
             );
         }
         
-        if($this->parent->isMainChannelEnabled() && !$this->isMainChannelEmpty()) {
+        if ($this->parent->isMainChannelEnabled() && !$this->isMainChannelEmpty()) {
             $extendedWidget = '<div class="selected-channel-message">'.
                               $this->parent->module->l("Selected payment channel").
                               ':&nbsp;&nbsp; <a href="#" class="channel-selected-change">'.
@@ -200,7 +224,7 @@ class DotpayDevApi extends DotpayApi {
                 $this->getHiddenField('dotpay_type', 'dotpay'),
                 $this->getHiddenField('order_id', Tools::getValue('order_id'))
             );
-            if($this->config->isDotpayWidgetMode()) {
+            if ($this->config->isDotpayWidgetMode()) {
                 $fields[] = array(
                     'type' => 'hidden',
                     'name' => 'widget',
@@ -220,11 +244,13 @@ class DotpayDevApi extends DotpayApi {
      * Check confirm message from Dotpay
      * @return bool
      */
-    public function checkConfirm(){
-        if($this->isSelectedPvChannel())
+    public function checkConfirm()
+    {
+        if ($this->isSelectedPvChannel()) {
             $start = $this->config->getDotpayPvPIN().$this->config->getDotpayPvId();
-        else
+        } else {
             $start = $this->config->getDotpayPIN().$this->config->getDotpayId();
+        }
         $signature = $start.
         Tools::getValue('operation_number').
         Tools::getValue('operation_type').
@@ -245,26 +271,27 @@ class DotpayDevApi extends DotpayApi {
         Tools::getValue('channel').
         Tools::getValue('channel_country').
         Tools::getValue('geoip_country');
-        
         return (Tools::getValue('signature') === hash('sha256', $signature));
     }
-    
+
     /**
      * Returns flag, if was selected PV channel
      */
-    public function isSelectedPvChannel() {
-        return ($this->parent->isDotSelectedCurrency($this->config->getDotpayPvCurrencies(), $this->getOperationCurrency()) 
-           && Tools::getValue('channel')==self::$pvChannel
-           && Tools::getValue('channel')==self::$pvChannel
-           && $this->config->isDotpayPV()
-           && $this->config->getDotpayPvId()==Tools::getValue('id'));
+    public function isSelectedPvChannel()
+    {
+        return ($this->parent->isDotSelectedCurrency($this->config->getDotpayPvCurrencies(), $this->getOperationCurrency()) &&
+                Tools::getValue('channel')==self::$pvChannel &&
+                Tools::getValue('channel')==self::$pvChannel &&
+                $this->config->isDotpayPV() &&
+                $this->config->getDotpayPvId()==Tools::getValue('id'));
     }
     
     /**
      * Returns total amount from confirm message
      * @return string|bool
      */
-    public function getTotalAmount() {
+    public function getTotalAmount()
+    {
         return Tools::getValue('operation_original_amount');
     }
     
@@ -272,7 +299,8 @@ class DotpayDevApi extends DotpayApi {
      * Returns currency from confirm message
      * @return string|bool
      */
-    public function getOperationCurrency() {
+    public function getOperationCurrency()
+    {
         return Tools::getValue('operation_original_currency');
     }
     
@@ -280,7 +308,8 @@ class DotpayDevApi extends DotpayApi {
      * Returns name of operation status
      * @return string|bool
      */
-    public function getOperationStatusName() {
+    public function getOperationStatusName()
+    {
         return Tools::getValue('operation_status');
     }
     
@@ -288,7 +317,8 @@ class DotpayDevApi extends DotpayApi {
      * Returns operation number from confirm message
      * @return string|bool
      */
-    public function getOperationNumber() {
+    public function getOperationNumber()
+    {
         return Tools::getValue('operation_number');
     }
     
@@ -296,7 +326,8 @@ class DotpayDevApi extends DotpayApi {
      * Returns related operation number from confirm message
      * @return string|bool
      */
-    public function getRelatedOperationNumber() {
+    public function getRelatedOperationNumber()
+    {
         return Tools::getValue('operation_related_number');
     }
     
@@ -304,16 +335,17 @@ class DotpayDevApi extends DotpayApi {
      * Returns new order state from confirm message
      * @return type
      */
-    public function getNewOrderState() {
-        $actualState = NULL;
+    public function getNewOrderState()
+    {
+        $actualState = null;
         switch ($this->getOperationStatusName()) {
             case "new":
                 $actualState = $this->config->getDotpayNewStatusId();
                 break;
-            case self::operationCompleted:
+            case self::OPERATION_COMPLETED:
                 $actualState = _PS_OS_PAYMENT_;
                 break;
-            case self::operationRejected:
+            case self::OPERATION_REJECTED:
                 $actualState = _PS_OS_ERROR_;
                 break;
             case "processing_realization_waiting":
@@ -329,7 +361,8 @@ class DotpayDevApi extends DotpayApi {
      * Returns hidden form for Dotpay Helper Form
      * @return array
      */
-    public function getHiddenForm() {
+    public function getHiddenForm()
+    {
         $type = Tools::getValue('dotpay_type');
         $formFields = array();
         switch($type) {
@@ -355,14 +388,13 @@ class DotpayDevApi extends DotpayApi {
                 $fields = $this->getHiddenFieldsDotpay();
                 break;
         }
-        foreach($fields as $name => $value) {
+        foreach ($fields as $name => $value) {
             $formFields[] = $this->getHiddenField($name, $value);
         }
-        if($type=='pv') {
+        if ($type=='pv') {
             $id = $this->config->getDotpayPvId();
             $pin = $this->config->getDotpayPvPIN();
-        }
-        else {
+        } else {
             $id = $this->config->getDotpayId();
             $pin = $this->config->getDotpayPIN();
         }
@@ -379,7 +411,8 @@ class DotpayDevApi extends DotpayApi {
      * @param array $params
      * @return boolean
      */
-    public function onPrepareAction($action, $params) {
+    public function onPrepareAction($action, $params)
+    {
         switch($action) {
             case 'oneclick_register':
                 return $this->onPrepareOneClick($params);
@@ -392,12 +425,13 @@ class DotpayDevApi extends DotpayApi {
      * @param array $group
      * @return boolean
      */
-    public function isChannelInGroup($channelId, array $groups) {
+    public function isChannelInGroup($channelId, array $groups)
+    {
         $result = $this->getApiChannels();
 
-        if(isset($result['channels']) && is_array($result['channels'])) {
+        if (isset($result['channels']) && is_array($result['channels'])) {
             foreach ($result['channels'] as $channel) {
-                if(isset($channel['group']) && $channel['id']==$channelId && in_array($channel['group'], $groups)) {
+                if (isset($channel['group']) && $channel['id']==$channelId && in_array($channel['group'], $groups)) {
                     return true;
                 }
             }
@@ -409,7 +443,8 @@ class DotpayDevApi extends DotpayApi {
      * Returns hidden fields for OneClick channel
      * @return array
      */
-    protected function getHiddenFieldsOneClick() {
+    protected function getHiddenFieldsOneClick()
+    {
         $hiddenFields = $this->getHiddenFields();
         
         $hiddenFields['channel'] = self::$ocChannel;
@@ -423,7 +458,8 @@ class DotpayDevApi extends DotpayApi {
      * Returns hidden fields for OneClick selected card
      * @return string
      */
-    protected function getHiddenFieldsOneClickCard() {
+    protected function getHiddenFieldsOneClickCard()
+    {
         $hiddenFields = $this->getHiddenFieldsOneClick();
         $cc = new DotpayCreditCard(Tools::getValue('credit_card'));
 
@@ -439,10 +475,11 @@ class DotpayDevApi extends DotpayApi {
      * Returns hidden fields for OneClick register card
      * @return type
      */
-    public function getHiddenFieldsOneClickRegister() {
+    public function getHiddenFieldsOneClickRegister()
+    {
         $hiddenFields = $this->getHiddenFieldsOneClick();
         $cc = DotpayCreditCard::getCreditCardByOrder($this->parent->getLastOrderNumber());
-        $hash = ($cc !== NULL)?$cc->hash:NULL;
+        $hash = ($cc !== null)?$cc->hash:null;
         
         $hiddenFields['credit_card_store'] = 1;
         $hiddenFields['credit_card_customer_id'] = $hash;
@@ -454,7 +491,8 @@ class DotpayDevApi extends DotpayApi {
      * Returns hidden fields for PV channel
      * @return array
      */
-    protected function getHiddenFieldsPV() {
+    protected function getHiddenFieldsPV()
+    {
         $hiddenFields = $this->getHiddenFields();
         
         $hiddenFields['channel'] = self::$pvChannel;
@@ -469,7 +507,8 @@ class DotpayDevApi extends DotpayApi {
      * Returns hidden fields for Credit card channel
      * @return array
      */
-    protected function getHiddenFieldsCreditCard() {
+    protected function getHiddenFieldsCreditCard()
+    {
         $hiddenFields = $this->getHiddenFields();
         
         $hiddenFields['channel'] = Tools::getValue('channel');
@@ -484,7 +523,8 @@ class DotpayDevApi extends DotpayApi {
      * Returns hidden fields for MasterPass channel
      * @return array
      */
-    protected function getHiddenFieldsMasterPass() {
+    protected function getHiddenFieldsMasterPass()
+    {
         $hiddenFields = $this->getHiddenFields();
         $hiddenFields['channel'] = self::$mpChannel;
         $hiddenFields['ch_lock'] = 1;
@@ -497,10 +537,11 @@ class DotpayDevApi extends DotpayApi {
      * Returns hidden fields for standard Dotpay channel
      * @return array
      */
-    protected function getHiddenFieldsDotpay() {
+    protected function getHiddenFieldsDotpay()
+    {
         $hiddenFields = $this->getHiddenFields();
         
-        if($this->config->isDotpayWidgetMode()) {
+        if ($this->config->isDotpayWidgetMode()) {
             $hiddenFields['ch_lock'] = 1;
             $hiddenFields['type'] = 4;
             $hiddenFields['channel'] = Tools::getValue('channel');
@@ -513,11 +554,13 @@ class DotpayDevApi extends DotpayApi {
      * Returns hidden fields for Blik channel
      * @return array
      */
-    protected function getHiddenFieldsBlik() {
+    protected function getHiddenFieldsBlik()
+    {
         $hiddenFields = $this->getHiddenFields();
         
-        if(!$this->config->isDotpayTestMode())
+        if (!$this->config->isDotpayTestMode()) {
             $hiddenFields['blik_code'] = Tools::getValue('blik_code');
+        }
         $hiddenFields['channel'] = self::$blikChannel;
         $hiddenFields['ch_lock'] = 1;
         $hiddenFields['type'] = 4;
@@ -529,7 +572,8 @@ class DotpayDevApi extends DotpayApi {
      * Returns standard hidden fields
      * @return array
      */
-    private function getHiddenFields() {
+    private function getHiddenFields()
+    {
         $streetData = $this->parent->getDotStreetAndStreetN1();
         return array(
             'id' => $this->parent->getDotId(),
@@ -563,7 +607,8 @@ class DotpayDevApi extends DotpayApi {
      * @param array $params Needed params
      * @return boolean
      */
-    protected function onPrepareOneClick($params) {
+    protected function onPrepareOneClick($params)
+    {
         $cc = new DotpayCreditCard();
         $cc->order_id = $params['order'];
         $cc->customer_id = $params['customer'];
@@ -575,17 +620,19 @@ class DotpayDevApi extends DotpayApi {
      * Checks if main channel will be empty
      * @return boolean
      */
-    private function isMainChannelEmpty() {
+    private function isMainChannelEmpty()
+    {
         $channels = $this->getApiChannels();
         $channels = $channels['channels'];
         $separatedChannels = $this->getSeparatedChannelsList();
         foreach ($channels as $number => $channel) {
-            if(($index = array_search($channel['id'], $separatedChannels)) !== false) {
+            if (($index = array_search($channel['id'], $separatedChannels)) !== false) {
                 unset($channels[$number]);
                 unset($separatedChannels[$index]);
             }
-            if(!count($separatedChannels))
+            if (!count($separatedChannels)) {
                 break;
+            }
         }
         return !count($channels);
     }
@@ -597,7 +644,8 @@ class DotpayDevApi extends DotpayApi {
      * @param array $ParametersArray Parameters from request
      * @return string
      */
-    protected function generateCHK($DotpayId, $DotpayPin, $ParametersArray) {
+    protected function generateCHK($DotpayId, $DotpayPin, $ParametersArray)
+    {
         $ParametersArray['id'] = $DotpayId;
         $ChkParametersChain =
         $DotpayPin.
@@ -721,22 +769,25 @@ class DotpayDevApi extends DotpayApi {
         $ParametersArray['recurring_start'] : null).
         (isset($ParametersArray['recurring_count']) ?
         $ParametersArray['recurring_count'] : null);
-        return hash('sha256',$ChkParametersChain);
+        return hash('sha256', $ChkParametersChain);
     }
     
     /**
      * Returns amount after extra charge
      * @return type
      */
-    public function getExtrachargeAmount($inDefaultCurrency = false) {
-        if(!$this->config->getDotpayExCh())
+    public function getExtrachargeAmount($inDefaultCurrency = false)
+    {
+        if (!$this->config->getDotpayExCh()) {
             return 0.0;
+        }
         $amount = (float)$this->parent->getDotAmount();
         $exPercentage = $this->getFormatAmount($amount * $this->config->getDotpayExPercentage()/100);
         $exAmount = $this->getFormatAmount($this->config->getDotpayExAmount());
         $price = max($exPercentage, $exAmount);
-        if($inDefaultCurrency)
+        if ($inDefaultCurrency) {
             $price = $this->getFormatAmount(Tools::convertPrice($price, $this->parent->getDotCurrencyId(), false));
+        }
         return $price;
     }
     
@@ -744,9 +795,11 @@ class DotpayDevApi extends DotpayApi {
      * Returns amount after discount for Dotpay
      * @return type
      */
-    public function getDiscountAmount() {
-        if(!$this->config->getDotpayDiscount())
+    public function getDiscountAmount()
+    {
+        if (!$this->config->getDotpayDiscount()) {
             return 0.0;
+        }
         $amount = $this->parent->getDotShippingAmount();
         $discPercentage = $this->getFormatAmount($amount * $this->config->getDotpayDiscPercentage()/100);
         $discAmount = $this->config->getDotpayDiscAmount();
@@ -759,9 +812,11 @@ class DotpayDevApi extends DotpayApi {
      * @param type $sellerId
      * @return boolean
      */
-    public function checkSellerId($sellerId) {
-        if(empty($sellerId))
+    public function checkSellerId($sellerId)
+    {
+        if (empty($sellerId)) {
             return false;
+        }
         $dotpayUrl = $this->config->getDotpayTargetUrl();
         $curlUrl = "{$dotpayUrl}payment_api/channels/?id={$sellerId}";
         
@@ -777,10 +832,10 @@ class DotpayDevApi extends DotpayApi {
             $resultJson = false;
         }
         
-        if($curl) {
+        if ($curl) {
             $curl->close();
         }
-        $result = json_decode($resultJson, true);
+        $result = Tools::jsonDecode($resultJson, true);
         return !(isset($result['error_code']) && $result['error_code'] == 'UNKNOWN_ACCOUNT');
     }
     
@@ -788,7 +843,8 @@ class DotpayDevApi extends DotpayApi {
      * Returns operation type
      * @return string
      */
-    public function getOperationType() {
+    public function getOperationType()
+    {
         return Tools::getValue('operation_type');
     }
 }

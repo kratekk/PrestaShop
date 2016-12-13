@@ -1,8 +1,5 @@
 <?php
-
 /**
-*
-*
 * NOTICE OF LICENSE
 *
 * This source file is subject to the Academic Free License (AFL 3.0)
@@ -22,26 +19,28 @@
 *  @author    Dotpay Team <tech@dotpay.pl>
 *  @copyright Dotpay
 *  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
-*
 */
 
-class DotpayFormHelper {
+class DotpayFormHelper
+{
     /**
      * Generate form from data array
      * @param array $data
      * @return string
      */
-    public static function generate(Array $data) {
+    public static function generate(Array $data)
+    {
         $html = '';
         foreach ($data['fields'] as $value) {
-            switch($value['type']) {
+            switch ($value['type']) {
                 case 'select':
                     $html .= self::generateSelect($value)."\n";
                     break;
                 case 'button':
+                /* --- EMPTY --- */
                 case 'reset':
                     $html .= self::generateButton($value)."\n";
-            	case 'submit':
+                case 'submit':
                     $html .= self::generateSubmit($value)."\n";
                     break;
                 case 'hidden':
@@ -60,9 +59,10 @@ class DotpayFormHelper {
      * @param array $data
      * @return string
      */
-    private static function generateFormBegin(Array $data) {
+    private static function generateFormBegin(Array $data)
+    {
         $html = '<form';
-        foreach($data['form'] as $name => $value) {
+        foreach ($data['form'] as $name => $value) {
             $html.=" $name='$value'";
         }
         $html .= '>';
@@ -74,19 +74,20 @@ class DotpayFormHelper {
      * @param array $data
      * @return string
      */
-    private static function generateDefault(Array $data, $hidden = false) {
+    private static function generateDefault(Array $data, $hidden = false)
+    {
         $label = '';
         $llabel = '';
-        if(isset($data['label'])) {
+        if (isset($data['label'])) {
             $label = $data['label'];
             unset($data['label']);
         }
-        if(isset($data['llabel'])) {
+        if (isset($data['llabel'])) {
             $llabel = $data['llabel'];
             unset($data['llabel']);
         }
         $html = '<input';
-        foreach($data as $name => $value) {
+        foreach ($data as $name => $value) {
             $html.=" $name='$value'";
         }
         $html .= ' />';
@@ -99,24 +100,29 @@ class DotpayFormHelper {
      * @param array $data
      * @return string
      */
-    private static function generateSelect(Array $data) {
+    private static function generateSelect(Array $data)
+    {
         $label = '';
         $llabel = '';
-        if(isset($data['label'])) {
+        if (isset($data['label'])) {
             $label = $data['label'];
             unset($data['label']);
         }
-        if(isset($data['llabel'])) {
+        if (isset($data['llabel'])) {
             $llabel = $data['llabel'];
             unset($data['llabel']);
         }
         $html = '<select';
-        foreach($data as $name => $value) {
-        	if($name!='value'&&$name!='values')
-            	$html.=" $name='$value'";
+        foreach ($data as $name => $value) {
+            if ($name!='value'&&$name!='values') {
+                $html.=" $name='$value'";
+            }
         }
         $html .= '>';
-        foreach($data['values'] as $name => $value) {
+        foreach ($data['values'] as $name => $value) {
+            if (empty($data['value'])) {
+                $data['value'] = null;
+            }
             $html.="<option value='$value'".(($value==$data['value'])?" selected":'').">$name</option>";
         }
         $html .= '</select>';
@@ -128,19 +134,20 @@ class DotpayFormHelper {
      * @param array $data
      * @return string
      */
-    private static function generateButton(Array $data) {
+    private static function generateButton(Array $data)
+    {
         $label = '';
         $llabel = '';
-        if(isset($data['label'])) {
+        if (isset($data['label'])) {
             $label = $data['label'];
             unset($data['label']);
         }
-        if(isset($data['llabel'])) {
+        if (isset($data['llabel'])) {
             $llabel = $data['llabel'];
             unset($data['llabel']);
         }
         $html = '<input';
-        foreach($data as $name => $value) {
+        foreach ($data as $name => $value) {
             $html.=" $name='$value'";
         }
         $html .= ' />';
@@ -152,24 +159,25 @@ class DotpayFormHelper {
      * @param array $data
      * @return string
      */
-    private static function generateSubmit(Array $data) {
+    private static function generateSubmit(Array $data)
+    {
         $label = '';
         $llabel = '';
-        if(isset($data['label'])) {
+        if (isset($data['label'])) {
             $label = $data['label'];
             unset($data['label']);
         }
-        if(isset($data['llabel'])) {
+        if (isset($data['llabel'])) {
             $llabel = $data['llabel'];
             unset($data['llabel']);
         }
         $content = '';
-        if(isset($data['value'])) {
+        if (isset($data['value'])) {
             $content = $data['value'];
             unset($data['value']);
         }
         $html = '<button';
-        foreach($data as $name => $value) {
+        foreach ($data as $name => $value) {
             $html.=" $name='$value'";
         }
         $html .= '>'.$content.'</button>';

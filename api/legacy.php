@@ -1,8 +1,5 @@
 <?php
-
 /**
-*
-*
 * NOTICE OF LICENSE
 *
 * This source file is subject to the Academic Free License (AFL 3.0)
@@ -22,27 +19,28 @@
 *  @author    Dotpay Team <tech@dotpay.pl>
 *  @copyright Dotpay
 *  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
-*
 */
 
-require_once(__DIR__.'/api.php');
+require_once(DOTPAY_PLUGIN_DIR.'/api/api.php');
 
-class DotpayLegacyApi extends DotpayApi {
+class DotpayLegacyApi extends DotpayApi
+{
     /**
      * Status name of rejected operation
      */
-    const operationRejected = 3;
+    const OPERATION_REJECTED = 3;
     
     /**
      * Status name of completed operation
      */
-    const operationCompleted = 2;
+    const OPERATION_COMPLETED = 2;
     
     /**
      * Returns list of payment channels
      * @return array
      */
-    public function getChannelList(){
+    public function getChannelList()
+    {
         $channelList = array();
         $targetUrl = $this->parent->getPreparingUrl();
         $channelList['dotpay'] = array(
@@ -62,32 +60,35 @@ class DotpayLegacyApi extends DotpayApi {
      * Check confirm message from Dotpay
      * @return bool
      */
-    public function checkConfirm(){
+    public function checkConfirm()
+    {
         $signature =
         $this->config->getDotpayPIN().":".
         $this->config->getDotpayId().":".
         Tools::getValue('control').":".
         Tools::getValue('t_id').":".
-        Tools::getValue('amount').":". 
+        Tools::getValue('amount').":".
         Tools::getValue('email').":".
-        Tools::getValue('service').":".  
+        Tools::getValue('service').":".
         Tools::getValue('code').":".
         Tools::getValue('username').":".
         Tools::getValue('password').":".
         Tools::getValue('t_status');
-	return (Tools::getValue('md5') == hash('md5', $signature));
+        return (Tools::getValue('md5') == hash('md5', $signature));
     }
     
     /**
      * Returns total amount from confirm message
      * @return string|bool
      */
-    public function getTotalAmount() {
+    public function getTotalAmount()
+    {
         $fullAmount = explode(' ', Tools::getValue('orginal_amount'));
         return $fullAmount[0];
     }
     
-    public function getOperationCurrency() {
+    public function getOperationCurrency()
+    {
         $fullAmount = explode(' ', Tools::getValue('orginal_amount'));
         return $fullAmount[1];
     }
@@ -96,7 +97,8 @@ class DotpayLegacyApi extends DotpayApi {
      * Returns name of operation status
      * @return string|bool
      */
-    public function getOperationStatusName() {
+    public function getOperationStatusName()
+    {
         return Tools::getValue('t_status');
     }
     
@@ -104,7 +106,8 @@ class DotpayLegacyApi extends DotpayApi {
      * Returns operation number from confirm message
      * @return string|bool
      */
-    public function getOperationNumber() {
+    public function getOperationNumber()
+    {
         return Tools::getValue('t_id');
     }
     
@@ -112,7 +115,8 @@ class DotpayLegacyApi extends DotpayApi {
      * Returns related operation number from confirm message
      * @return string|bool
      */
-    public function getRelatedOperationNumber() {
+    public function getRelatedOperationNumber()
+    {
         return false;
     }
     
@@ -120,16 +124,17 @@ class DotpayLegacyApi extends DotpayApi {
      * Returns new order state from confirm message
      * @return type
      */
-    public function getNewOrderState() {
-        $actualState = NULL;
+    public function getNewOrderState()
+    {
+        $actualState = null;
         switch ($this->getOperationStatusName()) {
             case 1:
                 $actualState = $this->config->getDotpayNewStatusId();
                 break;
-            case self::operationCompleted:
+            case self::OPERATION_COMPLETED:
                 $actualState = _PS_OS_PAYMENT_;
                 break;
-            case self::operationRejected:
+            case self::OPERATION_REJECTED:
                 $actualState = _PS_OS_ERROR_;
                 break;
             case 4:
@@ -143,19 +148,22 @@ class DotpayLegacyApi extends DotpayApi {
      * Returns hidden form for Dotpay Helper Form
      * @return array
      */
-    public function getHiddenForm() {
+    public function getHiddenForm()
+    {
         $formFields = array();
         $fields = $this->getHiddenFields();
-        foreach($fields as $name => $value) {
-            if(Tools::getValue($name)!==false)
+        foreach ($fields as $name => $value) {
+            if (Tools::getValue($name)!==false) {
                 $value = Tools::getValue($name);
+            }
             $formFields[] = $this->getHiddenField($name, $value);
         }
         $formFields[] = $this->getHiddenField('chk', $this->generateCHK($this->config->getDotpayID(), $this->config->getDotpayPIN(), $fields));
-        if(Tools::getValue('order_id'))
+        if (Tools::getValue('order_id')) {
             $formFields[] = $this->getHiddenField('order_id', Tools::getValue('order_id'));
+        }
         return array(
-	    'form'=> $this->getFormHeader('dotpay'),
+            'form'=> $this->getFormHeader('dotpay'),
             'fields' => $formFields
         );
     }
@@ -166,7 +174,8 @@ class DotpayLegacyApi extends DotpayApi {
      * @param array $params
      * @return boolean
      */
-    public function onPrepareAction($action, $params) {
+    public function onPrepareAction($action, $params)
+    {
         return true;
     }
     
@@ -176,7 +185,8 @@ class DotpayLegacyApi extends DotpayApi {
      * @param array $group
      * @return boolean
      */
-    public function isChannelInGroup($channelId, array $groups) {
+    public function isChannelInGroup($channelId, array $groups)
+    {
         return false;
     }
     
@@ -184,7 +194,8 @@ class DotpayLegacyApi extends DotpayApi {
      * Returns standard hidden fields
      * @return array
      */
-    private function getHiddenFields() {
+    private function getHiddenFields()
+    {
         $streetData = $this->parent->getDotStreetAndStreetN1();
         return array(
             'id' => $this->parent->getDotId(),
@@ -215,7 +226,8 @@ class DotpayLegacyApi extends DotpayApi {
      * @param array $ParametersArray Parameters from request
      * @return string
      */
-    protected function generateCHK($DotpayId, $DotpayPin, $ParametersArray) {
+    protected function generateCHK($DotpayId, $DotpayPin, $ParametersArray)
+    {
         $ChkParametersChain =
         $DotpayId.
         (isset($ParametersArray['amount']) ? $ParametersArray['amount'] : null).
@@ -229,7 +241,8 @@ class DotpayLegacyApi extends DotpayApi {
     /**
      * Returns flag, if was selected PV channel
      */
-    public function isSelectedPvChannel() {
+    public function isSelectedPvChannel()
+    {
         return false;
     }
     
@@ -237,7 +250,8 @@ class DotpayLegacyApi extends DotpayApi {
      * Returns amount after extra charge
      * @return type
      */
-    public function getExtrachargeAmount() {
+    public function getExtrachargeAmount()
+    {
         return 0.0;
     }
     
@@ -245,7 +259,8 @@ class DotpayLegacyApi extends DotpayApi {
      * Returns amount after discount for Dotpay
      * @return type
      */
-    public function getDiscountAmount() {
+    public function getDiscountAmount()
+    {
         return 0.0;
     }
     
@@ -254,7 +269,8 @@ class DotpayLegacyApi extends DotpayApi {
      * @param type $sellerId
      * @return boolean
      */
-    public function checkSellerId($sellerId) {
+    public function checkSellerId($sellerId)
+    {
         return true;
     }
     
@@ -262,7 +278,8 @@ class DotpayLegacyApi extends DotpayApi {
      * Returns operation type
      * @return string
      */
-    public function getOperationType() {
-        return self::paymentOperation;
+    public function getOperationType()
+    {
+        return self::PAYMENT_OPERATION;
     }
 }

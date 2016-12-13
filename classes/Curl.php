@@ -1,8 +1,5 @@
 <?php
-
 /**
-*
-*
 * NOTICE OF LICENSE
 *
 * This source file is subject to the Academic Free License (AFL 3.0)
@@ -22,31 +19,32 @@
 *  @author    Dotpay Team <tech@dotpay.pl>
 *  @copyright Dotpay
 *  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
-*
 */
 
 /**
  * Tool for support Curl
  */
-class DotpayCurl {
+class DotpayCurl
+{
     /**
      *
      * @var resource cURL resource
      */
-    private $_resource;
+    private $resource;
     
     /**
      * 
      * @var mixed Information about last request
      */
-    private $_info;
+    private $info;
     
     /**
      * Initialize a cURL session
      * @return \Curl
      */
-    public function __construct() {
-        $this->_resource = curl_init();
+    public function __construct()
+    {
+        $this->resource = curl_init();
     }
     
     /**
@@ -54,7 +52,8 @@ class DotpayCurl {
      * @param string $file
      * @return \Curl
      */
-    public function addCaInfo($file) {
+    public function addCaInfo($file)
+    {
         $this->addOption(CURLOPT_CAINFO, $file);
         
         return $this;
@@ -66,8 +65,9 @@ class DotpayCurl {
      * @param mixed $value
      * @return \Curl
      */
-    public function addOption($option, $value) {
-        curl_setopt($this->_resource, $option, $value);
+    public function addOption($option, $value)
+    {
+        curl_setopt($this->resource, $option, $value);
         return $this;
     }
     
@@ -75,9 +75,10 @@ class DotpayCurl {
      * Perform a cURL session
      * @return mixed
      */
-    public function exec() {
-        $response = curl_exec($this->_resource);
-        $this->_info = curl_getinfo($this->_resource);
+    public function exec()
+    {
+        $response = curl_exec($this->resource);
+        $this->info = curl_getinfo($this->resource);
         
         return $response;
     }
@@ -86,14 +87,16 @@ class DotpayCurl {
      * Get information regarding a specific transfer
      * @return mixed
      */
-    public function getInfo() {
-        return $this->_info;
+    public function getInfo()
+    {
+        return $this->info;
     }
     
     /**
      * Close a cURL session
      */
-    public function close() {
-        curl_close($this->_resource);
+    public function close()
+    {
+        curl_close($this->resource);
     }
 }

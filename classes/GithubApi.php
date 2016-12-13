@@ -1,8 +1,5 @@
 <?php
-
 /**
-*
-*
 * NOTICE OF LICENSE
 *
 * This source file is subject to the Academic Free License (AFL 3.0)
@@ -22,25 +19,25 @@
 *  @author    Dotpay Team <tech@dotpay.pl>
 *  @copyright Dotpay
 *  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
-*
 */
 
-class DotpayGithubApi {
+class DotpayGithubApi
+{
     private static $githubUrl = 'https://api.github.com';
     
-    public static function getLatestVersion() {
+    public static function getLatestVersion()
+    {
         $url = self::$githubUrl.'/repos/dotpay/PrestaShop/releases/latest';
         $curl = new DotpayCurl();
         $curl->addOption(CURLOPT_URL, $url);
         self::setCurlOption($curl);
-        $response = json_decode($curl->exec());
-        $version = NULL;
+        $response = Tools::jsonDecode($curl->exec());
+        $version = null;
         $url = '';
-        if($response instanceof \stdClass) {
-            if(isset($response->tag_name)) {
-                $version = str_replace ('v', '', $response->tag_name);
-                if(isset($response->html_url))
-                    $url = $response->assets[0]->browser_download_url;
+        if ($response instanceof \stdClass && isset($response->tag_name)) {
+            $version = str_replace('v', '', $response->tag_name);
+            if (isset($response->html_url)) {
+                $url = $response->assets[0]->browser_download_url;
             }
         }
         return array(
@@ -53,12 +50,13 @@ class DotpayGithubApi {
      * Set option for cUrl and return cUrl resource
      * @param resource $curl
      */
-    private static function setCurlOption($curl) {
+    private static function setCurlOption($curl)
+    {
         $headers = array(
             'Accept: application/vnd.github.v3+json',
             'User-Agent: DotpayPluginForPrestashop'
         );
-        $curl->addOption(CURLOPT_SSL_VERIFYPEER, TRUE)
+        $curl->addOption(CURLOPT_SSL_VERIFYPEER, true)
              ->addOption(CURLOPT_SSL_VERIFYHOST, 2)
              ->addOption(CURLOPT_RETURNTRANSFER, 1)
              ->addOption(CURLOPT_HTTPHEADER, $headers)

@@ -1,4 +1,25 @@
 <?php
+/**
+* NOTICE OF LICENSE
+*
+* This source file is subject to the Academic Free License (AFL 3.0)
+* that is bundled with this package in the file LICENSE.txt.
+* It is also available through the world-wide-web at this URL:
+* http://opensource.org/licenses/afl-3.0.php
+* If you did not receive a copy of the license and are unable to
+* obtain it through the world-wide-web, please send an email
+* to license@prestashop.com so we can send you a copy immediately.
+*
+* DISCLAIMER
+*
+* Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+* versions in the future. If you wish to customize PrestaShop for your
+* needs please refer to http://www.prestashop.com for more information.
+*
+*  @author    Dotpay Team <tech@dotpay.pl>
+*  @copyright Dotpay
+*  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
+*/
 
 global $_MODULE;
 $_MODULE = array();
@@ -113,9 +134,9 @@ $_MODULE['<{dotpay}prestashop>dotpay_b96c8d5c9a1c08148c542da61c3ee3bb'] = 'http:
 $_MODULE['<{dotpay}prestashop>admindotpayrefundcontroller_313abbf6c8bc2aef3002dc5f26abded3'] = 'Zwrot zamówienia:';
 $_MODULE['<{dotpay}prestashop>dotpay_2ca8cf8ffec2f5f610af205003632c8f'] = 'Żądanie zwrotu zostało wysłane';
 $_MODULE['<{dotpay}prestashop>dotpay_8ea6644b812925ca03d03b20fa4a013e'] = 'Wystąpił błąd podczas żądania zwrotu';
-$_MODULE['<{dotpay}prestashop>ocmanage_5655bf14f9f4c8bbe0e18087976d0813'] = 'Czy chcesz wyrejestrować kartę?';
-$_MODULE['<{dotpay}prestashop>ocmanage_fdfb0fd58631160c178dc31f07d119e4'] = 'Karta została wyrejestrowana.';
-$_MODULE['<{dotpay}prestashop>ocmanage_0856621dc4671bd2c96f220430bb3819'] = 'Wystapił błąd podczas wyrejestrowania karty.';
+$_MODULE['<{dotpay}prestashop>dotpay_5655bf14f9f4c8bbe0e18087976d0813'] = 'Czy chcesz wyrejestrować kartę?';
+$_MODULE['<{dotpay}prestashop>dotpay_fdfb0fd58631160c178dc31f07d119e4'] = 'Karta została wyrejestrowana.';
+$_MODULE['<{dotpay}prestashop>dotpay_0856621dc4671bd2c96f220430bb3819'] = 'Wystapił błąd podczas wyrejestrowania karty.';
 $_MODULE['<{dotpay}prestashop>payment_8556ebc348f22dd8693eb878ba043652'] = 'Płatności online Dotpay';
 $_MODULE['<{dotpay}prestashop>dotpay_46a8ec59e6a72d2fdc718f278042db75'] = 'Dodatkowa opłata manipulacyjna. Płatność zostanie zwiększona o';
 $_MODULE['<{dotpay}prestashop>dotpay_46a8ec59e6a72d2fdc718f278042db75'] = 'Dla wybranej metody płatności zostanie doliczona dodatkowa opłata manipulacyjna w wysokości';
@@ -159,6 +180,10 @@ $_MODULE['<{dotpay}prestashop>configure_e4b9748fa07b000ff905eda1e6dc759e'] = 'Mo
 $_MODULE['<{dotpay}prestashop>configure_fd0d185799de7c07eec990e379022a7d'] = 'na tej stronie';
 $_MODULE['<{dotpay}prestashop>configure_bac630adb4d5cd6ed5c91c79ad168a1d'] = 'Twój moduł jest aktualny';
 $_MODULE['<{dotpay}prestashop>configure_94dbe985fde10a4c8a76aa7ccd81a122'] = 'Dzięki temu masz gwarancję bezpieczeństwa oraz możliwość używania najnowszych rozwiązań, oferowanych przez firmę Dotpay.';
+$_MODULE['<{dotpay}prestashop>configure_7f231c4944d78cb9904f76af4b59b779'] = 'Sprawdź instrukcję przed konfiguracją modułu:';
+$_MODULE['<{dotpay}prestashop>configure_18cfe5faa6621518d24043e91ea53fd9'] = 'https://github.com/dotpay/PrestaShop/releases/download/v2.1.0/Dotpay_PrestaShop_modul-Instrukcja_v2.1.0_pl.pdf';
+$_MODULE['<{dotpay}prestashop>configure_315ec54b764e386076868028f30f3a94'] = 'Pobierz instrukcję konfiguracji dla tego modułu';
+$_MODULE['<{dotpay}prestashop>configure_d02eb64052c3fb26b9219e9dff4175fe'] = 'pobierz instrukcję';
 $_MODULE['<{dotpay}prestashop>back_22c1c4383031f483d44c365df03c684c'] = 'Koniec płatności Dotpay';
 $_MODULE['<{dotpay}prestashop>back_7408670e6e9be2f6697baeb74f000126'] = 'Wróć do strony głównej';
 $_MODULE['<{dotpay}prestashop>back_b52c8aab9d4c5957519168c3bcdfcc8b'] = 'Status opłacenia zamówienia:';
@@ -213,6 +238,7 @@ $_MODULE['<{dotpay}prestashop>renew_836254bc13bbc52e6aa691e586b3c710'] = 'Możes
 $_MODULE['<{dotpay}prestashop>renew_83a6a542583767804d3f9aa7e46e252b'] = 'Zobacz instrukcję';
 $_MODULE['<{dotpay}prestashop>dotpay_4d24fabb5b29b21d150e2127e13bc35e'] = 'Karty płatnicze - One Click';
 $_MODULE['<{dotpay}prestashop>dotpay_3379dcc893e3b8096e3b3c5b9fe39319'] = '(dzięki Dotpay.pl)';
+$_MODULE['<{dotpay}prestashop>dotpay_bb35bf1e786171d969f3168717144479'] = 'Musisz być zalogowany aby móc użyć tego kanału';
 $_MODULE['<{dotpay}prestashop>dotpay_9db387d72269723d491753cd6e992b73'] = 'Dostępne kanały płatności';
 $_MODULE['<{dotpay}prestashop>dotpay_2e57fd21d7e51b909f2cad0dbb9d5b4d'] = 'zmień kanał';
 $_MODULE['<{dotpay}prestashop>dotpay_96559b5a124d7ca7cbc0cbad1fbdb54d'] = 'Wybrany kanał płatności';

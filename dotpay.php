@@ -76,7 +76,7 @@ class dotpay extends PaymentModule
     {
         $this->name = 'dotpay';
         $this->tab = 'payments_gateways';
-        $this->version = '2.2.0';
+        $this->version = '2.2.1';
         $this->author = 'tech@dotpay.pl';
         $this->ps_versions_compliancy = array('min' => '1.6', 'max' => '1.6.9');
         $this->bootstrap = true;
@@ -320,16 +320,35 @@ class dotpay extends PaymentModule
         $order = new Order(Tools::getValue('id_order'));
         $instruction = DotpayInstruction::getByOrderId($order->id);
         $context =  Context::getContext();
-        $context->cookie->dotpay_channel = $instruction->channel;
         if ($order->module=='dotpay') {
-            $this->smarty->assign(array(
-                'isRenew' => $order->current_state == $this->config->getDotpayNewStatusId(),
-                'paymentUrl' => $this->context->link->getModuleLink('dotpay', 'payment', array('order_id'=>$order->id)),
-                'isInstruction' => ($instruction->id!=null),
-                'instructionUrl' => $this->context->link->getModuleLink('dotpay', 'confirm', array('order_id'=>$order->id)),
-            ));
+            if ($instruction != null && $this->ifRenewActiveForOrder($order)) {
+                $context->cookie->dotpay_channel = $instruction->channel;
+                $this->smarty->assign(array(
+                    'isInstruction' => ($instruction->id!=null),
+                    'instructionUrl' => $this->context->link->getModuleLink('dotpay', 'confirm', array('order_id'=>$order->id)),
+                ));
+            }
+            
+            if ($this->ifRenewActiveForOrder($order)) {
+                $this->smarty->assign(array(
+                    'isRenew' => $order->current_state == $this->config->getDotpayNewStatusId(),
+                    'paymentUrl' => $this->context->link->getModuleLink('dotpay', 'payment', array('order_id'=>$order->id))
+                ));
+            }
             return $this->display(__FILE__, 'renew.tpl');
         }
+    }
+    
+    /**
+     * Checks, if a possibility for given order haven't expired yet
+     * @param Order $order object of order
+     * @return bool
+     */
+    public function ifRenewActiveForOrder(Order $order) {
+        $now = new DateTime();
+        $orderAddDate = new DateTime($order->date_add);
+        $numberOfRenewDays = $this->config->getDotpayRenewDays();
+        return (empty($numberOfRenewDays) || ($orderAddDate < $now && $now->diff($orderAddDate)->format("%a") < $numberOfRenewDays));
     }
     
     /**
@@ -568,10 +587,11 @@ class dotpay extends PaymentModule
                         )
                     ),
                     array(
-                        'type' => 'switch',
-                        'label' => '<span class="dev-option">'.$this->l('Renew payment enabled')."</span>",
+                        'type' => 'radio',
+                        'label' => $this->l('Renew payment enabled'),
                         'name' => $this->config->getDotpayRenewFN(),
                         'is_bool' => true,
+                        'class' => 'dev-option renew-enable-option',
                         'desc' => $this->l('Logged in clients can resume interrupted payments'),
                         'values' => array(
                             array(
@@ -585,6 +605,14 @@ class dotpay extends PaymentModule
                                 'label' => $this->l('Disable')
                             )
                         )
+                    ),
+                    array(
+                        'type' => 'text',
+                        'name' => $this->config->getDotpayRenewDaysFN(),
+                        'label' => '<span class="dev-option renew-option">'.$this->l('Remaining days to renew payments')."</span>",
+                        'size' => 6,
+                        'class' => 'fixed-width-sm',
+                        'desc' => $this->l('You can set how long time (in days) customers have a possibility to renew their payments').'<br><b>'.$this->l('Leave this field blank to set an indefinite time').'</b>',
                     ),
                     array(
                         'type' => 'text',
@@ -863,6 +891,7 @@ class dotpay extends PaymentModule
             $this->config->getDotpayIdFN() => $this->config->getDotpayId(),
             $this->config->getDotpayPINFN() => $this->config->getDotpayPIN(),
             $this->config->getDotpayRenewFN() => $this->config->isDotpayRenewEn(),
+            $this->config->getDotpayRenewDaysFN() => $this->config->getDotpayRenewDays(),
             $this->config->getDotpayRefundFN() => $this->config->isDotpayRefundEn(),
             $this->config->getDotpayDispInstructionFN() => $this->config->isDotpayDispInstruction(),
             $this->config->getDotpayMasterPassFN() => $this->config->isDotpayMasterPass(),
@@ -915,7 +944,7 @@ class dotpay extends PaymentModule
             $extrachargeFlagAfter = $this->config->getDotpayExCh();
             
             if ($extrachargeFlagBefore == false && $extrachargeFlagAfter == true) {
-                $this->addDotpayVirtualProduct();
+                $this->checkDotpayVirtualProduct();
             }
             if ($discountFlagBefore == false && $discountFlagAfter == true) {
                 $this->addDotpayDiscount();
@@ -1068,7 +1097,6 @@ class dotpay extends PaymentModule
                 $newOrderState->name[$language['id_lang']] = $engName;
             }
         }
-
         $newOrderState->module_name = $this->name;
         $newOrderState->send_email = false;
         $newOrderState->invoice = false;
@@ -1081,19 +1109,65 @@ class dotpay extends PaymentModule
     }
     
     /**
-     * Added Dotpay virtual product for extracharge option
+     * Adds Dotpay virtual product for extracharge option
      * @return bool
      */
-    private function addDotpayVirtualProduct()
+    public function checkDotpayVirtualProduct()
     {
         if (Validate::isInt($this->config->getDotpayExchVPid()) &&
            (Validate::isLoadedObject($product = new Product($this->config->getDotpayExchVPid()))) &&
            Validate::isInt($product->id)
         ) {
+            if ($this->isVPIncomplete($product)) {
+                $this->setVPFeatures($product);
+                $product->save();
+                StockAvailable::setQuantity($product->id,NULL,$product->quantity);
+            }
             return true;
         }
             
         $product = new Product();
+        $this->setVPFeatures($product);
+        if (!$product->add()) {
+            return false;
+        }
+        $product->addToCategories(array(1));
+        StockAvailable::setQuantity($product->id, null, $product->quantity);
+        $this->config->setDotpayExchVPid($product->id);
+
+        return true;
+    }
+    
+    /**
+     * Checks if Dotpay virtual product is complete
+     * @param Product $product Dotpay virtual product object
+     * @return bool
+     */
+    private function isVPIncomplete($product) {
+        return (
+            empty($product->name) ||
+            empty($product->link_rewrite) ||
+            empty($product->visibility) ||
+            empty($product->reference) ||
+            empty($product->price) ||
+            empty($product->is_virtual) ||
+            empty($product->online_only) ||
+            empty($product->redirect_type) ||
+            empty($product->quantity) ||
+            empty($product->id_tax_rules_group) ||
+            empty($product->active) ||
+            empty($product->meta_keywords) ||
+            empty($product->id_category) ||
+            empty($product->id_category_default)
+        );
+    }
+    
+    /**
+     * Sets values of Dotpay virtual product
+     * @param Product $product Dotpay virtual product object
+     */
+    private function setVPFeatures($product)
+    {
         $product->name = array((int)Configuration::get('PS_LANG_DEFAULT') => 'Online payment');
         $product->link_rewrite = array((int)Configuration::get('PS_LANG_DEFAULT') => 'online-payment');
         $product->visibility = 'none';
@@ -1108,16 +1182,12 @@ class dotpay extends PaymentModule
         $product->meta_keywords = 'payment';
         $product->id_category = 1;
         $product->id_category_default = 1;
-        if (!$product->add()) {
-            return false;
-        }
-        $product->addToCategories(array(1));
-        StockAvailable::setQuantity($product->id, null, $product->quantity);
-        $this->config->setDotpayExchVPid($product->id);
-
-        return true;
     }
     
+    /**
+     * Adds a return tab
+     * @return bool
+     */
     private function addReturnTab()
     {
         // Prepare tab
@@ -1174,6 +1244,7 @@ class dotpay extends PaymentModule
                      ->setDotpayId('')
                      ->setDotpayPIN('')
                      ->setDotpayRenew(true)
+                     ->setDotpayRenewDays('')
                      ->setDotpayRefund(false)
                      ->setDotpayDispInstruction(false)
                      ->setDotpayTestMode(false)

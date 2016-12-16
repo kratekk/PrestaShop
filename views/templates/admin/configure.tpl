@@ -174,9 +174,18 @@
             $('.legacy-option').parents('.form-group').hide().next('hr').hide();
             $('.dev-option').parents('.form-group').show().next('hr').show();
             $('#message-for-old-version').hide();
+            setFieldsForRenew();
             setFieldsForPV();
             setFieldsForExCh();
             setFieldsForDiscount();
+        }
+    }
+    
+    function setFieldsForRenew() {
+        if($('.renew-enable-option input[name="DP_RENEW"]:checked').val()=='1') {
+            $('.renew-option').parents('.form-group').show();
+        } else {
+            $('.renew-option').parents('.form-group').hide();
         }
     }
     
@@ -302,6 +311,11 @@
         var check = validateId($('#DP_USER_ID'), true) + validatePin($('#DP_USER_PIN'), true);
         if(check)
             disableSubmit(true);
+        
+        $('.renew-enable-option input[name="DP_RENEW"]').change(function(){
+            setFieldsForPV();
+            validateGUI();
+        });
         
         $('.pv-enable-option input[name="DP_PV_MODE"]').change(function(){
             setFieldsForPV();

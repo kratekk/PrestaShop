@@ -53,14 +53,30 @@ abstract class DotpayController extends ModuleFrontController
     protected $api;
     
     /**
+     *
+     * @var float Total amount of order or cart, which is used to payment
+     */
+    protected $totalAmount;
+    
+    /**
+     *
+     * @var float Shipping amount of order or cart, which is used to payment
+     */
+    protected $shippingAmount;
+    
+    /**
+     *
+     * @var int Id of currency, which is used to payment
+     */
+    protected $currencyId;
+    
+    /**
      * Prepares environment for all Dotpay controllers
      */
     public function __construct()
     {
         parent::__construct();
         $this->config = new DotpayConfig();
-        
-        $this->initPersonalData();
         
         if ($this->config->getDotpayApiVersion()=='legacy') {
             $this->api = new DotpayLegacyApi($this);
@@ -69,6 +85,54 @@ abstract class DotpayController extends ModuleFrontController
         }
         
         $this->module->registerFormHelper();
+    }
+    
+    /**
+     * Returns address object, created from correct source
+     * @return Address
+     */
+    public function getAddress() {
+        if ($this->address === null) {
+            $this->address = new Address($this->getInitializedCart()->id_address_invoice);
+        }
+        return $this->address;
+    }
+    
+    /**
+     * Returns customer object, created from correct source
+     * @return Customer
+     */
+    public function getCustomer() {
+        if ($this->customer === null) {
+            $this->customer = new Customer($this->getInitializedCart()->id_customer);
+        }
+        return $this->customer;
+    }
+    
+    /**
+     * Returns currency id, came from correct source
+     * @return int
+     */
+    public function getCurrencyId() {
+        if ($this->currencyId === null) {
+            $this->currencyId = $this->getInitializedCart()->id_currency;
+        }
+        return $this->currencyId;
+    }
+    
+    /**
+     * Sets the given order as a source of a data for payment
+     * @param int $orderId Id of order
+     */
+    public function setOrderAsSource($orderId) {
+        $order = new Order($orderId);
+        if ($this->module->ifRenewActiveForOrder($order)) {
+            $this->totalAmount = $order->total_paid;
+            $this->shippingAmount = $order->total_shipping;
+            $this->currencyId = $order->id_currency;
+        } else {
+            die($this->module->l('You can not renew your payment, because this possibility has expired for your order.'));
+        }
     }
     
     /**
@@ -88,7 +152,6 @@ abstract class DotpayController extends ModuleFrontController
     {
         return Order::getOrderByCartId($this->context->cart->id);
     }
-
 
     /**
      * Returns unique value for every order
@@ -119,10 +182,16 @@ abstract class DotpayController extends ModuleFrontController
      */
     public function getDotAmount()
     {
+        if ($this->totalAmount === null) {
+            $this->totalAmount = $this->getInitializedCart()->getOrderTotal(true, Cart::BOTH);
+        }
+        if ($this->currencyId === null) {
+            $this->currencyId = $this->context->cart->id_currency;
+        }
         return $this->api->getFormatAmount(
             Tools::displayPrice(
-                $this->context->cart->getOrderTotal(true, Cart::BOTH),
-                new Currency($this->context->cart->id_currency)
+                $this->totalAmount,
+                new Currency($this->currencyId)
             )
         );
     }
@@ -133,10 +202,16 @@ abstract class DotpayController extends ModuleFrontController
      */
     public function getDotShippingAmount()
     {
+        if ($this->shippingAmount === null) {
+            $this->shippingAmount = $this->getInitializedCart()->getOrderTotal(true, Cart::ONLY_SHIPPING);
+        }
+        if ($this->currencyId === null) {
+            $this->currencyId = $this->context->cart->id_currency;
+        }
         return $this->api->getFormatAmount(
             Tools::displayPrice(
-                $this->context->cart->getOrderTotal(true, Cart::ONLY_SHIPPING),
-                new Currency($this->context->cart->id_currency)
+                $this->shippingAmount,
+                new Currency($this->currencyId)
             )
         );
     }
@@ -228,7 +303,7 @@ abstract class DotpayController extends ModuleFrontController
      */
     public function getDotFirstname()
     {
-        return $this->customer->firstname;
+        return $this->getCustomer()->firstname;
     }
     
     /**
@@ -237,7 +312,7 @@ abstract class DotpayController extends ModuleFrontController
      */
     public function getDotLastname()
     {
-        return $this->customer->lastname;
+        return $this->getCustomer()->lastname;
     }
     
     /**
@@ -246,7 +321,7 @@ abstract class DotpayController extends ModuleFrontController
      */
     public function getDotEmail()
     {
-        return $this->customer->email;
+        return $this->getCustomer()->email;
     }
     
     /**
@@ -255,11 +330,12 @@ abstract class DotpayController extends ModuleFrontController
      */
     public function getDotPhone()
     {
+        $address = $this->getAddress();
         $phone = '';
-        if ($this->address->phone != '') {
-            $phone = $this->address->phone;
-        } else if ($this->address->phone_mobile != '') {
-            $phone = $this->address->phone_mobile;
+        if ($address->phone != '') {
+            $phone = $address->phone;
+        } else if ($address->phone_mobile != '') {
+            $phone = $address->phone_mobile;
         }
         return $phone;
     }
@@ -270,8 +346,9 @@ abstract class DotpayController extends ModuleFrontController
      */
     public function getDotStreetAndStreetN1()
     {
-        $street = $this->address->address1;
-        $street_n1 = $this->address->address2;
+        $address = $this->getAddress();
+        $street = $address->address1;
+        $street_n1 = $address->address2;
         if (empty($street_n1)) {
             preg_match("/\s[\w\d\/_\-]{0,30}$/", $street, $matches);
             if (count($matches)>0) {
@@ -291,7 +368,7 @@ abstract class DotpayController extends ModuleFrontController
      */
     public function getDotCity()
     {
-        return $this->address->city;
+        return $this->getAddress()->city;
     }
     
     /**
@@ -300,7 +377,7 @@ abstract class DotpayController extends ModuleFrontController
      */
     public function getDotPostcode()
     {
-        return $this->address->postcode;
+        return $this->getAddress()->postcode;
     }
     
     /**
@@ -334,7 +411,7 @@ abstract class DotpayController extends ModuleFrontController
      */
     public function getDotCountry()
     {
-        $country = new Country((int)($this->address->id_country));
+        $country = new Country((int)($this->getAddress()->id_country));
         return $country->iso_code;
     }
     
@@ -404,14 +481,12 @@ abstract class DotpayController extends ModuleFrontController
     /**
      * Init personal data about cart, customer adn adress
      */
-    protected function initPersonalData()
+    public function getInitializedCart()
     {
         if ($this->context->cart==null) {
             $this->context->cart = new Cart($this->context->cookie->id_cart);
         }
-        
-        $this->address = new Address($this->context->cart->id_address_invoice);
-        $this->customer = new Customer($this->context->cart->id_customer);
+        return $this->context->cart;
     }
     
     /**
@@ -443,7 +518,7 @@ abstract class DotpayController extends ModuleFrontController
      */
     protected function isExVPinCart()
     {
-        $products = $this->context->cart->getProducts(true);
+        $products = $this->getInitializedCart()->getProducts(true);
         foreach ($products as $product) {
             if ($product['id_product'] == $this->config->getDotpayExchVPid()) {
                 return true;

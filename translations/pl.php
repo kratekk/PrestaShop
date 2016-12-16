@@ -248,3 +248,7 @@ $_MODULE['<{dotpay}prestashop>dotpay_7908ca3187eb0e71478694e59b21d026'] = 'Rabat
 $_MODULE['<{dotpay}prestashop>dotpay_c882f892bba5facd0f061e78c66061cc'] = 'Wymagane konto testowe Dotpay: ';
 $_MODULE['<{dotpay}prestashop>dotpay_81277fe4045b1ff0265ac5e405276b2e'] = 'Rejestracja konta testowego w systemie Dotpay';
 $_MODULE['<{dotpay}prestashop>dotpay_563873d38950b841aebf89c3be1b1a35'] = 'rejestracja';
+$_MODULE['<{dotpay}prestashop>dotpay_bd021c37b6d51825aea529b8d4f719de'] = 'Nie możesz ponowić płatności, ponieważ ta możliwość została zablokowana dla Twojego zamówienia.';
+$_MODULE['<{dotpay}prestashop>dotpay_a8d42ce84838e1e6c1b99779d4806b5a'] = 'Pozostałe dni do ponowienia płatności';
+$_MODULE['<{dotpay}prestashop>dotpay_8ef140dbb60122823fdf53154fdacfb5'] = 'Możesz ustawić, przez jak długi czas (w dniach) klient będzie mógł ponowić płatność';
+$_MODULE['<{dotpay}prestashop>dotpay_cabf03f4eb4486d9028398799be2d251'] = 'Pozostaw pole puste, aby czas był nieskończony';

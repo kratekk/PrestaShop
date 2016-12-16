@@ -133,7 +133,7 @@ class DotpayConfig
     
     public function getDotpayRenewFN()
     {
-        return 'DP_TEST_RENEW';
+        return 'DP_RENEW';
     }
     public function setDotpayRenew($renew)
     {
@@ -146,6 +146,23 @@ class DotpayConfig
             return false;
         }
         return Configuration::get($this->getDotpayRenewFN());
+    }
+    
+    public function getDotpayRenewDaysFN()
+    {
+        return 'DP_RENEW_DAYS';
+    }
+    public function setDotpayRenewDays($renewDays)
+    {
+        Configuration::updateValue($this->getDotpayRenewDaysFN(), $renewDays);
+        return $this;
+    }
+    public function getDotpayRenewDays()
+    {
+        if ($this->getDotpayApiVersion() === 'legacy') {
+            return '';
+        }
+        return Configuration::get($this->getDotpayRenewDaysFN());
     }
     
     public function getDotpayRefundFN()

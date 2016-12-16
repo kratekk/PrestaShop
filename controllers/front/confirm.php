@@ -36,10 +36,11 @@ class dotpayconfirmModuleFrontController extends DotpayController
     {
         $this->display_column_left = false;
         parent::initContent();
-
-        if (Tools::getValue('order_id')) {
+        
+        $orderId = Tools::getValue('order_id');
+        if ($orderId) {
             $this->context->cart = Cart::getCartByOrderId(Tools::getValue('order_id'));
-            $this->initPersonalData();
+            $this->setOrderAsSource($orderId);
         }
         
         $channel = $this->context->cookie->dotpay_channel;

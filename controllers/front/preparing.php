@@ -38,7 +38,7 @@ class dotpaypreparingModuleFrontController extends DotpayController
         $this->display_column_left = false;
         $this->display_header = false;
         $this->display_footer = false;
-        $cartId = 0;
+        $orderId = 0;
         
         if (Tools::getValue('order_id') == false) {
             $cartId = $this->context->cart->id;
@@ -46,6 +46,7 @@ class dotpaypreparingModuleFrontController extends DotpayController
             if ($exAmount > 0 && !$this->isExVPinCart()) {
                 $productId = $this->config->getDotpayExchVPid();
                 if ($productId != 0) {
+                    $this->module->checkDotpayVirtualProduct();
                     $product = new Product($productId, true);
                     $product->price = $exAmount;
                     $product->save();
@@ -78,27 +79,28 @@ class dotpaypreparingModuleFrontController extends DotpayController
                 array(),
                 null,
                 false,
-                $this->customer->secure_key
+                $this->getCustomer()->secure_key
             );
+            $orderId = Order::getOrderByCartId($cartId);
         } else {
-            $this->context->cart = Cart::getCartByOrderId(Tools::getValue('order_id'));
-            $this->initPersonalData();
-            $cartId = $this->context->cart->id;
+            $orderId = Tools::getValue('order_id');
+            $this->context->cart = Cart::getCartByOrderId($orderId);
+            $this->setOrderAsSource($orderId);
         }
         
         $this->api->onPrepareAction(Tools::getValue('dotpay_type'), array(
-            'order' => Order::getOrderByCartId($cartId),
+            'order' => $orderId,
             'customer' => $this->context->customer->id
         ));
         
         $sa = new DotpaySellerApi($this->config->getDotpaySellerApiUrl());
         if ($this->config->isDotpayDispInstruction() &&
-           $this->config->isApiConfigOk() &&
-           $this->api->isChannelInGroup(Tools::getValue('channel'), array(DotpayApi::CASH_GROUP, DotpayApi::TRANSFERS_GROUP)) &&
-           $sa->isAccountRight($this->config->getDotpayApiUsername(), $this->config->getDotpayApiPassword(), $this->config->getDotpayApiVersion())
+            $this->config->isApiConfigOk() &&
+            $this->api->isChannelInGroup(Tools::getValue('channel'), array(DotpayApi::CASH_GROUP, DotpayApi::TRANSFERS_GROUP)) &&
+            $sa->isAccountRight($this->config->getDotpayApiUsername(), $this->config->getDotpayApiPassword(), $this->config->getDotpayApiVersion())
         ) {
             $this->context->cookie->dotpay_channel = Tools::getValue('channel');
-            Tools::redirect($this->context->link->getModuleLink($this->module->name, 'confirm', array('order_id'=>Order::getOrderByCartId($cartId))));
+            Tools::redirect($this->context->link->getModuleLink($this->module->name, 'confirm', array('order_id' => $orderId)));
             die();
         }
         
@@ -106,7 +108,7 @@ class dotpaypreparingModuleFrontController extends DotpayController
             'hiddenForm' => $this->api->getHiddenForm()
         ));
         $cookie = new Cookie('lastOrder');
-        $cookie->orderId = Order::getOrderByCartId($cartId);
+        $cookie->orderId = $orderId;
         $cookie->write();
         $this->setTemplate("preparing.tpl");
     }

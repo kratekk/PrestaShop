@@ -36,7 +36,7 @@
             <label>
                 {l s='Amount of payment' mod='dotpay'}
                 <div class="input-group">
-                    <input type="text" class="important" id="amount" value="{$amoun|escape:'htmlall':'UTF-8't}" aria-describedby="transfer-currency">
+                    <input type="text" class="important" id="amount" value="{$amount|escape:'htmlall':'UTF-8'}" aria-describedby="transfer-currency">
                     <span class="input-group-addon" id="transfer-currency">{$currency|escape:'htmlall':'UTF-8'}</span>
                 </div>
             </label>

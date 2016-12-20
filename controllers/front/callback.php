@@ -55,6 +55,7 @@ class dotpaycallbackModuleFrontController extends DotpayController
                 "Test Mode: ".(int)$this->config->isDotpayTestMode()."<br>".
                 "Widget: ".(int)$this->config->isDotpayWidgetMode()."<br>".
                 "Payment Renew: ".(int)$this->config->isDotpayRenewEn()."<br>".
+                "Payment Renew Days: ".(int)$this->config->getDotpayRenewDays()."<br>".
                 "Refund: ".(int)$this->config->isDotpayRefundEn()."<br>".
                 "Register Order: ".(int)$this->config->isDotpayDispInstruction()."<br>".
                 "Disabled Currencies: ".$this->config->getDotpayWidgetDisCurr()."<br><br>".

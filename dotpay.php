@@ -589,10 +589,10 @@ class dotpay extends PaymentModule
                     array(
                         'type' => 'radio',
                         'label' => $this->l('Renew payment enabled'),
-                        'name' => $this->config->getDotpayRenewFN(),
                         'is_bool' => true,
                         'class' => 'dev-option renew-enable-option',
-                        'desc' => $this->l('Logged in clients can resume interrupted payments'),
+                        'desc' => $this->l('Logged in clients can resume interrupted payments').'<br><b>'.$this->l('Warning! Renewed order amount will be the same as during first payment attempt').'<br>'.$this->l('(changes in product prices will not be taken into account)').'</b>',
+                        'name' => $this->config->getDotpayRenewFN(),
                         'values' => array(
                             array(
                                 'id' => 'active_on',
@@ -609,10 +609,10 @@ class dotpay extends PaymentModule
                     array(
                         'type' => 'text',
                         'name' => $this->config->getDotpayRenewDaysFN(),
-                        'label' => '<span class="dev-option renew-option">'.$this->l('Remaining days to renew payments')."</span>",
+                        'label' => '<span class="dev-option renew-option">'.$this->l('Number of days to renew payments').'</span>',
                         'size' => 6,
                         'class' => 'fixed-width-sm',
-                        'desc' => $this->l('You can set how long time (in days) customers have a possibility to renew their payments').'<br><b>'.$this->l('Leave this field blank to set an indefinite time').'</b>',
+                        'desc' => $this->l('Enter for how many days customers will be able to renew their payments').'<br><b>'.$this->l('Leave blank if payment renew should not be restricted by time').'</b>',
                     ),
                     array(
                         'type' => 'text',

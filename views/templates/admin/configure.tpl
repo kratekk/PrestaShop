@@ -149,7 +149,7 @@
             </div>
         </div>
     {/if}
-	  <br><br><h3>{l s='Check manual before configuration:'  mod='dotpay'}<a href="{l s='https://github.com/dotpay/PrestaShop/releases/download/v2.1.0/Dotpay_PrestaShop_module-manual_v2.1.0_en.pdf'  mod='dotpay'}" Title="{l s='Get manual for this module' mod='dotpay'}" target="_blank"> {l s='download manual' mod='dotpay'}</a></h3>
+	  <h2>{l s='Check manual before configuration:'  mod='dotpay'}<a href="{l s='https://github.com/dotpay/PrestaShop/releases/download/v2.2.1/Dotpay_PrestaShop_module-manual_v2.2.1_en.pdf'  mod='dotpay'}" Title="{l s='Get manual for this module' mod='dotpay'}" target="_blank"> {l s='download manual' mod='dotpay'}</a></h2>
 </div></div>
 
 {literal}

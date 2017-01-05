@@ -76,7 +76,7 @@ class dotpay extends PaymentModule
     {
         $this->name = 'dotpay';
         $this->tab = 'payments_gateways';
-        $this->version = '2.2.1';
+        $this->version = '2.2.2';
         $this->author = 'tech@dotpay.pl';
         $this->ps_versions_compliancy = array('min' => '1.6', 'max' => '1.6.9');
         $this->bootstrap = true;
@@ -210,7 +210,18 @@ class dotpay extends PaymentModule
             'badOldPinMessage' => $this->l('Incorrect PIN (0 or 16 alphanumeric characters)'),
             'valueLowerThanZero' => $this->l('The value must be greater than zero.'),
             'testSellerId' => $this->api->checkSellerId($this->config->getDotpayId()),
-            'testApiAccount' => $sellerApi->isAccountRight($this->config->getDotpayApiUsername(), $this->config->getDotpayApiPassword(), $this->config->getDotpayApiVersion()),
+            'testApiAccount' => $sellerApi->isAccountRight(
+                                    $this->config->getDotpayApiUsername(),
+                                    $this->config->getDotpayApiPassword(),
+                                    $this->config->getDotpayApiVersion()
+            ),
+            'testSellerPin' => $sellerApi->isSellerPinOk(
+                                    $this->config->getDotpayApiUsername(),
+                                    $this->config->getDotpayApiPassword(),
+                                    $this->config->getDotpayApiVersion(),
+                                    $this->config->getDotpayId(),
+                                    $this->config->getDotpayPIN()
+            ),
             'urlWithNewVersion' => $version['url'],
             'obsoletePlugin' => version_compare($version['version'], $this->version, '>'),
             'canNotCheckPlugin' => $version['version'] === null
@@ -591,8 +602,8 @@ class dotpay extends PaymentModule
                         'label' => $this->l('Renew payment enabled'),
                         'is_bool' => true,
                         'class' => 'dev-option renew-enable-option',
-                        'desc' => $this->l('Logged in clients can resume interrupted payments').'<br><b>'.$this->l('Warning! Renewed order amount will be the same as during first payment attempt').'<br>'.$this->l('(changes in product prices will not be taken into account)').'</b>',
-                        'name' => $this->config->getDotpayRenewFN(),
+						'desc' => $this->l('Logged in clients can resume interrupted payments').'<br><b>'.$this->l('Warning! Renewed order amount will be the same as during first payment attempt').'<br>'.$this->l('(changes in product prices will not be taken into account)').'</b>',
+						'name' => $this->config->getDotpayRenewFN(),
                         'values' => array(
                             array(
                                 'id' => 'active_on',
@@ -609,10 +620,10 @@ class dotpay extends PaymentModule
                     array(
                         'type' => 'text',
                         'name' => $this->config->getDotpayRenewDaysFN(),
-                        'label' => '<span class="dev-option renew-option">'.$this->l('Number of days to renew payments').'</span>',
+						'label' => '<span class="dev-option renew-option">'.$this->l('Number of days to renew payments').'</span>',
                         'size' => 6,
                         'class' => 'fixed-width-sm',
-                        'desc' => $this->l('Enter for how many days customers will be able to renew their payments').'<br><b>'.$this->l('Leave blank if payment renew should not be restricted by time').'</b>',
+						'desc' => $this->l('Enter for how many days customers will be able to renew their payments').'<br><b>'.$this->l('Leave blank if payment renew should not be restricted by time').'</b>',
                     ),
                     array(
                         'type' => 'text',

@@ -70,6 +70,7 @@ class dotpaypreparingModuleFrontController extends DotpayController
                 $this->context->cart->getPackageList(true);
             }
             
+            $secureKey = ($this->getCustomer()->secure_key!==null)?$this->getCustomer()->secure_key:md5(uniqid(rand(), true));
             $this->module->validateOrder(
                 $this->context->cart->id,
                 (int)$this->config->getDotpayNewStatusId(),
@@ -79,7 +80,7 @@ class dotpaypreparingModuleFrontController extends DotpayController
                 array(),
                 null,
                 false,
-                $this->getCustomer()->secure_key
+                $secureKey
             );
             $orderId = Order::getOrderByCartId($cartId);
         } else {

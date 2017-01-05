@@ -24,6 +24,7 @@
 require_once(DOTPAY_PLUGIN_DIR.'/models/Config.php');
 require_once(DOTPAY_PLUGIN_DIR.'/controllers/front/dotpay.php');
 require_once(DOTPAY_PLUGIN_DIR.'/classes/Curl.php');
+require_once(DOTPAY_PLUGIN_DIR.'/classes/SellerApi.php');
 
 /**
  * Interface and common functionality of the API.

@@ -77,6 +77,32 @@ class DotpaySellerApi
     }
     
     /**
+     * Checks if seller's PIN is right
+     * @param string $username Username of user
+     * @param string $password Password of user
+     * @param string $version Version of used Dotpay Api
+     * @param int $id Seller ID
+     * @param string $pin Seller PIN
+     * @return boolean|null
+     */
+    public function isSellerPinOk($username, $password, $version, $id, $pin)
+    {
+        if ($version == 'legacy') {
+            return null;
+        }
+        if (empty($username) && empty($password)) {
+            return null;
+        }
+        $url = $this->baseurl.$this->getDotPaymentApi()."accounts/$id/?format=json";
+        $curl = new DotpayCurl();
+        $curl->addOption(CURLOPT_URL, $url)
+             ->addOption(CURLOPT_USERPWD, $username.':'.$password);
+        $this->setCurlOption($curl);
+        $account = json_decode($curl->exec(), true);
+        return ($account['config']['pin'] == $pin);
+    }
+    
+    /**
      * Returns ifnos about payment
      * @param string $username
      * @param string $password

@@ -160,7 +160,7 @@ abstract class DotpayController extends ModuleFrontController
     public function getDotControl($source = null)
     {
         if ($source == null) {
-            return $this->getLastOrderNumber().'|'.$_SERVER['SERVER_NAME'];
+            return $this->getLastOrderNumber().'|'.$_SERVER['SERVER_NAME'].'|module:'.$this->module->version;
         } else {
             $tmp = explode('|', $source);
             return $tmp[0];
@@ -285,7 +285,7 @@ abstract class DotpayController extends ModuleFrontController
      */
     public function getDotUrl()
     {
-        return $this->context->link->getModuleLink('dotpay', 'back', array('control' => $this->context->cart->id), $this->module->isSSLEnabled());
+        return $this->context->link->getModuleLink('dotpay', 'back', array('orderId' => Order::getOrderByCartId($this->context->cart->id)), $this->module->isSSLEnabled());
     }
     
     /**

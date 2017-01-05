@@ -33,18 +33,19 @@ class dotpaystatusModuleFrontController extends DotpayController
      */
     public function initContent()
     {
-        $cookie = new Cookie('lastOrder');
-        if ($cookie->orderId != null) {
-            $lastOrderState = OrderHistory::getLastOrderState($cookie->orderId);
+        $orderId = Tools::getValue('orderId');
+        if ($orderId != null) {
+            $lastOrderState = OrderHistory::getLastOrderState($orderId);
             switch ($lastOrderState->id) {
                 case $this->config->getDotpayNewStatusId():
-                    if (Tools::getValue('lastRequest')===true) {
-                        $cookie->logout();
-                    }
                     die('0');
                 case _PS_OS_PAYMENT_:
-                    $cookie->logout();
-                    die('1');
+                    $payments = OrderPayment::getByOrderId($orderId);
+                    if (count($payments) > 1) {
+                        die('2');
+                    } else {
+                        die('1');
+                    }
                 default:
                     die('-1');
             }

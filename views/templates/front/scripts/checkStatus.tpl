@@ -42,7 +42,7 @@ $(document).ready(function(){
         }
         if(counter==counterLimit-1)
             lastRequest = true;
-        $.get(window.checkStatusConfig.url, {"lastRequest":lastRequest}, function(e){
+        $.get(window.checkStatusConfig.url, {"orderId": window.checkStatusConfig.orderId, "lastRequest":lastRequest}, function(e){
             switch(e) {
                 case '0':
                     break;
@@ -51,6 +51,11 @@ $(document).ready(function(){
                     setSuccessMessage(window.checkStatusConfig.successMessage);
                     clearInterval(checkInt);
                     setTimeout(function(){location.href=window.checkStatusConfig.redirectUrl;}, 5000);
+                    break;
+                 case '2':
+                    hideLoader();
+                    setWarningMessage(window.checkStatusConfig.tooManyPaymentsMessage);
+                    clearInterval(checkInt);
                     break;
                 default:
                     hideLoader();
@@ -75,6 +80,10 @@ function setMessage(message, className) {
 
 function setErrorMessage(message) {
     setMessage(message, 'alert-danger');
+}
+
+function setWarningMessage(message) {
+    setMessage(message, 'alert-warning');
 }
 
 function setSuccessMessage(message) {

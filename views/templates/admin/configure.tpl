@@ -89,6 +89,17 @@
                 </div>
             </div>
         {/if}
+        {if $testSellerPin === false}
+            <div class="bootstrap">
+                <div class="alert alert-danger">
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    <h2 style="margin-left: 10px; margin-top: 0px;">{l s='Your PIN is incorrect.' mod='dotpay'}</h2>
+                    <br />
+                    <p style="color: #555;"><b>{l s='Please type correct PIN. Until it payments will not be accepted.' mod='dotpay'}</b></p>
+                    <br />
+                </div>
+            </div>
+        {/if}
 
         <p>{l s='Thanks to Dotpay payment module the only activities needed for integration are: ID and PIN numbers and URLC confirmation configuration.' mod='dotpay'}</p>
         <p>{l s='ID and PIN can be found in Dotpay panel in Settings in the top bar. ID number is a 6-digit string after # in a "Shop" column.' mod='dotpay'}</p>

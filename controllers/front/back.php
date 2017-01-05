@@ -29,14 +29,6 @@ require_once(DOTPAY_PLUGIN_DIR.'/controllers/front/dotpay.php');
 class dotpaybackModuleFrontController extends DotpayController
 {
     /**
-     * Removes cokie with last order data
-     */
-    public function removeCookieWithOrderId()
-    {
-        $cookie = new Cookie('lastOrder');
-        $cookie->logout();
-    }
-    /**
      * Proces coming back from a Dotpay server
      */
     public function initContent()
@@ -50,10 +42,9 @@ class dotpaybackModuleFrontController extends DotpayController
         } else {
             $url=$this->context->link->getPageLink('history', true);
         }
-        $cookie = new Cookie('lastOrder');
-        $order = new Order($cookie->orderId);
+        $orderId = Tools::getValue('orderId');
+        $order = new Order($orderId);
         if (Tools::getValue('error_code') !== false) {
-            $this->removeCookieWithOrderId();
             switch (Tools::getValue('error_code'))
             {
                 case 'PAYMENT_EXPIRED':
@@ -92,9 +83,11 @@ class dotpaybackModuleFrontController extends DotpayController
             'message' => $message,
             'redirectUrl' => $url,
             'orderReference' => $order->reference,
+            'orderId' => $orderId,
             'checkStatusUrl' => $this->context->link->getModuleLink($this->module->name, 'status', array()),
             'waitingMessage' => $this->module->l('Waiting for confirm your payment...').'<br>'.$this->module->l('It make take up to 2 minutes.'),
             'successMessage' => $this->module->l('Thank you! The process of payment completed correctly. In a moment you will be able to check the status of your order.'),
+            'tooManyPaymentsMessage' => $this->module->l('Warning! Payment for this order have already registered. If you bank account has been charged, please contact to seller and give him a name of the order:').' '.$order->reference,
             'errorMessage' => $this->module->l('Payment was rejected.'),
             'timeoutMessage' => $this->module->l('Time intended for waiting for payment confirmation has elapsed. When transaction will be confirmed we will notify you on email. If payment will not be confirmed, please contact with shop owner and give him the order number:').' '.$order->reference,
         ));

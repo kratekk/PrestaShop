@@ -99,8 +99,10 @@
         <script type="text/javascript">
             window.checkStatusConfig = {
                 "url": "{/literal}{$checkStatusUrl}{literal}",
+                "orderId": "{/literal}{$orderId}{literal}",
                 "waitingMessage": "{/literal}{$waitingMessage}{literal}",
                 "successMessage": "{/literal}{$successMessage|escape:'htmlall':'UTF-8'}{literal}",
+                "tooManyPaymentsMessage": "{/literal}{$tooManyPaymentsMessage|escape:'htmlall':'UTF-8'}{literal}",
                 "errorMessage": "{/literal}{$errorMessage|escape:'htmlall':'UTF-8'}{literal}",
                 "timeoutMessage": "{/literal}{$timeoutMessage|escape:'htmlall':'UTF-8'}{literal}",
                 "redirectUrl": "{/literal}{$redirectUrl}{literal}"

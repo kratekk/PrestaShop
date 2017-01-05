@@ -55,7 +55,7 @@ class dotpaycallbackModuleFrontController extends DotpayController
                 "Test Mode: ".(int)$this->config->isDotpayTestMode()."<br>".
                 "Widget: ".(int)$this->config->isDotpayWidgetMode()."<br>".
                 "Payment Renew: ".(int)$this->config->isDotpayRenewEn()."<br>".
-                "Payment Renew Days: ".(int)$this->config->getDotpayRenewDays()."<br>".
+				"Payment Renew Days: ".(int)$this->config->getDotpayRenewDays()."<br>".
                 "Refund: ".(int)$this->config->isDotpayRefundEn()."<br>".
                 "Register Order: ".(int)$this->config->isDotpayDispInstruction()."<br>".
                 "Disabled Currencies: ".$this->config->getDotpayWidgetDisCurr()."<br><br>".
@@ -167,23 +167,32 @@ class dotpaycallbackModuleFrontController extends DotpayController
         $history = new OrderHistory();
         $history->id_order = $order->id;
         $lastOrderState = OrderHistory::getLastOrderState($history->id_order);
+        if ($lastOrderState->id == _PS_OS_PAYMENT_) {
+            die('OK');
+        }
         if ($lastOrderState->id != $newOrderState) {
             $history->changeIdOrderState($newOrderState, $history->id_order);
             $history->addWithemail(true);
             if ($newOrderState == _PS_OS_PAYMENT_) {
                 $payments = OrderPayment::getByOrderId($order->id);
-                if (count($payments)) {
-                    $payments[0]->transaction_id = $this->api->getOperationNumber();
-                    $payments[0]->payment_method = $this->module->displayName;
-                    $payments[0]->update();
+                $numberOfPayments = count($payments);
+                if ($numberOfPayments >= 1) {
+                    if (empty($payments[$numberOfPayments - 1]->transaction_id)) {
+                        $payments[$numberOfPayments - 1]->transaction_id = $this->api->getOperationNumber();
+                        $payments[$numberOfPayments - 1]->payment_method = $this->module->displayName;
+                        $payments[$numberOfPayments - 1]->update();
+                    } else {
+                        $payment = $this->prepareOrderPayment($order);
+                        $payment->add();
+                    }
                 }
                 $instruction = DotpayInstruction::getByOrderId($order->id);
                 if ($instruction !== null) {
                     $instruction->delete();
                 }
             }
-        } elseif ($lastOrderState->id == $newOrderState && $newOrderState == _PS_OS_PAYMENT_) {
-            die ('PrestaShop - ORDER IS ALERADY PAID');
+        } else {
+            die ('PrestaShop - THIS STATE ('.$lastOrderState->name.') IS ALERADY REGISTERED');
         }
         die('OK');
     }
@@ -229,14 +238,7 @@ class dotpaycallbackModuleFrontController extends DotpayController
         }
         
         if ($this->api->getOperationStatusName() == $api::OPERATION_COMPLETED) {
-            $payment = new OrderPayment();
-            $payment->order_reference = $order->reference;
-            $payment->amount = (float)('-'.Tools::getValue('operation_original_amount'));
-            $payment->id_currency = $order->id_currency;
-            $payment->conversion_rate = 1;
-            $payment->transaction_id = $this->api->getOperationNumber();
-            $payment->payment_method = $this->module->displayName;
-            $payment->date_add = new \DateTime();
+            $payment = $this->prepareOrderPayment($order, true);
             $payment->add();
 
             if ($receivedAmount < $sumOfPayments) {
@@ -256,8 +258,24 @@ class dotpaycallbackModuleFrontController extends DotpayController
             $history->changeIdOrderState($state, $history->id_order);
             $history->addWithemail(true);
         }
-
         die('OK');
+    }
+    
+    /**
+     * Creates and prepares payment for given order
+     * @param Order $order Order object
+     * @param bool $minus Flag, if minus sign should be set
+     */
+    private function prepareOrderPayment($order, $minus = false) {
+        $payment = new OrderPayment();
+        $payment->order_reference = $order->reference;
+        $payment->amount = (float)(($minus ? '-':'').Tools::getValue('operation_original_amount'));
+        $payment->id_currency = $order->id_currency;
+        $payment->conversion_rate = 1;
+        $payment->transaction_id = $this->api->getOperationNumber();
+        $payment->payment_method = $this->module->displayName;
+        $payment->date_add = new \DateTime();
+        return $payment;
     }
     
     /**

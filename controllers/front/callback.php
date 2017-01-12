@@ -55,7 +55,7 @@ class dotpaycallbackModuleFrontController extends DotpayController
                 "Test Mode: ".(int)$this->config->isDotpayTestMode()."<br>".
                 "Widget: ".(int)$this->config->isDotpayWidgetMode()."<br>".
                 "Payment Renew: ".(int)$this->config->isDotpayRenewEn()."<br>".
-				"Payment Renew Days: ".(int)$this->config->getDotpayRenewDays()."<br>".
+                "Payment Renew Days: ".(int)$this->config->getDotpayRenewDays()."<br>".
                 "Refund: ".(int)$this->config->isDotpayRefundEn()."<br>".
                 "Register Order: ".(int)$this->config->isDotpayDispInstruction()."<br>".
                 "Disabled Currencies: ".$this->config->getDotpayWidgetDisCurr()."<br><br>".
@@ -143,7 +143,7 @@ class dotpaycallbackModuleFrontController extends DotpayController
         
         $newOrderState = $this->api->getNewOrderState();
         if ($newOrderState===null) {
-            die ('PrestaShop - WRONG TRANSACTION STATUS');
+            die('PrestaShop - WRONG TRANSACTION STATUS');
         }
         
         $cc = DotpayCreditCard::getCreditCardByOrder($order->id);
@@ -167,7 +167,8 @@ class dotpaycallbackModuleFrontController extends DotpayController
         $history = new OrderHistory();
         $history->id_order = $order->id;
         $lastOrderState = OrderHistory::getLastOrderState($history->id_order);
-        if ($lastOrderState->id == _PS_OS_PAYMENT_) {
+        if ($lastOrderState->id == _PS_OS_PAYMENT_ ||
+            $newOrderState == $this->config->getDotpayNewStatusId()) {
             die('OK');
         }
         if ($lastOrderState->id != $newOrderState) {
@@ -192,7 +193,7 @@ class dotpaycallbackModuleFrontController extends DotpayController
                 }
             }
         } else {
-            die ('PrestaShop - THIS STATE ('.$lastOrderState->name.') IS ALERADY REGISTERED');
+            die('PrestaShop - THIS STATE ('.$lastOrderState->name.') IS ALERADY REGISTERED');
         }
         die('OK');
     }
@@ -266,7 +267,8 @@ class dotpaycallbackModuleFrontController extends DotpayController
      * @param Order $order Order object
      * @param bool $minus Flag, if minus sign should be set
      */
-    private function prepareOrderPayment($order, $minus = false) {
+    private function prepareOrderPayment($order, $minus = false)
+    {
         $payment = new OrderPayment();
         $payment->order_reference = $order->reference;
         $payment->amount = (float)(($minus ? '-':'').Tools::getValue('operation_original_amount'));

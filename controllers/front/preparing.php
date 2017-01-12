@@ -83,6 +83,7 @@ class dotpaypreparingModuleFrontController extends DotpayController
                 $secureKey
             );
             $orderId = Order::getOrderByCartId($cartId);
+            $this->setOrderAsSource($orderId, true);
         } else {
             $orderId = Tools::getValue('order_id');
             $this->context->cart = Cart::getCartByOrderId($orderId);

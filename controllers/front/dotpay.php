@@ -123,10 +123,11 @@ abstract class DotpayController extends ModuleFrontController
     /**
      * Sets the given order as a source of a data for payment
      * @param int $orderId Id of order
+     * @param bool $force Flag if setting can be done without chacking if it's allowed
      */
-    public function setOrderAsSource($orderId) {
+    public function setOrderAsSource($orderId, $force = false) {
         $order = new Order($orderId);
-        if ($this->module->ifRenewActiveForOrder($order)) {
+        if ($force || $this->module->ifRenewActiveForOrder($order)) {
             $this->totalAmount = $order->total_paid;
             $this->shippingAmount = $order->total_shipping;
             $this->currencyId = $order->id_currency;

@@ -51,6 +51,7 @@ class dotpaycallbackModuleFrontController extends DotpayController
                 "--- Dotpay PLN ---"."<br>".
                 "ID: ".$this->config->getDotpayId()."<br>".
                 "ID Correct: ".(int)$this->api->checkSellerId($this->config->getDotpayId())."<br>".
+                "PIN Correct: ".var_export($sellerApiCallback->isSellerPinOk($this->config->getDotpayApiUsername(), $this->config->getDotpayApiPassword(), $this->config->getDotpayApiVersion(), $this->config->getDotpayId(), $this->config->getDotpayPIN()), true)."<br>".
                 "API Version: ".$this->config->getDotpayApiVersion()."<br>".
                 "Test Mode: ".(int)$this->config->isDotpayTestMode()."<br>".
                 "Widget: ".(int)$this->config->isDotpayWidgetMode()."<br>".

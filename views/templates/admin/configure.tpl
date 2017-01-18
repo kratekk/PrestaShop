@@ -89,7 +89,7 @@
                 </div>
             </div>
         {/if}
-        {if $testSellerPin === false}
+        {if $testSellerPin === false && $testApiAccount === true}
             <div class="bootstrap">
                 <div class="alert alert-danger">
                     <button type="button" class="close" data-dismiss="alert">&times;</button>

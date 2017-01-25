@@ -99,6 +99,9 @@ class DotpaySellerApi
              ->addOption(CURLOPT_USERPWD, $username.':'.$password);
         $this->setCurlOption($curl);
         $account = json_decode($curl->exec(), true);
+        if (!isset($account['config'])) {
+            return null;
+        }
         return ($account['config']['pin'] == $pin);
     }
     

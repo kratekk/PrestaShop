@@ -35,7 +35,8 @@ class dotpaystatusModuleFrontController extends DotpayController
     {
         $orderId = Tools::getValue('orderId');
         if ($orderId != null) {
-            $lastOrderState = OrderHistory::getLastOrderState($orderId);
+            $order = new Order($orderId);
+            $lastOrderState = new OrderState($order->getCurrentState());
             switch ($lastOrderState->id) {
                 case $this->config->getDotpayNewStatusId():
                     die('0');

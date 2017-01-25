@@ -51,7 +51,6 @@ class dotpaycallbackModuleFrontController extends DotpayController
                 "--- Dotpay PLN ---"."<br>".
                 "ID: ".$this->config->getDotpayId()."<br>".
                 "ID Correct: ".(int)$this->api->checkSellerId($this->config->getDotpayId())."<br>".
-                "PIN Correct: ".var_export($sellerApiCallback->isSellerPinOk($this->config->getDotpayApiUsername(), $this->config->getDotpayApiPassword(), $this->config->getDotpayApiVersion(), $this->config->getDotpayId(), $this->config->getDotpayPIN()), true)."<br>".
                 "API Version: ".$this->config->getDotpayApiVersion()."<br>".
                 "Test Mode: ".(int)$this->config->isDotpayTestMode()."<br>".
                 "Widget: ".(int)$this->config->isDotpayWidgetMode()."<br>".
@@ -167,7 +166,7 @@ class dotpaycallbackModuleFrontController extends DotpayController
         
         $history = new OrderHistory();
         $history->id_order = $order->id;
-        $lastOrderState = OrderHistory::getLastOrderState($history->id_order);
+        $lastOrderState = new OrderState($order->getCurrentState());
         if ($lastOrderState->id == _PS_OS_PAYMENT_ ||
             $newOrderState == $this->config->getDotpayNewStatusId()) {
             die('OK');
@@ -234,7 +233,7 @@ class dotpaycallbackModuleFrontController extends DotpayController
             die('PrestaShop - NO MATCH OR WRONG AMOUNT - '.$receivedAmount.' > '.$sumOfPayments);
         }
         
-        $lastOrderState = OrderHistory::getLastOrderState($order->id);
+        $lastOrderState = new OrderState($order->getCurrentState());
         if ($lastOrderState->id != $this->config->getDotpayWaitingRefundStatusId()) {
             die('PrestaShop - REFUND HAVEN\'T BEEN SUBMITTED');
         }

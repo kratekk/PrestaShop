@@ -76,7 +76,7 @@ class dotpay extends PaymentModule
     {
         $this->name = 'dotpay';
         $this->tab = 'payments_gateways';
-        $this->version = '2.2.5';
+        $this->version = '2.2.6';
         $this->author = 'tech@dotpay.pl';
         $this->ps_versions_compliancy = array('min' => '1.6', 'max' => '1.6.9');
         $this->bootstrap = true;
@@ -1299,12 +1299,16 @@ class dotpay extends PaymentModule
     public function isSSLEnabled()
     {
         if (isset($_SERVER['HTTPS'])) {
-            if ('on' == Tools::strtolower($_SERVER['HTTPS'])) {
+            if (Tools::strtolower($_SERVER['HTTPS']) == 'on' || $_SERVER['HTTPS'] == '1') {
                 return true;
             }
-        } elseif (isset($_SERVER['SERVER_P||T']) && ('443' == $_SERVER['SERVER_P||T'])) {
+        } elseif  (isset($_SERVER['SERVER_PORT']) && ($_SERVER['SERVER_PORT'] == '443')) {
             return true;
         }
+		elseif (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https'){
+            return true;
+        }
+		
         return false;
     }
     
@@ -1315,7 +1319,7 @@ class dotpay extends PaymentModule
     public function getUrl()
     {
         $url = 'http';
-        if ($_SERVER["HTTPS"] == "on") {
+        if ($this->isSSLEnabled()) {
             $url .= "s";
         }
         $url .= "://".$_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"];

@@ -32,14 +32,23 @@ class dotpaycallbackModuleFrontController extends DotpayController
      * Defined IP address of localhost
      */
     const LOCAL_IP = '127.0.0.1';
+	 
+
     
     /**
      * Confirm payment based on Dotpay URLC
      */
     public function displayAjax()
     {
+			 /**
+			 * Check external IP address method
+			 */
+				$CHECK_IP = $_SERVER['REMOTE_ADDR'];  // recommended method
+			// $CHECK_IP = Tools::getRemoteAddr(); // Prestashop function - (when using proxy)
+		
+		
         $sellerApiCallback = new DotpaySellerApi($this->config->getDotpaySellerApiUrl());
-        if ($_SERVER['REMOTE_ADDR'] == $this->config->getOfficeIp() && $_SERVER['REQUEST_METHOD'] == 'GET') {
+        if (($CHECK_IP == $this->config->getOfficeIp() || $CHECK_IP == self::LOCAL_IP) && $_SERVER['REQUEST_METHOD'] == 'GET') {
             die("--- Dotpay PrestaShop ---"."<br>".
                 "Active: ".(int)$this->config->isDotpayEnabled()."<br><br>".
                 "--- System Info ---"."<br>".
@@ -51,6 +60,7 @@ class dotpaycallbackModuleFrontController extends DotpayController
                 "--- Dotpay PLN ---"."<br>".
                 "ID: ".$this->config->getDotpayId()."<br>".
                 "ID Correct: ".(int)$this->api->checkSellerId($this->config->getDotpayId())."<br>".
+				"PIN Correct: ".var_export($sellerApiCallback->isSellerPinOk($this->config->getDotpayApiUsername(), $this->config->getDotpayApiPassword(), $this->config->getDotpayApiVersion(), $this->config->getDotpayId(), $this->config->getDotpayPIN()), true)."<br>".
                 "API Version: ".$this->config->getDotpayApiVersion()."<br>".
                 "Test Mode: ".(int)$this->config->isDotpayTestMode()."<br>".
                 "Widget: ".(int)$this->config->isDotpayWidgetMode()."<br>".
@@ -82,15 +92,15 @@ class dotpaycallbackModuleFrontController extends DotpayController
             );
         }
         if (
-            !($_SERVER['REMOTE_ADDR'] == $this->config->getDotpayIp() ||
+            !($CHECK_IP == $this->config->getDotpayIp() ||
                 ($this->config->isDotpayTestMode() &&
-                 ($_SERVER['REMOTE_ADDR'] == $this->config->getOfficeIp() ||
-                  $_SERVER['REMOTE_ADDR'] == self::LOCAL_IP
+                 ($CHECK_IP == $this->config->getOfficeIp() ||
+                  $CHECK_IP == self::LOCAL_IP
                  )
                 )
             )
         ) {
-            die("PrestaShop - ERROR (REMOTE ADDRESS: ".$_SERVER['REMOTE_ADDR'].")");
+            die("PrestaShop - UNEXPECTED IP: <br> - REMOTE ADDRESS: ".$_SERVER['REMOTE_ADDR']."<br> - getRemoteAddr: ".Tools::getRemoteAddr() ."");
         }
 
         if ($_SERVER['REQUEST_METHOD'] != 'POST') {
@@ -98,7 +108,7 @@ class dotpaycallbackModuleFrontController extends DotpayController
         }
         
         if (!$this->api->checkConfirm()) {
-            die("PrestaShop - ERROR SIGNATURE - CHECK PIN");
+             die("PrestaShop - ERROR SIGNATURE - CHECK PIN");
         }
         
         $api = $this->api;
@@ -107,7 +117,7 @@ class dotpaycallbackModuleFrontController extends DotpayController
         } elseif ($api->getOperationType() == $api::REFUND_OPERATION) {
             $this->makeRefund();
         } else {
-            die('PrestaShop - ERROR STATUS');
+            // die('PrestaShop - ERROR STATUS');
         }
     }
     

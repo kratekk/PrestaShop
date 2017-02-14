@@ -117,7 +117,7 @@ class dotpaycallbackModuleFrontController extends DotpayController
         } elseif ($api->getOperationType() == $api::REFUND_OPERATION) {
             $this->makeRefund();
         } else {
-            // die('PrestaShop - ERROR STATUS');
+             die('PrestaShop - ERROR STATUS');
         }
     }
     

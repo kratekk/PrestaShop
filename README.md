@@ -1,4 +1,4 @@
-PrestaShop Dotpay payment module
+PrestaShop Dotpay payment module for PrestaShop v.1.6.x
 =====================
 
 ####Wtyczka dla PrestaShop dodająca bramkę płatności Dotpay####

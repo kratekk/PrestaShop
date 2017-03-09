@@ -22,6 +22,7 @@
 */
 
 require_once(DOTPAY_PLUGIN_DIR.'/controllers/front/dotpay.php');
+require_once(DOTPAY_PLUGIN_DIR.'/classes/Checksum.php');
 
 /**
  * Controller for handling callback from Dotpay
@@ -40,11 +41,11 @@ class dotpaycallbackModuleFrontController extends DotpayController
      */
     public function displayAjax()
     {
-			 /**
-			 * Check external IP address method
-			 */
-				$CHECK_IP = $_SERVER['REMOTE_ADDR'];  // recommended method
-			// $CHECK_IP = Tools::getRemoteAddr(); // Prestashop function - (when using proxy)
+        /**
+        * Check external IP address method
+        */
+               $CHECK_IP = $_SERVER['REMOTE_ADDR'];  // recommended method
+        // $CHECK_IP = Tools::getRemoteAddr(); // Prestashop function - (when using proxy)
 		
 		
         $sellerApiCallback = new DotpaySellerApi($this->config->getDotpaySellerApiUrl());
@@ -88,7 +89,9 @@ class dotpaycallbackModuleFrontController extends DotpayController
                 "--- Dotpay Discount ---"."<br>".
                 "Discount Enabled: ".(int)$this->config->getDotpayDiscount()."<br>".
                 "Discount Flat: ".$this->config->getDotpayDiscAmount()."<br>".
-                "Discount Percentage: ".$this->config->getDotpayDiscPercentage()
+                "Discount Percentage: ".$this->config->getDotpayDiscPercentage()."<br><br>".
+                "--- Dotpay Integrity ---"."<br>".
+                'Checksum: '.DotpayChecksum::getForDir(mydirname(__DIR__, 3))
             );
         }
         if (

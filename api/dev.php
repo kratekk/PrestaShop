@@ -385,6 +385,7 @@ class DotpayDevApi extends DotpayApi
                 $fields = $this->getHiddenFieldsBlik();
                 break;
             case 'dotpay':
+            default:
                 $fields = $this->getHiddenFieldsDotpay();
                 break;
         }

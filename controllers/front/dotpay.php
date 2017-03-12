@@ -130,6 +130,10 @@ abstract class DotpayController extends ModuleFrontController
         if ($force || $this->module->ifRenewActiveForOrder($order)) {
             $this->totalAmount = $order->total_paid;
             $this->shippingAmount = $order->total_shipping;
+            foreach($order->getBrother() as $order) {
+                $this->totalAmount += $order->total_paid;
+                $this->shippingAmount += $order->total_shipping;
+            }
             $this->currencyId = $order->id_currency;
         } else {
             die($this->module->l('You can not renew your payment, because this possibility has expired for your order.'));

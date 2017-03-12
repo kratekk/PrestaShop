@@ -61,7 +61,7 @@ class dotpaycallbackModuleFrontController extends DotpayController
                 "--- Dotpay PLN ---"."<br>".
                 "ID: ".$this->config->getDotpayId()."<br>".
                 "ID Correct: ".(int)$this->api->checkSellerId($this->config->getDotpayId())."<br>".
-				"PIN Correct: ".var_export($sellerApiCallback->isSellerPinOk($this->config->getDotpayApiUsername(), $this->config->getDotpayApiPassword(), $this->config->getDotpayApiVersion(), $this->config->getDotpayId(), $this->config->getDotpayPIN()), true)."<br>".
+                "PIN Correct: ".var_export($sellerApiCallback->isSellerPinOk($this->config->getDotpayApiUsername(), $this->config->getDotpayApiPassword(), $this->config->getDotpayApiVersion(), $this->config->getDotpayId(), $this->config->getDotpayPIN()), true)."<br>".
                 "API Version: ".$this->config->getDotpayApiVersion()."<br>".
                 "Test Mode: ".(int)$this->config->isDotpayTestMode()."<br>".
                 "Widget: ".(int)$this->config->isDotpayWidgetMode()."<br>".
@@ -135,6 +135,10 @@ class dotpaycallbackModuleFrontController extends DotpayController
         }
         
         $order = new Order((int)$this->getDotControl(Tools::getValue('control')));
+        $brotherOrders = [$order];
+        foreach($order->getBrother() as $brotherOrder) {
+            $brotherOrders[] = $brotherOrder;
+        }
         $currency = new Currency($order->id_currency);
         
         $receivedCurrency = $this->api->getOperationCurrency();
@@ -145,12 +149,15 @@ class dotpaycallbackModuleFrontController extends DotpayController
         }
         
         $receivedAmount = (float)$this->api->getTotalAmount();
-        $orderAmount = Tools::displayPrice($order->total_paid, $currency, false);
-        $orderAmount = (float)$this->getCorrectAmount(
-            preg_replace("/[^-0-9\.]/", '', str_replace(',', '.', $orderAmount))
-        );
-        
-        if ($receivedAmount != $orderAmount) {
+        $orderAmount = 0.0;
+        foreach ($brotherOrders as $oneOrder) {
+            $orderAmount += (float)$this->getCorrectAmount(
+                preg_replace("/[^-0-9\.]/", '', str_replace(',', '.',
+                    Tools::displayPrice($oneOrder->total_paid, $currency, false)
+                ))
+            );
+        }
+        if (number_format($receivedAmount, 4) != number_format($orderAmount, 4)) {
             die('PrestaShop - NO MATCH OR WRONG AMOUNT - '.$receivedAmount.' <> '.$orderAmount);
         }
         
@@ -177,36 +184,38 @@ class dotpaycallbackModuleFrontController extends DotpayController
             $brand->save();
         }
         
-        $history = new OrderHistory();
-        $history->id_order = $order->id;
-        $lastOrderState = new OrderState($order->getCurrentState());
-        if ($lastOrderState->id == _PS_OS_PAYMENT_ ||
-            $newOrderState == $this->config->getDotpayNewStatusId()) {
-            die('OK');
-        }
-        if ($lastOrderState->id != $newOrderState) {
-            $history->changeIdOrderState($newOrderState, $history->id_order);
-            $history->addWithemail(true);
-            if ($newOrderState == _PS_OS_PAYMENT_) {
-                $payments = OrderPayment::getByOrderId($order->id);
-                $numberOfPayments = count($payments);
-                if ($numberOfPayments >= 1) {
-                    if (empty($payments[$numberOfPayments - 1]->transaction_id)) {
-                        $payments[$numberOfPayments - 1]->transaction_id = $this->api->getOperationNumber();
-                        $payments[$numberOfPayments - 1]->payment_method = $this->module->displayName;
-                        $payments[$numberOfPayments - 1]->update();
-                    } else {
-                        $payment = $this->prepareOrderPayment($order);
-                        $payment->add();
+        foreach ($brotherOrders as $order) {
+            $history = new OrderHistory();
+            $history->id_order = $order->id;
+            $lastOrderState = new OrderState($order->getCurrentState());
+            if ($lastOrderState->id == _PS_OS_PAYMENT_ ||
+                $newOrderState == $this->config->getDotpayNewStatusId()) {
+                die('OK');
+            }
+            if ($lastOrderState->id != $newOrderState) {
+                $history->changeIdOrderState($newOrderState, $history->id_order);
+                $history->addWithemail(true);
+                if ($newOrderState == _PS_OS_PAYMENT_) {
+                    $payments = OrderPayment::getByOrderId($order->id);
+                    $numberOfPayments = count($payments);
+                    if ($numberOfPayments >= 1) {
+                        if (empty($payments[$numberOfPayments - 1]->transaction_id)) {
+                            $payments[$numberOfPayments - 1]->transaction_id = $this->api->getOperationNumber();
+                            $payments[$numberOfPayments - 1]->payment_method = $this->module->displayName;
+                            $payments[$numberOfPayments - 1]->update();
+                        } else {
+                            $payment = $this->prepareOrderPayment($order);
+                            $payment->add();
+                        }
+                    }
+                    $instruction = DotpayInstruction::getByOrderId($order->id);
+                    if ($instruction !== null) {
+                        $instruction->delete();
                     }
                 }
-                $instruction = DotpayInstruction::getByOrderId($order->id);
-                if ($instruction !== null) {
-                    $instruction->delete();
-                }
+            } else {
+                die('PrestaShop - THIS STATE ('.$lastOrderState->name.') IS ALERADY REGISTERED');
             }
-        } else {
-            die('PrestaShop - THIS STATE ('.$lastOrderState->name.') IS ALERADY REGISTERED');
         }
         die('OK');
     }

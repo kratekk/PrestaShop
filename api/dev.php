@@ -286,6 +286,16 @@ class DotpayDevApi extends DotpayApi
                 $this->config->getDotpayPvId()==Tools::getValue('id'));
     }
     
+   /**
+     * replacing illegal characters by space from: firstname, lastname, city, street, p_info
+     * @return string|bool
+     */
+    public function replaceCharacters($originalValue)
+		{
+			return preg_replace('/(\'|\"|\s{2,}|\.{2,}|@{2,}|-{2,})/', ' ', $originalValue);
+		}
+    
+    
     /**
      * Returns total amount from confirm message
      * @return string|bool
@@ -579,7 +589,7 @@ class DotpayDevApi extends DotpayApi
         return array(
             'id' => $this->parent->getDotId(),
             'control' => $this->parent->getDotControl(),
-            'p_info' => $this->parent->getDotPinfo(),
+            'p_info' => $this->replaceCharacters($this->parent->getDotPinfo()),
             'amount' => $this->parent->getDotAmount(),
             'currency' => $this->parent->getDotCurrency(),
             'description' => $this->parent->getDotDescription(),
@@ -589,13 +599,13 @@ class DotpayDevApi extends DotpayApi
             'api_version' => $this->config->getDotpayApiVersion(),
             'type' => 0,
             'ch_lock' => 0,
-            'firstname' => $this->parent->getDotFirstname(),
-            'lastname' => $this->parent->getDotLastname(),
+            'firstname' => $this->replaceCharacters($this->parent->getDotFirstname()),
+            'lastname' => $this->replaceCharacters($this->parent->getDotLastname()),
             'email' => $this->parent->getDotEmail(),
             'phone' => $this->parent->getDotPhone(),
-            'street' => $streetData['street'],
-            'street_n1' => $streetData['street_n1'],
-            'city' => $this->parent->getDotCity(),
+            'street' => $this->replaceCharacters($streetData['street']),
+            'street_n1' => $this->replaceCharacters($streetData['street_n1']),
+            'city' => $this->replaceCharacters($this->parent->getDotCity()),
             'postcode' => $this->parent->getDotPostcode(),
             'country' => $this->parent->getDotCountry(),
             'bylaw' => 1,

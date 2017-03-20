@@ -17,19 +17,42 @@
  */
 
 class DotpayChecksum {
-    public static function getForDir($dir) {
+    public static function getForDir($dir, $allowedExt = null) {
         $dirIter = new DirectoryIterator($dir);
         $concat = '';
         foreach ($dirIter as $fileinfo) {
-            if (!$fileinfo->isDot()) {
+            $filename = $fileinfo->getFilename();
+            if (!$fileinfo->isDot() && substr($filename, 0, 1) != '.') {
                 if ($fileinfo->getType() == 'dir') {
-                    $concat .= self::getForDir($fileinfo->getPathname());
+                    $concat .= self::getForDir($fileinfo->getPathname(), $allowedExt);
                 } else {
+                    if ($allowedExt && !in_array($fileinfo->getExtension(), $allowedExt)) {
+		        continue;
+                    }
                     $concat .= self::getForFile($fileinfo->getPathname());
                 }
             }
         }
         return sha1($concat);
+    }
+    
+    public static function getFileList($dir, $separator = "<br />", $allowedExt = null) {
+        $dirIter = new DirectoryIterator($dir);
+        $list = [];
+        foreach ($dirIter as $fileinfo) {
+            $filename = $fileinfo->getFilename();
+            if (!$fileinfo->isDot() && substr($filename, 0, 1) != '.') {
+                if ($fileinfo->getType() == 'dir') {
+                    $list[] = self::getFileList($fileinfo->getPathname(), $separator, $allowedExt);
+                } else {
+                    if ($allowedExt && !in_array($fileinfo->getExtension(), $allowedExt)) {
+		        continue;
+                    }
+                    $list[] = $fileinfo->getPathname().' : '.self::getForFile($fileinfo->getPathname());
+                }
+            }
+        }
+        return implode($list, $separator);
     }
     
     public static function getForFile($filename) {

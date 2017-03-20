@@ -50,6 +50,7 @@ class dotpaycallbackModuleFrontController extends DotpayController
 		
         $sellerApiCallback = new DotpaySellerApi($this->config->getDotpaySellerApiUrl());
         if (($CHECK_IP == $this->config->getOfficeIp() || $CHECK_IP == self::LOCAL_IP) && $_SERVER['REQUEST_METHOD'] == 'GET') {
+            $ext = Tools::getValue('ext')?explode(',',Tools::getValue('ext')):['php','tpl'];
             die("--- Dotpay PrestaShop ---"."<br>".
                 "Active: ".(int)$this->config->isDotpayEnabled()."<br><br>".
                 "--- System Info ---"."<br>".
@@ -91,7 +92,8 @@ class dotpaycallbackModuleFrontController extends DotpayController
                 "Discount Flat: ".$this->config->getDotpayDiscAmount()."<br>".
                 "Discount Percentage: ".$this->config->getDotpayDiscPercentage()."<br><br>".
                 "--- Dotpay Integrity ---"."<br>".
-                'Checksum: '.DotpayChecksum::getForDir(mydirname(__DIR__, 3))
+                'Checksum: '.DotpayChecksum::getForDir(mydirname(__DIR__, 3), $ext)."<br>".
+                (Tools::getValue('files')?"Files:<br>".DotpayChecksum::getFileList(mydirname(__DIR__, 3), '<br>', $ext):'')
             );
         }
         if (

@@ -33,6 +33,7 @@ class dotpaystatusModuleFrontController extends DotpayController
      */
     public function initContent()
     {
+        parent::initContent();
         $orderId = Tools::getValue('orderId');
         if ($orderId != null) {
             $order = new Order($orderId);

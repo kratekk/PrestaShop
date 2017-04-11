@@ -190,9 +190,11 @@ class dotpaycallbackModuleFrontController extends DotpayController
             $history = new OrderHistory();
             $history->id_order = $order->id;
             $lastOrderState = new OrderState($order->getCurrentState());
-            if ($lastOrderState->id == _PS_OS_PAYMENT_ ||
-                $newOrderState == $this->config->getDotpayNewStatusId()) {
+            if ($newOrderState == $this->config->getDotpayNewStatusId() && $lastOrderState->id == $newOrderState) {
                 die('OK');
+            } else if ($lastOrderState->id != $this->config->getDotpayNewStatusId() &&
+                $lastOrderState->id != $this->config->getDotpayWaitingRefundStatusId()) {
+                die('PRESTASHOP - STATUS HAS BEEN CHANGED BEFORE');
             }
             if ($lastOrderState->id != $newOrderState) {
                 $history->changeIdOrderState($newOrderState, $history->id_order);
@@ -235,6 +237,14 @@ class dotpaycallbackModuleFrontController extends DotpayController
         
         $order = new Order((int)$this->getDotControl(Tools::getValue('control')));
         
+        if ($statusName == $api::OPERATION_REJECTED) {
+            $state = $this->config->getDotpayFailedRefundStatusId();
+            $history = new OrderHistory();
+            $history->id_order = $order->id;
+            $history->changeIdOrderState($state, $history->id_order);
+            $history->addWithemail(true);
+        }
+        
         $payments = OrderPayment::getByOrderId($order->id);
         $foundPaymet = false;
         $sumOfPayments = 0.0;
@@ -262,7 +272,7 @@ class dotpaycallbackModuleFrontController extends DotpayController
             die('PrestaShop - REFUND HAVEN\'T BEEN SUBMITTED');
         }
         
-        if ($this->api->getOperationStatusName() == $api::OPERATION_COMPLETED) {
+        if ($statusName == $api::OPERATION_COMPLETED) {
             $payment = $this->prepareOrderPayment($order, true);
             $payment->add();
 
@@ -272,12 +282,6 @@ class dotpaycallbackModuleFrontController extends DotpayController
                 $state = $this->config->getDotpayTotalRefundStatusId();
             }
             
-            $history = new OrderHistory();
-            $history->id_order = $order->id;
-            $history->changeIdOrderState($state, $history->id_order);
-            $history->addWithemail(true);
-        } elseif ($this->api->getOperationStatusName() == $api::OPERATION_REJECTED) {
-            $state = $this->config->getDotpayFailedRefundStatusId();
             $history = new OrderHistory();
             $history->id_order = $order->id;
             $history->changeIdOrderState($state, $history->id_order);

@@ -139,7 +139,7 @@ abstract class DotpayApi
                 }
             }
         }
-        $amount = Tools::displayPrice($amount);
+        $amount = Tools::displayPrice($amount, $currency);
         return preg_replace('/[^0-9.]/', '', str_replace(',', '.', $amount));
     }
     

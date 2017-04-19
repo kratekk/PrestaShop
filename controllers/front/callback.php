@@ -193,6 +193,7 @@ class dotpaycallbackModuleFrontController extends DotpayController
             if ($newOrderState == $this->config->getDotpayNewStatusId() && $lastOrderState->id == $newOrderState) {
                 die('OK');
             } else if ($lastOrderState->id != $this->config->getDotpayNewStatusId() &&
+                $lastOrderState->id != _PS_OS_ERROR_ &&
                 $lastOrderState->id != $this->config->getDotpayWaitingRefundStatusId()) {
                 die('PRESTASHOP - STATUS HAS BEEN CHANGED BEFORE');
             }

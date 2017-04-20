@@ -76,7 +76,7 @@ class dotpay extends PaymentModule
     {
         $this->name = 'dotpay';
         $this->tab = 'payments_gateways';
-        $this->version = '2.2.7.2';
+        $this->version = '2.2.7.3';
         $this->author = 'tech@dotpay.pl';
         $this->ps_versions_compliancy = array('min' => '1.6', 'max' => '1.6.9');
         $this->bootstrap = true;
@@ -84,7 +84,7 @@ class dotpay extends PaymentModule
         $this->is_eu_compatible = 1;
         $this->currencies = true;
         $this->currencies_mode = 'checkbox';
-        $this->module_key = '6d94a731ae299ada80355d0236bdb727';
+        $this->module_key = '4a4585752c0aceb57586b3f669cf9421';
         parent::__construct();
 
         $this->displayName = $this->l('Dotpay');

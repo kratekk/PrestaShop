@@ -38,6 +38,7 @@ class dotpaypaymentModuleFrontController extends DotpayController
         
         if (Tools::getValue('order_id')) {
             $cart = Cart::getCartByOrderId(Tools::getValue('order_id'));
+            $this->checkOrderOwnership(Context::getContext()->customer->id, $cart->id_customer);
             if (empty($cart)) {
                 $cart = new Cart();
             }

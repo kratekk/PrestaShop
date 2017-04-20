@@ -41,6 +41,7 @@ class dotpaypreparingModuleFrontController extends DotpayController
         $orderId = 0;
         
         if (Tools::getValue('order_id') == false) {
+            $this->checkOrderOwnership($this->context->customer->id, $this->context->cart->id_customer);
             $cartId = $this->context->cart->id;
             $exAmount = $this->api->getExtrachargeAmount(true);
             if ($exAmount > 0 && !$this->isExVPinCart()) {

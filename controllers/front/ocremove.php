@@ -37,7 +37,7 @@ class dotpayocremoveModuleFrontController extends DotpayController
         parent::initContent();
         
         $cc = new DotpayCreditCard(Tools::getValue('card_id'));
-        if ($cc->id != null) {
+        if ($cc->id != null && $cc->customer_id == Context::getContext()->customer->id) {
             $cc->delete();
             die('OK');
         } else {

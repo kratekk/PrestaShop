@@ -132,6 +132,7 @@ $_MODULE['<{dotpay}prestashop>dotpay_83fa39a28a4d159061c408fbd6a249e7'] = 'Zamó
 $_MODULE['<{dotpay}prestashop>dotpay_ba777d568514aa27d9c256529a99e16f'] = 'Zamowienie nr:';
 $_MODULE['<{dotpay}prestashop>dotpay_9b169df2bcce3a7f51ac2a82db9d7f2f'] = 'Aby przejść na nowszą wersję API (dev) skontaktuj się z BOK';
 $_MODULE['<{dotpay}prestashop>dotpay_b96c8d5c9a1c08148c542da61c3ee3bb'] = 'http://www.dotpay.pl/kontakt/biuro-obslugi-klienta/';
+$_MODULE['<{dotpay}prestashop>dotpay_8aab5ca8cbc849db9414699f00662aed'] = 'Wystąpił błąd z ustaleniem własności tego zamówienia';
 $_MODULE['<{dotpay}prestashop>admindotpayrefundcontroller_313abbf6c8bc2aef3002dc5f26abded3'] = 'Zwrot zamówienia:';
 $_MODULE['<{dotpay}prestashop>dotpay_2ca8cf8ffec2f5f610af205003632c8f'] = 'Żądanie zwrotu zostało wysłane';
 $_MODULE['<{dotpay}prestashop>dotpay_8ea6644b812925ca03d03b20fa4a013e'] = 'Wystąpił błąd podczas żądania zwrotu';

@@ -40,6 +40,7 @@ class dotpayconfirmModuleFrontController extends DotpayController
         $orderId = Tools::getValue('order_id');
         if ($orderId) {
             $this->context->cart = Cart::getCartByOrderId(Tools::getValue('order_id'));
+            $this->checkOrderOwnership($this->context->customer->id, $this->context->cart->id_customer);
             $this->setOrderAsSource($orderId);
         }
         

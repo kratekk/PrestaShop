@@ -127,6 +127,7 @@ abstract class DotpayController extends ModuleFrontController
      */
     public function setOrderAsSource($orderId, $force = false) {
         $order = new Order($orderId);
+        $this->checkOrderOwnership($this->context->customer->id, $order->id_customer);
         if ($force || $this->module->ifRenewActiveForOrder($order)) {
             $this->totalAmount = $order->total_paid;
             $this->shippingAmount = $order->total_shipping;
@@ -520,5 +521,17 @@ abstract class DotpayController extends ModuleFrontController
             }
         }
         return false;
+    }
+    
+    /**
+     * Check if customer, who is set in context, is assigned to the order
+     * @param int $customerId If of customer which is set in context
+     * @param int $orderOwnerId Id of customer which is assigned to the order
+     */
+    protected function checkOrderOwnership($customerId, $orderOwnerId)
+    {
+        if ((int)$customerId !== (int)$orderOwnerId) {
+            die($this->module->l('An error with ownership of this order occured'));
+        }
     }
 }

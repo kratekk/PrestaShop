@@ -166,9 +166,15 @@ abstract class DotpayController extends ModuleFrontController
     public function getDotControl($source = null)
     {
         if ($source == null) {
-            return $this->getLastOrderNumber().'|'.$_SERVER['SERVER_NAME'].'|module:'.$this->module->version;
+			$exAmount_is = $this->api->getExtrachargeAmount(true);
+			 if ($exAmount_is  > 0) {
+				 return $this->getLastOrderNumber().'/'.$_SERVER['SERVER_NAME'].'/module:'.$this->module->version.'/fee:'.$exAmount_is.' '.$this->getDotCurrency();
+			 }else{
+				return $this->getLastOrderNumber().'/'.$_SERVER['SERVER_NAME'].'/module:'.$this->module->version;
+			 }
+            
         } else {
-            $tmp = explode('|', $source);
+            $tmp = explode('/', $source);
             return $tmp[0];
         }
     }
@@ -239,8 +245,23 @@ abstract class DotpayController extends ModuleFrontController
     public function getDotDescription()
     {
         $order = new Order(Order::getOrderByCartId($this->context->cart->id));
+		
+			$exAmount_is = $this->api->getExtrachargeAmount(true);
+			 if ($exAmount_is  > 0) {
+				$exAmount_desc = " ".$this->module->l("(including an extra fee:").$exAmount_is." ".$this->getDotCurrency().")";
+			 }else{
+				$exAmount_desc = "";
+			 }
+			 $disAmount_is = $this->api->getDiscountAmount();
+			 if ($disAmount_is  > 0) {
+				$disAmount_desc = " ".$this->module->l("(including discount:")." -".$disAmount_is." ".$this->getDotCurrency().")";
+			 }else{
+				$disAmount_desc = "";
+			 }
+
+		
         if ($this->config->getDotpayApiVersion() == 'dev') {
-            return ($this->module->l("Order ID:").' '.$order->reference);
+            return ($this->module->l("Order ID:").' '.$order->reference.''.$exAmount_desc.$disAmount_desc);
         } else {
             return ($this->module->l("Your order ID:").' '.$order->reference);
         }

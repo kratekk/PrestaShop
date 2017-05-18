@@ -586,6 +586,7 @@ class DotpayDevApi extends DotpayApi
     private function getHiddenFields()
     {
         $streetData = $this->parent->getDotStreetAndStreetN1();
+
         return array(
             'id' => $this->parent->getDotId(),
             'control' => $this->parent->getDotControl(),
@@ -598,7 +599,6 @@ class DotpayDevApi extends DotpayApi
             'URLC' => $this->parent->getDotUrlC(),
             'api_version' => $this->config->getDotpayApiVersion(),
             'type' => 0,
-            'ch_lock' => 0,
             'firstname' => $this->replaceCharacters($this->parent->getDotFirstname()),
             'lastname' => $this->replaceCharacters($this->parent->getDotLastname()),
             'email' => $this->parent->getDotEmail(),
@@ -607,9 +607,7 @@ class DotpayDevApi extends DotpayApi
             'street_n1' => $this->replaceCharacters($streetData['street_n1']),
             'city' => $this->replaceCharacters($this->parent->getDotCity()),
             'postcode' => $this->parent->getDotPostcode(),
-            'country' => $this->parent->getDotCountry(),
-            'bylaw' => 1,
-            'personal_data' => 1
+            'country' => $this->parent->getDotCountry()
         );
     }
     

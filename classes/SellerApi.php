@@ -159,11 +159,19 @@ class DotpaySellerApi
             'description' => $description,
             'control' => $control
         );
+		
+		if (function_exists('json_encode')) {
+            $dataPost = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        } else {
+		    $dataPost = Tools::jsonEncode($data);
+		}	
+		
+		
         $curl = new DotpayCurl();
         $curl->addOption(CURLOPT_URL, $url)
              ->addOption(CURLOPT_USERPWD, $username.':'.$password)
              ->addOption(CURLOPT_POST, 1)
-             ->addOption(CURLOPT_POSTFIELDS, Tools::jsonEncode($data))
+             ->addOption(CURLOPT_POSTFIELDS, $dataPost)
              ->addOption(CURLOPT_SSL_VERIFYPEER, true)
              ->addOption(CURLOPT_SSL_VERIFYHOST, 2)
              ->addOption(CURLOPT_RETURNTRANSFER, 1)

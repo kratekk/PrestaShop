@@ -461,6 +461,8 @@ class DotpayDevApi extends DotpayApi
         $hiddenFields['channel'] = self::$ocChannel;
         $hiddenFields['ch_lock'] = 1;
         $hiddenFields['type'] = 4;
+		$hiddenFields['bylaw'] = 1;
+		$hiddenFields['personal_data'] = 1;
         
         return $hiddenFields;
     }
@@ -476,8 +478,6 @@ class DotpayDevApi extends DotpayApi
 
         $hiddenFields['credit_card_customer_id'] = $cc->hash;
         $hiddenFields['credit_card_id'] = $cc->card_id;
-        $hiddenFields['bylaw'] = '1';
-        $hiddenFields['personal_data'] = '1';
 
         return $hiddenFields;
     }
@@ -509,6 +509,8 @@ class DotpayDevApi extends DotpayApi
         $hiddenFields['channel'] = self::$pvChannel;
         $hiddenFields['ch_lock'] = 1;
         $hiddenFields['type'] = 4;
+		$hiddenFields['bylaw'] = 1;
+		$hiddenFields['personal_data'] = 1;
         $hiddenFields['id'] = $this->config->getDotpayPvId();
         
         return $hiddenFields;
@@ -523,9 +525,10 @@ class DotpayDevApi extends DotpayApi
         $hiddenFields = $this->getHiddenFields();
         
         $hiddenFields['channel'] = Tools::getValue('channel');
-        
         $hiddenFields['ch_lock'] = 1;
         $hiddenFields['type'] = 4;
+		$hiddenFields['bylaw'] = 1;
+		$hiddenFields['personal_data'] = 1;
         
         return $hiddenFields;
     }
@@ -537,9 +540,12 @@ class DotpayDevApi extends DotpayApi
     protected function getHiddenFieldsMasterPass()
     {
         $hiddenFields = $this->getHiddenFields();
+		
         $hiddenFields['channel'] = self::$mpChannel;
         $hiddenFields['ch_lock'] = 1;
         $hiddenFields['type'] = 4;
+		$hiddenFields['bylaw'] = 1;
+		$hiddenFields['personal_data'] = 1;
         
         return $hiddenFields;
     }
@@ -553,9 +559,11 @@ class DotpayDevApi extends DotpayApi
         $hiddenFields = $this->getHiddenFields();
         
         if ($this->config->isDotpayWidgetMode()) {
+			$hiddenFields['channel'] = Tools::getValue('channel');
             $hiddenFields['ch_lock'] = 1;
             $hiddenFields['type'] = 4;
-            $hiddenFields['channel'] = Tools::getValue('channel');
+			$hiddenFields['bylaw'] = 1;
+			$hiddenFields['personal_data'] = 1;
         }
         
         return $hiddenFields;
@@ -575,6 +583,8 @@ class DotpayDevApi extends DotpayApi
         $hiddenFields['channel'] = self::$blikChannel;
         $hiddenFields['ch_lock'] = 1;
         $hiddenFields['type'] = 4;
+		$hiddenFields['bylaw'] = 1;
+		$hiddenFields['personal_data'] = 1;
         
         return $hiddenFields;
     }

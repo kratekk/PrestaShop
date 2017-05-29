@@ -89,7 +89,13 @@ class AdminDotpayRefundController extends ModuleAdminController
         }
         $payment->sum_of_payments = $sumOfPayments;
         $payment->return_description = $this->l('Refund of order:').' '.$order->reference;
-        die(Tools::jsonEncode($payment));
+		if (function_exists('json_encode')) {
+            $payment_json = json_encode($payment, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        } else {
+			$payment_json = Tools::jsonEncode($payment);
+		}
+		
+        die($payment_json);
     }
     
     /**

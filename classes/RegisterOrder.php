@@ -62,7 +62,12 @@ abstract class DotpayRegisterOrder
      */
     public static function create($channelId)
     {
-        $data = str_replace('\\/', '/', Tools::jsonEncode(self::prepareData($channelId)));
+        
+		 if (function_exists('json_encode')) {
+            $data = json_encode(self::prepareData($channelId), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        } else {
+			$data = str_replace('\\/', '/', Tools::jsonEncode(self::prepareData($channelId)));
+		}	
         if (!self::checkIfCompletedControlExist(self::$parent->getDotControl(), $channelId)) {
             return self::createRequest($data);
         }

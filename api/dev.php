@@ -559,7 +559,7 @@ class DotpayDevApi extends DotpayApi
         $hiddenFields = $this->getHiddenFields();
         
         if ($this->config->isDotpayWidgetMode()) {
-			$hiddenFields['channel'] = Tools::getValue('channel');
+            $hiddenFields['channel'] = Tools::getValue('channel');
             $hiddenFields['ch_lock'] = 1;
             $hiddenFields['type'] = 4;
 			$hiddenFields['bylaw'] = 1;
@@ -582,9 +582,9 @@ class DotpayDevApi extends DotpayApi
         }
         $hiddenFields['channel'] = self::$blikChannel;
         $hiddenFields['ch_lock'] = 1;
-        $hiddenFields['type'] = 4;
-		$hiddenFields['bylaw'] = 1;
-		$hiddenFields['personal_data'] = 1;
+			$hiddenFields['bylaw'] = 1;
+			$hiddenFields['personal_data'] = 1;
+        $hiddenFields['personal_data'] = 1;
         
         return $hiddenFields;
     }
@@ -609,6 +609,7 @@ class DotpayDevApi extends DotpayApi
             'URLC' => $this->parent->getDotUrlC(),
             'api_version' => $this->config->getDotpayApiVersion(),
             'type' => 0,
+            'chlock' => 0,
             'firstname' => $this->replaceCharacters($this->parent->getDotFirstname()),
             'lastname' => $this->replaceCharacters($this->parent->getDotLastname()),
             'email' => $this->parent->getDotEmail(),
@@ -617,6 +618,8 @@ class DotpayDevApi extends DotpayApi
             'street_n1' => $this->replaceCharacters($streetData['street_n1']),
             'city' => $this->replaceCharacters($this->parent->getDotCity()),
             'postcode' => $this->parent->getDotPostcode(),
+//            'bylaw' => 1,
+//            'personal_data' => 1,
             'country' => $this->parent->getDotCountry()
         );
     }
@@ -801,7 +804,7 @@ class DotpayDevApi extends DotpayApi
             return 0.0;
         }
         $amount = (float)$this->parent->getDotAmount();
-        $exPercentage = $this->getFormatAmount($amount * $this->config->getDotpayExPercentage()/100);
+        $exPercentage = $this->getFormatAmount($amount * $this->config->getDotpayExPercentage()/100.0);
         $exAmount = $this->getFormatAmount($this->config->getDotpayExAmount());
         $price = max($exPercentage, $exAmount);
         if ($inDefaultCurrency) {
@@ -820,7 +823,7 @@ class DotpayDevApi extends DotpayApi
             return 0.0;
         }
         $amount = $this->parent->getDotShippingAmount();
-        $discPercentage = $this->getFormatAmount($amount * $this->config->getDotpayDiscPercentage()/100);
+        $discPercentage = $this->getFormatAmount($amount * $this->config->getDotpayDiscPercentage()/100.0);
         $discAmount = $this->config->getDotpayDiscAmount();
         $tmpPrice = max($discPercentage, $discAmount);
         return min($tmpPrice, $amount);

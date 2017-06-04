@@ -140,7 +140,20 @@ abstract class DotpayApi
             }
         }
         $amount = Tools::displayPrice($amount, $currency);
-        return preg_replace('/[^0-9.]/', '', str_replace(',', '.', $amount));
+        return $this->fixAmountSeparator($amount);
+    }
+    
+    /**
+     * Fix separators in the given amount
+     * @param string $inputAmount Input amount
+     * @param string $separator Separator which should be removed besides the last one
+     * @return type
+     */
+    protected function fixAmountSeparator($inputAmount, $separator = '.') {
+        $amount = preg_replace('/[^0-9.]/', '', str_replace(',', '.', $inputAmount));
+        $part1 = str_replace($separator, '', substr($amount, 0, strrpos($amount, $separator)));
+        $part2 = substr($amount, strrpos($amount, $separator));
+        return $part1.$part2;
     }
     
     /**

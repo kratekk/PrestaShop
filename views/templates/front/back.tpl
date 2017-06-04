@@ -95,8 +95,27 @@
 </div>
 
 {if $message == null}
+    {include file='./scripts/checkStatus.tpl'}
     {literal}
         <script type="text/javascript">
+            window.backConfig = {
+                messages: {
+                    notFound: "{/literal}{$notFoundMessage|escape:'htmlall':'UTF-8'}{literal}",
+                    basic: "{/literal}{$basicMessage|escape:'htmlall':'UTF-8'}{literal}",
+                    status: "{/literal}{$statusMessage|escape:'htmlall':'UTF-8'}{literal}",
+                    timeout: "{/literal}{$timeoutMessage|escape:'htmlall':'UTF-8'}{literal}",
+                    pending: "{/literal}{$waitingMessage}{literal}",
+                    success: "{/literal}{$successMessage|escape:'htmlall':'UTF-8'}{literal}",
+                    error: "{/literal}{$errorMessage|escape:'htmlall':'UTF-8'}{literal}",
+                    tooMany: "{/literal}{$tooManyPaymentsMessage|escape:'htmlall':'UTF-8'}{literal}",
+                    unknown: "{/literal}{$unknownMessage|escape:'htmlall':'UTF-8'}{literal}"
+                },
+                target: "{/literal}{$checkStatusUrl}{literal}",
+                redirect: "{/literal}{$redirectUrl}{literal}",
+                orderId: {/literal}{$orderId}{literal},
+                interval: 5,
+                timeout: 2*60
+            };
             window.checkStatusConfig = {
                 "url": "{/literal}{$checkStatusUrl}{literal}",
                 "orderId": "{/literal}{$orderId}{literal}",
@@ -107,8 +126,8 @@
                 "timeoutMessage": "{/literal}{$timeoutMessage|escape:'htmlall':'UTF-8'}{literal}",
                 "redirectUrl": "{/literal}{$redirectUrl}{literal}"
             };
+            DotpayStatusChecker($('#statusMessageContainer'), window.backConfig);
         </script>
     {/literal}
-    {include file='./scripts/checkStatus.tpl'}
 {/if}
 <a href="{$link->getPageLink('index', true, null)}" class="button_large">{l s='Back to main mage' mod='dotpay'}</a>

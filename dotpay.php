@@ -847,9 +847,8 @@ class dotpay extends PaymentModule
                         'class' => 'fixed-width-lg dev-option exch-option lastInSection',
                         'desc' => $this->l('Value of additional fee for given currency in % (eg. 1.90)').'<br><b>'.$this->l('Bigger amount will be chosen').'</b>',
                     ),
-			/*   
-				//20170518 temporaray disabled: requires an error correction
-				   array(
+                    
+                    array(
                         'type' => 'radio',
                         'label' => $this->l('Discount options'),
                         'name' => $this->config->getDotpayDiscountFN(),
@@ -882,9 +881,7 @@ class dotpay extends PaymentModule
                         'label' => $this->l('Reduce amount of order (in %)'),
                         'class' => 'fixed-width-lg dev-option discount-option',
                         'desc' => $this->l('Value of discount for given currency in % (eg. 1.90)').'<br><b>'.$this->l('Bigger amount will be chosen').'</b>',
-                    )
-					
-			*/		
+                    )		
                 ),
                 'submit' => array(
                     'class' => 'center-block',

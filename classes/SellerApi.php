@@ -160,12 +160,11 @@ class DotpaySellerApi
             'control' => $control
         );
 		
-		if (function_exists('json_encode')) {
+        if (function_exists('json_encode')) {
             $dataPost = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
         } else {
-		    $dataPost = Tools::jsonEncode($data);
-		}	
-		
+            $dataPost = Tools::jsonEncode($data);
+        }	
 		
         $curl = new DotpayCurl();
         $curl->addOption(CURLOPT_URL, $url)

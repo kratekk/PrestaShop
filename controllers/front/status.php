@@ -31,28 +31,48 @@ class dotpaystatusModuleFrontController extends DotpayController
     /**
      * Checks a payment status of order in shop
      */
-    public function initContent()
-    {
-        parent::initContent();
+    public function init() {
+        parent::init();
+        header('Content-Type: application/json; charset=utf-8');
         $orderId = Tools::getValue('orderId');
         if ($orderId != null) {
             $order = new Order($orderId);
             $lastOrderState = new OrderState($order->getCurrentState());
+            $statusName = (gettype($lastOrderState->name) == 'array')?$lastOrderState->name[1]:$lastOrderState->name;
             switch ($lastOrderState->id) {
                 case $this->config->getDotpayNewStatusId():
-                    die('0');
+                    die($this->getJson(1, $statusName));
                 case _PS_OS_PAYMENT_:
                     $payments = OrderPayment::getByOrderId($orderId);
                     if ((count($payments) - count($order->getBrother())) > 1) {
-                        die('2');
+                        die($this->getJson(3, $statusName));
                     } else {
-                        die('1');
+                        die($this->getJson(2, $statusName));
                     }
+                case _PS_OS_ERROR_:
+                    die($this->getJson(0, $statusName));
                 default:
-                    die('-1');
+                    die($this->getJson(4, $statusName));
             }
         } else {
-            die('NO');
+            die($this->getJson(-1));
         }
+    }
+    
+    
+    private function getJson($code, $status = NULL, $message = NULL) {
+        $data = [
+            "code" => (int)$code,
+            "status" => (string)$status
+        ];
+        if($message !== NULL) {
+            $data['message'] = $message;
+        }
+        if (function_exists('json_encode')) {
+            $json = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        } else {
+            $json = str_replace('\\/', '/', Tools::jsonEncode($data));
+        }
+        return $json;
     }
 }

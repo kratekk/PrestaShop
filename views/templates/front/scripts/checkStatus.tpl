@@ -114,6 +114,7 @@ function DotpayStatusChecker(parent, config) {
                 case 0://ERROR
                     finish(checkInt);
                     setErrorMessage(getMessageWithStatus(config.messages.error, data.status));
+                    setTimeout(function(){location.href=config.redirect;}, config.delay*1000);
                     break;
                 case 1://PENDING
                     setInfoMessage(getBaseMessage(data.status)+"<br />"+config.messages.pending);

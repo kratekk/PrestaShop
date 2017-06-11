@@ -609,7 +609,7 @@ class DotpayDevApi extends DotpayApi
             'URLC' => $this->parent->getDotUrlC(),
             'api_version' => $this->config->getDotpayApiVersion(),
             'type' => 0,
-            'chlock' => 0,
+            'ch_lock' => 0,
             'firstname' => $this->replaceCharacters($this->parent->getDotFirstname()),
             'lastname' => $this->replaceCharacters($this->parent->getDotLastname()),
             'email' => $this->parent->getDotEmail(),

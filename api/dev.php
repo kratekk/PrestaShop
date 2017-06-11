@@ -461,8 +461,8 @@ class DotpayDevApi extends DotpayApi
         $hiddenFields['channel'] = self::$ocChannel;
         $hiddenFields['ch_lock'] = 1;
         $hiddenFields['type'] = 4;
-		$hiddenFields['bylaw'] = 1;
-		$hiddenFields['personal_data'] = 1;
+        $hiddenFields['bylaw'] = 1;
+        $hiddenFields['personal_data'] = 1;
         
         return $hiddenFields;
     }
@@ -509,8 +509,8 @@ class DotpayDevApi extends DotpayApi
         $hiddenFields['channel'] = self::$pvChannel;
         $hiddenFields['ch_lock'] = 1;
         $hiddenFields['type'] = 4;
-		$hiddenFields['bylaw'] = 1;
-		$hiddenFields['personal_data'] = 1;
+        $hiddenFields['bylaw'] = 1;
+        $hiddenFields['personal_data'] = 1;
         $hiddenFields['id'] = $this->config->getDotpayPvId();
         
         return $hiddenFields;
@@ -527,8 +527,8 @@ class DotpayDevApi extends DotpayApi
         $hiddenFields['channel'] = Tools::getValue('channel');
         $hiddenFields['ch_lock'] = 1;
         $hiddenFields['type'] = 4;
-		$hiddenFields['bylaw'] = 1;
-		$hiddenFields['personal_data'] = 1;
+        $hiddenFields['bylaw'] = 1;
+        $hiddenFields['personal_data'] = 1;
         
         return $hiddenFields;
     }
@@ -544,8 +544,8 @@ class DotpayDevApi extends DotpayApi
         $hiddenFields['channel'] = self::$mpChannel;
         $hiddenFields['ch_lock'] = 1;
         $hiddenFields['type'] = 4;
-		$hiddenFields['bylaw'] = 1;
-		$hiddenFields['personal_data'] = 1;
+        $hiddenFields['bylaw'] = 1;
+        $hiddenFields['personal_data'] = 1;
         
         return $hiddenFields;
     }
@@ -562,8 +562,8 @@ class DotpayDevApi extends DotpayApi
             $hiddenFields['channel'] = Tools::getValue('channel');
             $hiddenFields['ch_lock'] = 1;
             $hiddenFields['type'] = 4;
-			$hiddenFields['bylaw'] = 1;
-			$hiddenFields['personal_data'] = 1;
+            $hiddenFields['bylaw'] = 1;
+            $hiddenFields['personal_data'] = 1;
         }
         
         return $hiddenFields;
@@ -582,8 +582,8 @@ class DotpayDevApi extends DotpayApi
         }
         $hiddenFields['channel'] = self::$blikChannel;
         $hiddenFields['ch_lock'] = 1;
-			$hiddenFields['bylaw'] = 1;
-			$hiddenFields['personal_data'] = 1;
+        $hiddenFields['bylaw'] = 1;
+        $hiddenFields['personal_data'] = 1;
         $hiddenFields['personal_data'] = 1;
         
         return $hiddenFields;
@@ -618,8 +618,6 @@ class DotpayDevApi extends DotpayApi
             'street_n1' => $this->replaceCharacters($streetData['street_n1']),
             'city' => $this->replaceCharacters($this->parent->getDotCity()),
             'postcode' => $this->parent->getDotPostcode(),
-//            'bylaw' => 1,
-//            'personal_data' => 1,
             'country' => $this->parent->getDotCountry()
         );
     }

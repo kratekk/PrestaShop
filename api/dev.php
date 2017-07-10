@@ -259,6 +259,7 @@ class DotpayDevApi extends DotpayApi
         Tools::getValue('operation_currency').
         Tools::getValue('operation_withdrawal_amount').
         Tools::getValue('operation_commission_amount').
+        Tools::getValue('is_completed').
         Tools::getValue('operation_original_amount').
         Tools::getValue('operation_original_currency').
         Tools::getValue('operation_datetime').

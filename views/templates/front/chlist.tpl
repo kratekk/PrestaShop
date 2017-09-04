@@ -60,14 +60,14 @@
         {include file='./scripts/payment_widget.tpl'}
     {/if}
     
-    {foreach from=$channelList key=channel item=form}
+    {foreach from=$channelList key=dotpaySingleChannel item=dotpaySingleForm}
     <div class="row">
         <div class="col-xs-12 col-md-12">
             <p class="dotpay_unsigned_channel payment_module">
-                <a class="dotpay dropbtn"{if $directPayment and $channel=='dotpay'} data-type="dotpay_payment_link"{/if}>
-                    <label display-cell form-target="{$channel|escape:'htmlall':'UTF-8'}">
-                        <img class="{$channel|escape:'htmlall':'UTF-8'}" src="{$form['image']}">
-                        {$form['description']}
+                <a class="dotpay dropbtn"{if $directPayment and $dotpaySingleChannel=='dotpay'} data-type="dotpay_payment_link"{/if}>
+                    <label display-cell form-target="{$dotpaySingleChannel|escape:'htmlall':'UTF-8'}">
+                        <img class="{$dotpaySingleChannel|escape:'htmlall':'UTF-8'}" src="{$dotpaySingleForm['image']}">
+                        {$dotpaySingleForm['description']}
                     </label>
                 </a>
                 <div class="dotpay-channels-list">
@@ -78,7 +78,7 @@
                     {if $discAmount > 0}
                         <p class="alert alert-success">{$discMessage|escape:'htmlall':'UTF-8'}: {$discAmount|escape:'htmlall':'UTF-8'}&nbsp;{$currency|escape:'htmlall':'UTF-8'}.</p>
                     {/if}
-                    {dotpayGenerateForm form=$form}
+                    {dotpayGenerateForm form=$dotpaySingleForm}
                 </div>
             </p>
         </div>

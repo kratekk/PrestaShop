@@ -45,9 +45,9 @@ require_once(DOTPAY_PLUGIN_DIR.'/classes/GithubApi.php');
  * @param type $smarty
  * @return string
  */
-function dotpayGenerateForm(Array $params, $smarty)
+function dotpayGenerateForm(array $params, $smarty)
 {
-    $data = (isset($params['form']))?$params['form']:array();
+    $data = (isset($params['form']))?$params['form']:[];
     return DotpayFormHelper::generate($data);
 }
 
@@ -151,8 +151,8 @@ class dotpay extends PaymentModule
             !$this->addDotpayPartialRefundStatus() ||
             !$this->addReturnTab() ||
             !DotpayInstruction::create() ||
-            !DotpayCreditCard::create() ||
-            !DotpayCardBrand::create()) {
+            !DotpayCardBrand::create() ||
+            !DotpayCreditCard::create()) {
                 return false;
         }
         return true;

@@ -28,7 +28,7 @@ class DotpayFormHelper
      * @param array $data
      * @return string
      */
-    public static function generate(Array $data)
+    public static function generate(array $data)
     {
         $html = '';
         foreach ($data['fields'] as $value) {
@@ -59,7 +59,7 @@ class DotpayFormHelper
      * @param array $data
      * @return string
      */
-    private static function generateFormBegin(Array $data)
+    private static function generateFormBegin(array $data)
     {
         $html = '<form';
         foreach ($data['form'] as $name => $value) {
@@ -74,7 +74,7 @@ class DotpayFormHelper
      * @param array $data
      * @return string
      */
-    private static function generateDefault(Array $data, $hidden = false)
+    private static function generateDefault(array $data, $hidden = false)
     {
         $label = '';
         $llabel = '';
@@ -100,7 +100,7 @@ class DotpayFormHelper
      * @param array $data
      * @return string
      */
-    private static function generateSelect(Array $data)
+    private static function generateSelect(array $data)
     {
         $label = '';
         $llabel = '';
@@ -134,7 +134,7 @@ class DotpayFormHelper
      * @param array $data
      * @return string
      */
-    private static function generateButton(Array $data)
+    private static function generateButton(array $data)
     {
         $label = '';
         $llabel = '';
@@ -159,7 +159,7 @@ class DotpayFormHelper
      * @param array $data
      * @return string
      */
-    private static function generateSubmit(Array $data)
+    private static function generateSubmit(array $data)
     {
         $label = '';
         $llabel = '';

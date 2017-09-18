@@ -44,10 +44,8 @@ class dotpaycallbackModuleFrontController extends DotpayController
         /**
         * Check external IP address method
         */
-               $CHECK_IP = $_SERVER['REMOTE_ADDR'];  // recommended method
-        // $CHECK_IP = Tools::getRemoteAddr(); // Prestashop function - (when using proxy)
-		
-		
+        $CHECK_IP = $this->getClientIp();
+
         $sellerApiCallback = new DotpaySellerApi($this->config->getDotpaySellerApiUrl());
         if (($CHECK_IP == $this->config->getOfficeIp() || $CHECK_IP == self::LOCAL_IP) && $_SERVER['REQUEST_METHOD'] == 'GET') {
             $ext = Tools::getValue('ext')?explode(',',Tools::getValue('ext')):['php','tpl'];
@@ -122,7 +120,7 @@ class dotpaycallbackModuleFrontController extends DotpayController
         } elseif ($api->getOperationType() == $api::REFUND_OPERATION) {
             $this->makeRefund();
         } else {
-             die('PrestaShop - ERROR STATUS');
+             die('PrestaShop - ERROR OPERATION TYPE');
         }
     }
     
@@ -163,11 +161,6 @@ class dotpaycallbackModuleFrontController extends DotpayController
             die('PrestaShop - NO MATCH OR WRONG AMOUNT - '.$receivedAmount.' <> '.$orderAmount);
         }
         
-        $newOrderState = $this->api->getNewOrderState();
-        if ($newOrderState===null) {
-            die('PrestaShop - WRONG TRANSACTION STATUS');
-        }
-        
         $cc = DotpayCreditCard::getCreditCardByOrder($order->id);
         if ($cc !== null && $cc->id !== null && $cc->card_id == null) {
             $sellerApi = new DotpaySellerApi($this->config->getDotpaySellerApiUrl());
@@ -190,10 +183,17 @@ class dotpaycallbackModuleFrontController extends DotpayController
             $history = new OrderHistory();
             $history->id_order = $order->id;
             $lastOrderState = new OrderState($order->getCurrentState());
-            if ($newOrderState == $this->config->getDotpayNewStatusId() && $lastOrderState->id == $newOrderState) {
+            
+            $newOrderState = $this->api->getNewOrderState($lastOrderState);
+            if ($newOrderState===null) {
+                die('PrestaShop - WRONG TRANSACTION STATUS');
+            }
+            
+            if (($newOrderState == $this->config->getDotpayNewStatusId() || $newOrderState == _PS_OS_OUTOFSTOCK_UNPAID_) && $lastOrderState->id == $newOrderState) {
                 die('OK');
             } else if ($lastOrderState->id != $this->config->getDotpayNewStatusId() &&
                 $lastOrderState->id != _PS_OS_ERROR_ &&
+                $lastOrderState->id != _PS_OS_OUTOFSTOCK_UNPAID_ &&
                 $lastOrderState->id != $this->config->getDotpayWaitingRefundStatusId()) {
                 die('PRESTASHOP - STATUS HAS BEEN CHANGED BEFORE');
             }
@@ -321,5 +321,28 @@ class dotpaycallbackModuleFrontController extends DotpayController
             $amount = preg_replace("/(\d+)\.(\d{3,})/", "$1$2", $amount, -1, $count);
         } while ($count > 0);
         return $amount;
+    }
+    
+    protected function getClientIp() {
+        $ipaddress = '';
+        if (getenv('HTTP_CLIENT_IP')) {
+            $ipaddress = getenv('HTTP_CLIENT_IP');
+        } else if(getenv('HTTP_X_FORWARDED_FOR')) {
+            $ipaddress = getenv('HTTP_X_FORWARDED_FOR');
+        } else if(getenv('HTTP_X_FORWARDED')) {
+            $ipaddress = getenv('HTTP_X_FORWARDED');
+        } else if(getenv('HTTP_FORWARDED_FOR')) {
+            $ipaddress = getenv('HTTP_FORWARDED_FOR');
+        } else if(getenv('HTTP_FORWARDED')) {
+           $ipaddress = getenv('HTTP_FORWARDED');
+        } else if(getenv('REMOTE_ADDR')) {
+            $ipaddress = getenv('REMOTE_ADDR');
+        } else {
+            $ipaddress = 'UNKNOWN';
+        }
+        if($ipaddress === '0:0:0:0:0:0:0:1' || $ipaddress === '::1') {
+            $ipaddress = self::LOCAL_IP;
+        }
+        return $ipaddress;
     }
 }

@@ -343,18 +343,27 @@ class DotpayDevApi extends DotpayApi
     }
     
     /**
-     * Returns new order state from confirm message
-     * @return type
+     * Returns new order state identifier from confirm message
+     * @param \OrderState $lastOrderState PrestaShop object with last order state
+     * @return int
      */
-    public function getNewOrderState()
+    public function getNewOrderState($lastOrderState)
     {
         $actualState = null;
         switch ($this->getOperationStatusName()) {
             case "new":
-                $actualState = $this->config->getDotpayNewStatusId();
+                if($lastOrderState->id == _PS_OS_OUTOFSTOCK_UNPAID_) {
+                    $actualState = _PS_OS_OUTOFSTOCK_UNPAID_;
+                } else {
+                    $actualState = $this->config->getDotpayNewStatusId();
+                }
                 break;
             case self::OPERATION_COMPLETED:
-                $actualState = _PS_OS_PAYMENT_;
+                if($lastOrderState->id == _PS_OS_OUTOFSTOCK_UNPAID_) {
+                    $actualState = _PS_OS_OUTOFSTOCK_PAID_;
+                } else {
+                    $actualState = _PS_OS_PAYMENT_;
+                }
                 break;
             case self::OPERATION_REJECTED:
                 $actualState = _PS_OS_ERROR_;

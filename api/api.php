@@ -197,9 +197,9 @@ abstract class DotpayApi
     abstract public function getRelatedOperationNumber();
     
     /**
-     * Returns new order state from confirm message
+     * Returns new order state identifier from confirm message
      */
-    abstract public function getNewOrderState();
+    abstract public function getNewOrderState($lastOrderState);
     
     /**
      * Returns hidden form for Dotpay Helper Form

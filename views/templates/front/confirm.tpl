@@ -23,18 +23,6 @@
 *
 *}
 
-{literal}
-    <script type="text/javascript">
-        $(document).ready(function(){
-            $('#instruction input').keypress(function(e){
-                e.preventDefault();
-            }).focus(function(e){
-                $(this).select();
-            });
-        });
-    </script>
-{/literal}
-
 {capture name=path}
 	{l s='Completion of payments' mod='dotpay'}
 {/capture}

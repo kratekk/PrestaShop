@@ -31,32 +31,32 @@
         <div class="col-md-4 col-md-offset-1">
             <label>
                 {l s='Account number' mod='dotpay'}
-                <input type="text" class="important" id="iban" value="{$bankAccount|escape:'htmlall':'UTF-8'}" />
+                <input type="text" class="important" id="iban" value="{$bankAccount|escape:'htmlall':'UTF-8'}" readonly />
             </label>
             <label>
                 {l s='Amount of payment' mod='dotpay'}
                 <div class="input-group">
-                    <input type="text" class="important" id="amount" value="{$amount|escape:'htmlall':'UTF-8'}" aria-describedby="transfer-currency">
+                    <input type="text" class="important" id="amount" value="{$amount|escape:'htmlall':'UTF-8'}" aria-describedby="transfer-currency" readonly >
                     <span class="input-group-addon" id="transfer-currency">{$currency|escape:'htmlall':'UTF-8'}</span>
                 </div>
             </label>
             <label>
                 {l s='Title of payment' mod='dotpay'}
-                <input type="text" class="important" id="payment-title" value="{$title|escape:'htmlall':'UTF-8'}" />
+                <input type="text" class="important" id="payment-title" value="{$title|escape:'htmlall':'UTF-8'}" readonly />
             </label>
         </div>
         <div class="col-md-4 col-md-offset-2">
             <label>
                 {l s='Name of recipient' mod='dotpay'}
-                <input type="text" class="important" id="recipient" value="{$recipient|escape:'htmlall':'UTF-8'}" />
+                <input type="text" class="important" id="recipient" value="{$recipient|escape:'htmlall':'UTF-8'}" readonly />
             </label>
             <label>
                 {l s='Street' mod='dotpay'}
-                <input type="text" class="important" id="street" value="{$street|escape:'htmlall':'UTF-8'}" />
+                <input type="text" class="important" id="street" value="{$street|escape:'htmlall':'UTF-8'}" readonly />
             </label>
             <label>
                 {l s='Post code and city' mod='dotpay'}
-                <input type="text" class="important" id="post-code-city" value="{$city|escape:'htmlall':'UTF-8'}" />
+                <input type="text" class="important" id="post-code-city" value="{$city|escape:'htmlall':'UTF-8'}" readonly />
             </label>
         </div>
     </div>

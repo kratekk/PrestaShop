@@ -32,11 +32,11 @@
 {assign var='current_step' value='payment'}
 {include file="$tpl_dir./order-steps.tpl"}
 
-{if $errorMessage}
+{if isset($errorMessage)}
     <p class="alert alert-danger">{$errorMessage|escape:'htmlall':'UTF-8'}</p>
 {/if}
 
-{if $isOk}
+{if isset($isOk)}
 <p class="alert alert-success">{l s='Payment has been initialized' mod='dotpay'}</p>
 
 {include file=$template}

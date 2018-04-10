@@ -59,7 +59,7 @@ class DotpayCardBrand extends ObjectModel
                 `image` varchar(192) DEFAULT null,
                 PRIMARY KEY (`name`),
                 UNIQUE KEY `brand_img` (`image`)
-            ) DEFAULT CHARSET=utf8;'
+            ) ENGINE='._MYSQL_ENGINE_.' DEFAULT CHARSET=utf8;'
         );
     }
     
@@ -81,7 +81,7 @@ class DotpayCardBrand extends ObjectModel
     public function __construct($name)
     {
         $brand = Db::getInstance()->ExecuteS(
-            'SELECT *  
+           'SELECT *  
             FROM `'._DB_PREFIX_.self::$definition['table'].'` 
             WHERE name = \''.$name.'\''
         );

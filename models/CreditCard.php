@@ -119,7 +119,7 @@ class DotpayCreditCard extends ObjectModel
                     FOREIGN KEY (customer_id)
                     REFERENCES `'._DB_PREFIX_.Customer::$definition['table'].'` (`'.Customer::$definition['primary'].'`)
                     ON DELETE CASCADE
-            ) DEFAULT CHARSET=utf8;'
+            ) ENGINE='._MYSQL_ENGINE_.' DEFAULT CHARSET=utf8;'
         );
     }
     

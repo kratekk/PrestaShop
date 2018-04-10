@@ -67,7 +67,7 @@ abstract class DotpayRegisterOrder
         } else {
             $data = str_replace('\\/', '/', Tools::jsonEncode(self::prepareData($channelId)));
         }	
-        if (!self::checkIfCompletedControlExist(self::$parent->getDotControl(), $channelId)) {
+        if (!self::checkIfCompletedControlExist((int)self::$parent->getDotControl('number'), $channelId)) {
             return self::createRequest($data);
         }
         return null;

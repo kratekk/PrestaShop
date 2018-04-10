@@ -31,7 +31,7 @@
 {/literal}
 <div class="box" style="overflow: auto;">
     <h2 class="page-subheading"><a href="http://dotpay.pl" target="_blank"><img id="dotpay-logo" src="{$modules_dir|escape:'htmlall':'UTF-8'}dotpay/views/img/dp_logo.png" alt="Dotpay - {l s='Fast and secure Internet payments' mod='dotpay'}"/></a>&nbsp;{l s='Pay easy with Dotpay' mod='dotpay'}</h2>
-    {if $isRenew}
+    {if isset($isRenew) && $isRenew == 1}
     <p>{l s='Your payment was not yet confirmed by Dotpay. If you break payment, you can make it again.' mod='dotpay'}</p>
     <p class="cart_navigation">
         <a class="btn btn-info" href="{$paymentUrl}">
@@ -43,7 +43,7 @@
     {else}
         <p>{l s='Paments provide Dotpay' mod='dotpay'}</p>
     {/if}
-    {if $isInstruction}
+    {if isset($isInstruction) && $isInstruction == 1}
         <hr />
         <p>{l s='You can see instruction of payment completion.' mod='dotpay'}</p>
         <p class="cart_navigation">

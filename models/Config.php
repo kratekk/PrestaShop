@@ -659,7 +659,7 @@ class DotpayConfig
      */
     public function getDotpayAvailableCurrency()
     {
-        return array( 'EUR', 'USD', 'GBP', 'JPY','CZK', 'SEK', 'PLN' );
+        return array( 'EUR', 'USD', 'GBP', 'JPY','CZK', 'SEK', 'UAH', 'RON', 'PLN' );
     }
     
     /**
@@ -668,7 +668,7 @@ class DotpayConfig
      */
     public function getDotpayAvailableLanguage()
     {
-        return array( 'pl', 'en', 'de', 'it','fr', 'es', 'cz', 'ru', 'bg' );
+        return array( 'pl', 'en', 'de', 'it','fr', 'es', 'cz', 'ru', 'hu','cs', 'ro', 'ru' );
     }
     
     /**

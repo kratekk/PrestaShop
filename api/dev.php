@@ -95,7 +95,7 @@ class DotpayDevApi extends DotpayApi
                             'required' => true
                         ),
                         $this->addBylawField(),
-                        $this->addPersonalDataField(),
+                        // $this->addPersonalDataField(),
                         $this->getSubmitField(),
                     ),
                     'image' => $this->parent->getDotOneClickLogo(),
@@ -143,7 +143,7 @@ class DotpayDevApi extends DotpayApi
                     $this->getHiddenField('channel', $ccChannel),
                     $this->getHiddenField('order_id', Tools::getValue('order_id')),
                     $this->addBylawField(),
-                    $this->addPersonalDataField(),
+                    // $this->addPersonalDataField(),
                     $this->getSubmitField(),
                 ),
                 'image' => $this->parent->getDotCreditCardLogo(),
@@ -160,7 +160,7 @@ class DotpayDevApi extends DotpayApi
                     $this->getHiddenField('order_id', (int)Tools::getValue('order_id')),
                     $this->getHiddenField('id', $this->config->getDotpayPvId()),
                     $this->addBylawField(),
-                    $this->addPersonalDataField(),
+                    // $this->addPersonalDataField(),
                     $this->getSubmitField(),
                 ),
                 'image' => $this->parent->getDotPVLogo(),
@@ -184,7 +184,7 @@ class DotpayDevApi extends DotpayApi
                         'required' => true
                     ),
                     $this->addBylawField(),
-                    $this->addPersonalDataField(),
+                    // $this->addPersonalDataField(),
                     $this->getSubmitField(),
                 ),
                 'image' => $this->parent->getDotBlikLogo(),
@@ -200,7 +200,7 @@ class DotpayDevApi extends DotpayApi
                     $this->getHiddenField('dotpay_type', 'mp'),
                     $this->getHiddenField('order_id', Tools::getValue('order_id')),
                     $this->addBylawField(),
-                    $this->addPersonalDataField(),
+                    // $this->addPersonalDataField(),
                     $this->getSubmitField(),
                 ),
                 'image' => $this->parent->getDotMasterPassLogo(),
@@ -232,7 +232,7 @@ class DotpayDevApi extends DotpayApi
                     'label' => $extendedWidget.'<p class="my-form-widget-container"></p>'
                 );
                 $fields[] = $this->addBylawField();
-                $fields[] = $this->addPersonalDataField();
+                // $fields[] = $this->addPersonalDataField();
             }
             $fields[] = $this->getSubmitField();
             $channelList['dotpay']['fields'] = $fields;
@@ -282,20 +282,9 @@ class DotpayDevApi extends DotpayApi
     {
         return ($this->parent->isDotSelectedCurrency($this->config->getDotpayPvCurrencies(), $this->getOperationCurrency()) &&
                 Tools::getValue('channel')==self::$pvChannel &&
-                Tools::getValue('channel')==self::$pvChannel &&
                 $this->config->isDotpayPV() &&
                 $this->config->getDotpayPvId()==Tools::getValue('id'));
-    }
-    
-   /**
-     * replacing illegal characters by space from: firstname, lastname, city, street, p_info
-     * @return string|bool
-     */
-    public function replaceCharacters($originalValue)
-		{
-			return preg_replace('/(\'|\"|\s{2,}|\.{2,}|@{2,}|-{2,})/', ' ', $originalValue);
-		}
-    
+    } 
     
     /**
      * Returns total amount from confirm message
@@ -420,6 +409,7 @@ class DotpayDevApi extends DotpayApi
             $pin = $this->config->getDotpayPIN();
         }
         $formFields[] = $this->getHiddenField('chk', $this->generateCHK($id, $pin, $fields));
+		
         return array(
             'form'=>  $this->getFormHeader($type),
             'fields' => $formFields
@@ -472,7 +462,7 @@ class DotpayDevApi extends DotpayApi
         $hiddenFields['ch_lock'] = 1;
         $hiddenFields['type'] = 4;
         $hiddenFields['bylaw'] = 1;
-        $hiddenFields['personal_data'] = 1;
+        // $hiddenFields['personal_data'] = 1;
         
         return $hiddenFields;
     }
@@ -520,7 +510,7 @@ class DotpayDevApi extends DotpayApi
         $hiddenFields['ch_lock'] = 1;
         $hiddenFields['type'] = 4;
         $hiddenFields['bylaw'] = 1;
-        $hiddenFields['personal_data'] = 1;
+        // $hiddenFields['personal_data'] = 1;
         $hiddenFields['id'] = $this->config->getDotpayPvId();
         
         return $hiddenFields;
@@ -538,7 +528,7 @@ class DotpayDevApi extends DotpayApi
         $hiddenFields['ch_lock'] = 1;
         $hiddenFields['type'] = 4;
         $hiddenFields['bylaw'] = 1;
-        $hiddenFields['personal_data'] = 1;
+        // $hiddenFields['personal_data'] = 1;
         
         return $hiddenFields;
     }
@@ -555,7 +545,7 @@ class DotpayDevApi extends DotpayApi
         $hiddenFields['ch_lock'] = 1;
         $hiddenFields['type'] = 4;
         $hiddenFields['bylaw'] = 1;
-        $hiddenFields['personal_data'] = 1;
+        // $hiddenFields['personal_data'] = 1;
         
         return $hiddenFields;
     }
@@ -573,7 +563,7 @@ class DotpayDevApi extends DotpayApi
             $hiddenFields['ch_lock'] = 1;
             $hiddenFields['type'] = 4;
             $hiddenFields['bylaw'] = 1;
-            $hiddenFields['personal_data'] = 1;
+            // $hiddenFields['personal_data'] = 1;
         }
         
         return $hiddenFields;
@@ -593,8 +583,7 @@ class DotpayDevApi extends DotpayApi
         $hiddenFields['channel'] = self::$blikChannel;
         $hiddenFields['ch_lock'] = 1;
         $hiddenFields['bylaw'] = 1;
-        $hiddenFields['personal_data'] = 1;
-        $hiddenFields['personal_data'] = 1;
+        // $hiddenFields['personal_data'] = 1;
         
         return $hiddenFields;
     }
@@ -610,7 +599,7 @@ class DotpayDevApi extends DotpayApi
         return array(
             'id' => $this->parent->getDotId(),
             'control' => $this->parent->getDotControl(),
-            'p_info' => $this->replaceCharacters($this->parent->getDotPinfo()),
+            'p_info' => $this->parent->getDotPinfo(),
             'amount' => $this->parent->getDotAmount(),
             'currency' => $this->parent->getDotCurrency(),
             'description' => $this->parent->getDotDescription(),
@@ -620,13 +609,13 @@ class DotpayDevApi extends DotpayApi
             'api_version' => $this->config->getDotpayApiVersion(),
             'type' => 0,
             'ch_lock' => 0,
-            'firstname' => $this->replaceCharacters($this->parent->getDotFirstname()),
-            'lastname' => $this->replaceCharacters($this->parent->getDotLastname()),
+            'firstname' => $this->parent->getDotFirstname(),
+            'lastname' => $this->parent->getDotLastname(),
             'email' => $this->parent->getDotEmail(),
             'phone' => $this->parent->getDotPhone(),
-            'street' => $this->replaceCharacters($streetData['street']),
-            'street_n1' => $this->replaceCharacters($streetData['street_n1']),
-            'city' => $this->replaceCharacters($this->parent->getDotCity()),
+            'street' => $streetData['street'],
+            'street_n1' => $streetData['street_n1'],
+            'city' => $this->parent->getDotCity(),
             'postcode' => $this->parent->getDotPostcode(),
             'country' => $this->parent->getDotCountry()
         );
@@ -652,19 +641,25 @@ class DotpayDevApi extends DotpayApi
      */
     private function isMainChannelEmpty()
     {
-        $channels = $this->getApiChannels();
-        $channels = $channels['channels'];
-        $separatedChannels = $this->getSeparatedChannelsList();
-        foreach ($channels as $number => $channel) {
-            if (($index = array_search($channel['id'], $separatedChannels)) !== false) {
-                unset($channels[$number]);
-                unset($separatedChannels[$index]);
-            }
-            if (!count($separatedChannels)) {
-                break;
-            }
-        }
-        return !count($channels);
+
+			$channels1 = $this->getApiChannels();
+			
+		if(isset($channels1['channels']) && $channels1['channels'] != ''){
+			$channels = $channels1['channels'];
+			$separatedChannels = $this->getSeparatedChannelsList();
+			foreach ($channels as $number => $channel) {
+				if (($index = array_search($channel['id'], $separatedChannels)) !== false) {
+					unset($channels[$number]);
+					unset($separatedChannels[$index]);
+				}
+				if (!count($separatedChannels)) {
+					break;
+				}
+			}
+			return !count($channels);
+		}else{
+				return false;		
+		}
     }
     
     /**
@@ -674,132 +669,70 @@ class DotpayDevApi extends DotpayApi
      * @param array $ParametersArray Parameters from request
      * @return string
      */
-    protected function generateCHK($DotpayId, $DotpayPin, $ParametersArray)
+    protected function generateCHK($DotpayId, $DotpayPin, $ParametersArray, $test=0)
     {
         $ParametersArray['id'] = $DotpayId;
         $ChkParametersChain =
-        $DotpayPin.
-        (isset($ParametersArray['api_version']) ?
-        $ParametersArray['api_version'] : null).
-        (isset($ParametersArray['charset']) ?
-        $ParametersArray['charset'] : null).
-        (isset($ParametersArray['lang']) ?
-        $ParametersArray['lang'] : null).
-        (isset($ParametersArray['id']) ?
-        $ParametersArray['id'] : null).
-        (isset($ParametersArray['amount']) ?
-        $ParametersArray['amount'] : null).
-        (isset($ParametersArray['currency']) ?
-        $ParametersArray['currency'] : null).
-        (isset($ParametersArray['description']) ?
-        $ParametersArray['description'] : null).
-        (isset($ParametersArray['control']) ?
-        $ParametersArray['control'] : null).
-        (isset($ParametersArray['channel']) ?
-        $ParametersArray['channel'] : null).
-        (isset($ParametersArray['credit_card_brand']) ?
-        $ParametersArray['credit_card_brand'] : null).
-        (isset($ParametersArray['ch_lock']) ?
-        $ParametersArray['ch_lock'] : null).
-        (isset($ParametersArray['channel_groups']) ?
-        $ParametersArray['channel_groups'] : null).
-        (isset($ParametersArray['onlinetransfer']) ?
-        $ParametersArray['onlinetransfer'] : null).
-        (isset($ParametersArray['URL']) ?
-        $ParametersArray['URL'] : null).
-        (isset($ParametersArray['type']) ?
-        $ParametersArray['type'] : null).
-        (isset($ParametersArray['buttontext']) ?
-        $ParametersArray['buttontext'] : null).
-        (isset($ParametersArray['URLC']) ?
-        $ParametersArray['URLC'] : null).
-        (isset($ParametersArray['firstname']) ?
-        $ParametersArray['firstname'] : null).
-        (isset($ParametersArray['lastname']) ?
-        $ParametersArray['lastname'] : null).
-        (isset($ParametersArray['email']) ?
-        $ParametersArray['email'] : null).
-        (isset($ParametersArray['street']) ?
-        $ParametersArray['street'] : null).
-        (isset($ParametersArray['street_n1']) ?
-        $ParametersArray['street_n1'] : null).
-        (isset($ParametersArray['street_n2']) ?
-        $ParametersArray['street_n2'] : null).
-        (isset($ParametersArray['state']) ?
-        $ParametersArray['state'] : null).
-        (isset($ParametersArray['addr3']) ?
-        $ParametersArray['addr3'] : null).
-        (isset($ParametersArray['city']) ?
-        $ParametersArray['city'] : null).
-        (isset($ParametersArray['postcode']) ?
-        $ParametersArray['postcode'] : null).
-        (isset($ParametersArray['phone']) ?
-        $ParametersArray['phone'] : null).
-        (isset($ParametersArray['country']) ?
-        $ParametersArray['country'] : null).
-        (isset($ParametersArray['code']) ?
-        $ParametersArray['code'] : null).
-        (isset($ParametersArray['p_info']) ?
-        $ParametersArray['p_info'] : null).
-        (isset($ParametersArray['p_email']) ?
-        $ParametersArray['p_email'] : null).
-        (isset($ParametersArray['n_email']) ?
-        $ParametersArray['n_email'] : null).
-        (isset($ParametersArray['expiration_date']) ?
-        $ParametersArray['expiration_date'] : null).
-        (isset($ParametersArray['recipient_account_number']) ?
-        $ParametersArray['recipient_account_number'] : null).
-        (isset($ParametersArray['recipient_company']) ?
-        $ParametersArray['recipient_company'] : null).
-        (isset($ParametersArray['recipient_first_name']) ?
-        $ParametersArray['recipient_first_name'] : null).
-        (isset($ParametersArray['recipient_last_name']) ?
-        $ParametersArray['recipient_last_name'] : null).
-        (isset($ParametersArray['recipient_address_street']) ?
-        $ParametersArray['recipient_address_street'] : null).
-        (isset($ParametersArray['recipient_address_building']) ?
-        $ParametersArray['recipient_address_building'] : null).
-        (isset($ParametersArray['recipient_address_apartment']) ?
-        $ParametersArray['recipient_address_apartment'] : null).
-        (isset($ParametersArray['recipient_address_postcode']) ?
-        $ParametersArray['recipient_address_postcode'] : null).
-        (isset($ParametersArray['recipient_address_city']) ?
-        $ParametersArray['recipient_address_city'] : null).
-        (isset($ParametersArray['warranty']) ?
-        $ParametersArray['warranty'] : null).
-        (isset($ParametersArray['bylaw']) ?
-        $ParametersArray['bylaw'] : null).
-        (isset($ParametersArray['personal_data']) ?
-        $ParametersArray['personal_data'] : null).
-        (isset($ParametersArray['credit_card_number']) ?
-        $ParametersArray['credit_card_number'] : null).
-        (isset($ParametersArray['credit_card_expiration_date_year']) ?
-        $ParametersArray['credit_card_expiration_date_year'] : null).
-        (isset($ParametersArray['credit_card_expiration_date_month']) ?
-        $ParametersArray['credit_card_expiration_date_month'] : null).
-        (isset($ParametersArray['credit_card_security_code']) ?
-        $ParametersArray['credit_card_security_code'] : null).
-        (isset($ParametersArray['credit_card_store']) ?
-        $ParametersArray['credit_card_store'] : null).
-        (isset($ParametersArray['credit_card_store_security_code']) ?
-        $ParametersArray['credit_card_store_security_code'] : null).
-        (isset($ParametersArray['credit_card_customer_id']) ?
-        $ParametersArray['credit_card_customer_id'] : null).
-        (isset($ParametersArray['credit_card_id']) ?
-        $ParametersArray['credit_card_id'] : null).
-        (isset($ParametersArray['blik_code']) ?
-        $ParametersArray['blik_code'] : null).
-        (isset($ParametersArray['credit_card_registration']) ?
-        $ParametersArray['credit_card_registration'] : null).
-        (isset($ParametersArray['recurring_frequency']) ?
-        $ParametersArray['recurring_frequency'] : null).
-        (isset($ParametersArray['recurring_interval']) ?
-        $ParametersArray['recurring_interval'] : null).
-        (isset($ParametersArray['recurring_start']) ?
-        $ParametersArray['recurring_start'] : null).
-        (isset($ParametersArray['recurring_count']) ?
-        $ParametersArray['recurring_count'] : null);
-        return hash('sha256', $ChkParametersChain);
+				$DotpayPin.
+				(isset($ParametersArray['api_version']) ? $ParametersArray['api_version'] : null).
+				(isset($ParametersArray['charset']) ? $ParametersArray['charset'] : null).
+				(isset($ParametersArray['lang']) ? $ParametersArray['lang'] : null).
+				(isset($ParametersArray['id']) ? $ParametersArray['id'] : null).
+				(isset($ParametersArray['amount']) ? $ParametersArray['amount'] : null).
+				(isset($ParametersArray['currency']) ? $ParametersArray['currency'] : null).
+				(isset($ParametersArray['description']) ? $ParametersArray['description'] : null).
+				(isset($ParametersArray['control']) ? $ParametersArray['control'] : null).
+				(isset($ParametersArray['channel']) ?  $ParametersArray['channel'] : null).
+				(isset($ParametersArray['credit_card_brand']) ? $ParametersArray['credit_card_brand'] : null).
+				(isset($ParametersArray['ch_lock']) ? $ParametersArray['ch_lock'] : null).
+				(isset($ParametersArray['channel_groups']) ? $ParametersArray['channel_groups'] : null).
+				(isset($ParametersArray['onlinetransfer']) ? $ParametersArray['onlinetransfer'] : null).
+				(isset($ParametersArray['URL']) ? $ParametersArray['URL'] : null).
+				(isset($ParametersArray['type']) ? $ParametersArray['type'] : null).
+				(isset($ParametersArray['buttontext']) ? $ParametersArray['buttontext'] : null).
+				(isset($ParametersArray['URLC']) ? $ParametersArray['URLC'] : null).
+				(isset($ParametersArray['firstname']) ? $ParametersArray['firstname'] : null).
+				(isset($ParametersArray['lastname']) ? $ParametersArray['lastname'] : null).
+				(isset($ParametersArray['email']) ? $ParametersArray['email'] : null).
+				(isset($ParametersArray['street']) ? $ParametersArray['street'] : null).
+				(isset($ParametersArray['street_n1']) ? $ParametersArray['street_n1'] : null).
+				(isset($ParametersArray['street_n2']) ? $ParametersArray['street_n2'] : null).
+				(isset($ParametersArray['state']) ? $ParametersArray['state'] : null).
+				(isset($ParametersArray['addr3']) ? $ParametersArray['addr3'] : null).
+				(isset($ParametersArray['city']) ? $ParametersArray['city'] : null).
+				(isset($ParametersArray['postcode']) ? $ParametersArray['postcode'] : null).
+				(isset($ParametersArray['phone']) ? $ParametersArray['phone'] : null).
+				(isset($ParametersArray['country']) ? $ParametersArray['country'] : null).
+				(isset($ParametersArray['code']) ? $ParametersArray['code'] : null).
+				(isset($ParametersArray['p_info']) ? $ParametersArray['p_info'] : null).
+				(isset($ParametersArray['p_email']) ? $ParametersArray['p_email'] : null).
+				(isset($ParametersArray['n_email']) ? $ParametersArray['n_email'] : null).
+				(isset($ParametersArray['expiration_date']) ? $ParametersArray['expiration_date'] : null).
+				(isset($ParametersArray['recipient_account_number']) ? $ParametersArray['recipient_account_number'] : null).
+				(isset($ParametersArray['recipient_company']) ? $ParametersArray['recipient_company'] : null).
+				(isset($ParametersArray['recipient_first_name']) ? $ParametersArray['recipient_first_name'] : null).
+				(isset($ParametersArray['recipient_last_name']) ? $ParametersArray['recipient_last_name'] : null).
+				(isset($ParametersArray['recipient_address_street']) ? $ParametersArray['recipient_address_street'] : null).
+				(isset($ParametersArray['recipient_address_building']) ? $ParametersArray['recipient_address_building'] : null).
+				(isset($ParametersArray['recipient_address_apartment']) ? $ParametersArray['recipient_address_apartment'] : null).
+				(isset($ParametersArray['recipient_address_postcode']) ? $ParametersArray['recipient_address_postcode'] : null).
+				(isset($ParametersArray['recipient_address_city']) ? $ParametersArray['recipient_address_city'] : null).
+				(isset($ParametersArray['warranty']) ? $ParametersArray['warranty'] : null).
+				(isset($ParametersArray['bylaw']) ? $ParametersArray['bylaw'] : null).
+				(isset($ParametersArray['personal_data']) ? $ParametersArray['personal_data'] : null).
+				(isset($ParametersArray['credit_card_number']) ? $ParametersArray['credit_card_number'] : null).
+				(isset($ParametersArray['credit_card_expiration_date_year']) ? $ParametersArray['credit_card_expiration_date_year'] : null).
+				(isset($ParametersArray['credit_card_expiration_date_month']) ? $ParametersArray['credit_card_expiration_date_month'] : null).
+				(isset($ParametersArray['credit_card_security_code']) ? $ParametersArray['credit_card_security_code'] : null).
+				(isset($ParametersArray['credit_card_store']) ? $ParametersArray['credit_card_store'] : null).
+				(isset($ParametersArray['credit_card_store_security_code']) ? $ParametersArray['credit_card_store_security_code'] : null).
+				(isset($ParametersArray['credit_card_customer_id']) ? $ParametersArray['credit_card_customer_id'] : null).
+				(isset($ParametersArray['credit_card_id']) ? $ParametersArray['credit_card_id'] : null).
+				(isset($ParametersArray['blik_code']) ? $ParametersArray['blik_code'] : null).
+				(isset($ParametersArray['credit_card_registration']) ? $ParametersArray['credit_card_registration'] : null);
+		
+		return hash('sha256', $ChkParametersChain);
+
     }
     
     /**
@@ -821,6 +754,17 @@ class DotpayDevApi extends DotpayApi
         return $price;
     }
     
+     /** Returns info about test mode
+     * @return type
+     */
+    public function getinfoaboutTest()
+    {
+        if ($this->config->isDotpayTestMode()) {
+            return true;
+        }else{
+			return false;
+		}
+    }							   
     /**
      * Returns amount after discount for Dotpay
      * @return type

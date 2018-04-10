@@ -124,7 +124,7 @@ class DotpaySellerApi
     }
     
     /**
-     * Returns ifnos about payment
+     * Returns infos about payment
      * @param string $username
      * @param string $password
      * @param int $orderId

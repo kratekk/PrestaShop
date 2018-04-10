@@ -235,6 +235,12 @@ abstract class DotpayApi
      * Checks if seller account is right
      */
     abstract public function checkSellerId($sellerId);
+	
+	/**
+     * Checks if test mode is enabled
+     */
+    abstract public function getinfoaboutTest();
+	
     
     /**
      * Returns operation type

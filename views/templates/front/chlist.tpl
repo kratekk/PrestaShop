@@ -30,7 +30,7 @@
     </script>
 {/literal}
 
-{if $inCheckout}
+{if isset($inCheckout)}
 <link rel="stylesheet" href="{$modules_dir|escape:'htmlall':'UTF-8'}dotpay/views/css/front.css" type="text/css" media="all" />
 {include file='./scripts/noConflict.tpl'}
 {/if}
@@ -38,16 +38,16 @@
 {include file='./scripts/jquery.transit.tpl'}
 {include file='./scripts/payment.tpl'}
 
-{if $goodCurency }
+{if isset($goodCurency) }
     
-    {if $isWidget}
+    {if isset($isWidget)}
         <link href="{$dotpayUrl|escape:'htmlall':'UTF-8'}widget/payment_widget.min.css" rel="stylesheet">
         <script type="text/javascript">
         {literal}
             var dotpayWidgetConfig = {
                 sellerAccountId: {/literal}{$userId|escape:'htmlall':'UTF-8'}{literal},
-                amount: {/literal}{$amount|escape:'htmlall':'UTF-8'}{literal},
-                currency: '{/literal}{$currency|escape:'htmlall':'UTF-8'}{literal}',
+				amount: {/literal}{$amount|escape:'htmlall':'UTF-8'}{literal},
+                currency: '{/literal}{$currencyPay|escape:'htmlall':'UTF-8'}{literal}',
                 lang: '{/literal}{$lang|escape:'htmlall':'UTF-8'}{literal}',
                 widgetFormContainerClass: 'my-form-widget-container',
                 offlineChannel: 'mark',
@@ -71,12 +71,16 @@
                     </label>
                 </a>
                 <div class="dotpay-channels-list">
+                    {if isset($getinfoaboutTest) && $getinfoaboutTest == 1}
+						 <p class="alert alert-warning">{$testMessage|escape:'htmlall':'UTF-8'}</p><br>			 						 
+					{/if}
+					
                     {if $exAmount > 0}
-                        <p class="alert alert-danger">{$exMessage|escape:'htmlall':'UTF-8'}: {$exAmount|escape:'htmlall':'UTF-8'}&nbsp;{$currency|escape:'htmlall':'UTF-8'}.</p>
+                        <p class="alert alert-danger">{$exMessage|escape:'htmlall':'UTF-8'}: {$exAmount|escape:'htmlall':'UTF-8'}&nbsp;{$currencyPay|escape:'htmlall':'UTF-8'}.</p>
                     {/if}
 
                     {if $discAmount > 0}
-                        <p class="alert alert-success">{$discMessage|escape:'htmlall':'UTF-8'}: {$discAmount|escape:'htmlall':'UTF-8'}&nbsp;{$currency|escape:'htmlall':'UTF-8'}.</p>
+                        <p class="alert alert-success">{$discMessage|escape:'htmlall':'UTF-8'}: {$discAmount|escape:'htmlall':'UTF-8'}&nbsp;{$currencyPay|escape:'htmlall':'UTF-8'}.</p>
                     {/if}
                     {dotpayGenerateForm form=$dotpaySingleForm}
                 </div>

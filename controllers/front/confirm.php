@@ -45,7 +45,7 @@ class dotpayconfirmModuleFrontController extends DotpayController
         }
         
         $channel = $this->context->cookie->dotpay_channel;
-        unset($this->context->cookie->dotpay_channel);
+        // unset($this->context->cookie->dotpay_channel);
         DotpayRegisterOrder::init($this);
         $payment = DotpayRegisterOrder::create($channel);
         if ($payment===null) {
@@ -96,20 +96,24 @@ class dotpayconfirmModuleFrontController extends DotpayController
             }
             $chData = $this->api->getChannelData($instruction->channel);
             $channelImage = $chData['logo'];
-            $this->context->smarty->assign(array(
-                'meta_title' => $this->module->l('Complete payment'),
-                'isOk' => true,
-                'amount' => $instruction->amount,
-                'currency' => $instruction->currency,
-                'title' => $instruction->number,
-                'address' => $address,
-                'bankAccount' => $instruction->bank_account,
-                'recipient' => DotpayInstruction::DOTPAY_NAME,
-                'street' => DotpayInstruction::DOTPAY_STREET,
-                'city' => DotpayInstruction::DOTPAY_CITY,
-                'template' => './confirm/'.$template,
-                'channelImage' =>$channelImage
-            ));
+			
+			$this->context->smarty->assign(
+			  array(
+				    'meta_title' => $this->module->l('Complete payment'),
+					'isOk' => true,
+					'template' => './confirm/'.$template,
+					'amount' => $instruction->amount,
+					'currencyInstr' => $instruction->currency,
+					'title' => $instruction->number,
+					'bankAccount' => $instruction->bank_account,
+					'address' => $address,
+					'recipient' => DotpayInstruction::DOTPAY_NAME,
+					'street' => DotpayInstruction::DOTPAY_STREET,
+					'city' => DotpayInstruction::DOTPAY_CITY,
+					'template' => './confirm/'.$template,
+					'channelImage' =>$channelImage
+				   )
+			);
         }
         
         $this->setTemplate("confirm.tpl");

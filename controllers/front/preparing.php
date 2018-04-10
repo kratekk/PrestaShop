@@ -39,10 +39,10 @@ class dotpaypreparingModuleFrontController extends DotpayController
         $this->display_header = false;
         $this->display_footer = false;
         $orderId = 0;
-        
+        $getinfoaboutTest = $this->api->getinfoaboutTest();
         if (Tools::getValue('order_id') == false) {
             $this->checkOrderOwnership($this->context->customer->id, $this->context->cart->id_customer);
-            $cartId = $this->context->cart->id;
+            $cartId = $this->context->cart->id;											   
             $exAmount = $this->api->getExtrachargeAmount(true);
             if ($exAmount > 0 && !$this->isExVPinCart()) {
                 $productId = $this->config->getDotpayExchVPid();
@@ -85,7 +85,7 @@ class dotpaypreparingModuleFrontController extends DotpayController
             );
             $orderId = Order::getOrderByCartId($cartId);
             $this->setOrderAsSource($orderId, true);
-        } else {
+        } else {								  
             $orderId = Tools::getValue('order_id');
             $this->context->cart = Cart::getCartByOrderId($orderId);
             $this->setOrderAsSource($orderId);

@@ -72,9 +72,9 @@
 <div id="dotpayDetailsPaymentPanel" class="panel">
     <div class="panel-heading">
         <i class="icon-university"></i>
-        Płatności Dotpay<span class="badge">$</span>
+        {l s='Dotpay payments' mod='dotpay'}<span class="badge">$</span>
     </div>
-    <h4>Zwrot płatności</h4>
+    <h4>{l s='Payment refund' mod='dotpay'}</h4>
     <form method="POST" action="{$returnUrl}">
         <input type="hidden" name="order_id" value="{$orderId|escape:'htmlall':'UTF-8'}" />
         <select id="dotpay-return-payment" name="payment" class="dotpay-margin dotpay-return-param">
@@ -87,6 +87,6 @@
             <span class="input-group-addon" value="" id="return-currency"></span>
         </div>
         <input class="dotpay-margin dotpay-return-param" size="60" type="text" name="description" value="" />
-        <input class="dotpay-margin" type="submit" value="Wykonaj zwrot" />
+        <input class="dotpay-margin" type="submit" value="{l s='Make refund' mod='dotpay'}" />
     </form>
 </div>

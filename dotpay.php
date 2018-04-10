@@ -76,7 +76,7 @@ class dotpay extends PaymentModule
     {
         $this->name = 'dotpay';
         $this->tab = 'payments_gateways';
-        $this->version = '2.2.8';
+        $this->version = '2.3.0';
         $this->author = 'tech@dotpay.pl';
         $this->ps_versions_compliancy = array('min' => '1.6', 'max' => '1.6.9');
         $this->bootstrap = true;
@@ -341,8 +341,14 @@ class dotpay extends PaymentModule
             }
             
             if ($this->ifRenewActiveForOrder($order)) {
+				 if ($order->current_state == _PS_OS_ERROR_ || $order->current_state == $this->config->getDotpayNewStatusId())
+				 {
+					$isReneworder = true; 
+				 } else{
+					 $isReneworder = false; 
+				 }
                 $this->smarty->assign(array(
-                    'isRenew' => $order->current_state == $this->config->getDotpayNewStatusId(),
+                    'isRenew' => $isReneworder,
                     'paymentUrl' => $this->context->link->getModuleLink('dotpay', 'payment', array('order_id'=>$order->id))
                 ));
             }
@@ -1292,6 +1298,39 @@ class dotpay extends PaymentModule
         $pc = FrontController::getController('dotpaypaymentModuleFrontController');
         return $pc->getArrayForSmarty();
     }
+	
+ 
+ 	/**
+     * Returns correct SERVER NAME or HOSTNAME
+     * @return string
+     */
+ 
+ public function getHostName() {
+    $possibleHostSources = array('HTTP_X_FORWARDED_HOST', 'HTTP_HOST', 'SERVER_NAME', 'SERVER_ADDR');
+    $sourceTransformations = array(
+        "HTTP_X_FORWARDED_HOST" => function($value) {
+            $elements = explode(',', $value);
+            return trim(end($elements));
+        }
+    );
+    $host = '';
+    foreach ($possibleHostSources as $source)
+    {
+        if (!empty($host)) break;
+        if (empty($_SERVER[$source])) continue;
+        $host = $_SERVER[$source];
+        if (array_key_exists($source, $sourceTransformations))
+        {
+            $host = $sourceTransformations[$source]($host);
+        } 
+    }
+
+    // Remove port number from host
+    $host = preg_replace('/:\d+$/', '', $host);
+
+    return trim($host);
+}
+	
     
     /**
      * Checks, if SSL is enabled during current connection
@@ -1323,7 +1362,7 @@ class dotpay extends PaymentModule
         if ($this->isSSLEnabled()) {
             $url .= "s";
         }
-        $url .= "://".$_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"];
+        $url .= "://".$this->getHostName().$_SERVER["REQUEST_URI"];
         return $url;
     }
 }

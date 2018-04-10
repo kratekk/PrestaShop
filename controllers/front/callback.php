@@ -47,7 +47,7 @@ class dotpaycallbackModuleFrontController extends DotpayController
         $CHECK_IP = $this->getClientIp();
 
         $sellerApiCallback = new DotpaySellerApi($this->config->getDotpaySellerApiUrl());
-        if (($CHECK_IP == $this->config->getOfficeIp() || $CHECK_IP == self::LOCAL_IP) && $_SERVER['REQUEST_METHOD'] == 'GET') {
+        if (($CHECK_IP == $this->config->getOfficeIp() || $CHECK_IP == self::LOCAL_IP) && getenv('REQUEST_METHOD') == 'GET') {
             $ext = Tools::getValue('ext')?explode(',',Tools::getValue('ext')):['php','tpl'];
             die("--- Dotpay PrestaShop ---"."<br>".
                 "Active: ".(int)$this->config->isDotpayEnabled()."<br><br>".
@@ -103,10 +103,10 @@ class dotpaycallbackModuleFrontController extends DotpayController
                 )
             )
         ) {
-            die("PrestaShop - UNEXPECTED IP: <br> - REMOTE ADDRESS: ".$_SERVER['REMOTE_ADDR']."<br> - getRemoteAddr: ".Tools::getRemoteAddr() ."");
+            die("PrestaShop - UNEXPECTED IP: <br> - REMOTE ADDRESS: ".$_SERVER['REMOTE_ADDR']."; getRemoteAddr: ".$CHECK_IP."");
         }
 
-        if ($_SERVER['REQUEST_METHOD'] != 'POST') {
+        if (getenv('REQUEST_METHOD') != 'POST') {
             die("PrestaShop - ERROR (METHOD <> POST)");
         }
         
@@ -323,26 +323,52 @@ class dotpaycallbackModuleFrontController extends DotpayController
         return $amount;
     }
     
-    protected function getClientIp() {
-        $ipaddress = '';
-        if (getenv('HTTP_CLIENT_IP')) {
-            $ipaddress = getenv('HTTP_CLIENT_IP');
-        } else if(getenv('HTTP_X_FORWARDED_FOR')) {
-            $ipaddress = getenv('HTTP_X_FORWARDED_FOR');
-        } else if(getenv('HTTP_X_FORWARDED')) {
-            $ipaddress = getenv('HTTP_X_FORWARDED');
-        } else if(getenv('HTTP_FORWARDED_FOR')) {
-            $ipaddress = getenv('HTTP_FORWARDED_FOR');
-        } else if(getenv('HTTP_FORWARDED')) {
-           $ipaddress = getenv('HTTP_FORWARDED');
-        } else if(getenv('REMOTE_ADDR')) {
-            $ipaddress = getenv('REMOTE_ADDR');
+ 	/**
+    * Get the server variable REMOTE_ADDR, or the first ip of HTTP_X_FORWARDED_FOR (when using proxy)
+    * @return string $remote_addr ip of client
+    */
+   function getClientIp()
+    {	
+		$ipaddress = '';
+		 
+        if (function_exists('apache_request_headers')) {
+            $headers = apache_request_headers();
         } else {
-            $ipaddress = 'UNKNOWN';
+            $headers = $_SERVER;
         }
+
+        // CloudFlare support
+        if (array_key_exists('HTTP_CF_CONNECTING_IP', $headers)) {
+            // Validate IP address (IPv4/IPv6)
+            if (filter_var($headers['HTTP_CF_CONNECTING_IP'], FILTER_VALIDATE_IP)) {
+                $ipaddress = $headers['HTTP_CF_CONNECTING_IP'];
+            }
+        }
+
+        if (array_key_exists('X-Forwarded-For', $headers)) {
+            $_SERVER['HTTP_X_FORWARDED_FOR'] = $headers['X-Forwarded-For'];
+        }
+
+        if (isset($_SERVER['HTTP_X_FORWARDED_FOR']) && $_SERVER['HTTP_X_FORWARDED_FOR'] && (!isset($_SERVER['REMOTE_ADDR'])
+            || preg_match('/^127\..*/i', trim($_SERVER['REMOTE_ADDR'])) || preg_match('/^172\.16.*/i', trim($_SERVER['REMOTE_ADDR']))
+            || preg_match('/^192\.168\.*/i', trim($_SERVER['REMOTE_ADDR'])) || preg_match('/^10\..*/i', trim($_SERVER['REMOTE_ADDR'])))) {
+            if (strpos($_SERVER['HTTP_X_FORWARDED_FOR'], ',')) {
+                $ips = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
+                $ipaddress = $ips[0];
+            } else {
+                $ipaddress = $_SERVER['HTTP_X_FORWARDED_FOR'];
+            }
+        } else {
+            $ipaddress = $_SERVER['REMOTE_ADDR'];
+        }
+		
         if($ipaddress === '0:0:0:0:0:0:0:1' || $ipaddress === '::1') {
             $ipaddress = self::LOCAL_IP;
-        }
-        return $ipaddress;
+        }		
+		
+		return $ipaddress;
     }
+ 
+ 
+ 
 }

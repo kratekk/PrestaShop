@@ -36,6 +36,7 @@ class dotpaybackModuleFrontController extends DotpayController
         $this->display_column_left = false;
         parent::initContent();
         $message = null;
+		$hiddenHookData = null;
         
         if ((bool)Context::getContext()->customer->is_guest) {
             $url=$this->context->link->getPageLink('guest-tracking', true);

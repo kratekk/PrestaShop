@@ -159,65 +159,208 @@ abstract class DotpayController extends ModuleFrontController
         return Order::getOrderByCartId($this->context->cart->id);
     }
 
+	
+	/**
+     * Returns correct SERVER NAME or HOSTNAME
+     * @return string
+     */
+    public function getHost()
+    {
+
+		$possibleHostSources = array('HTTP_X_FORWARDED_HOST', 'HTTP_HOST', 'SERVER_NAME', 'SERVER_ADDR');
+		$sourceTransformations = array(
+			"HTTP_X_FORWARDED_HOST" => function($value) {
+				$elements = explode(',', $value);
+				return trim(end($elements));
+			}
+		);
+		$host = '';
+		foreach ($possibleHostSources as $source)
+		{
+			if (!empty($host)) break;
+			if (empty($_SERVER[$source])) continue;
+			$host = $_SERVER[$source];
+			if (array_key_exists($source, $sourceTransformations))
+			{
+				$host = $sourceTransformations[$source]($host);
+			} 
+		}
+
+		// Remove port number from host
+		$host = preg_replace('/:\d+$/', '', $host);
+
+		return trim($host);
+
+    }
+	
+	 /**
+	 * The validator checks if the given URL address is correct.
+	 */
+	public function validateHostname($value)
+    {
+        return (bool) preg_match('/^[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,10}$/', $value);
+    }
+	
+	 /**
+     * replacing removing double or more special characters that appear side by side by space from: firstname, lastname, city, street, p_info...
+     * @return string
+     */
+    public function replaceCharacters($originalValue)
+		{
+			$originalValue1 = preg_replace('/(\s{2,}|\.{2,}|@{2,}|\-{2,}|\/{2,} | \'{2,}|\"{2,}|_{2,})/', ' ', $originalValue);
+			return trim($originalValue1);
+		}
+	
+	/**
+	 * checks and crops the size of a string
+	 * the $special parameter means an estimate of how many urlencode characters can be used in a given field
+	 * e.q. 'ż' (1 char) -> '%C5%BC' (6 chars)
+	 */	
+	public function encoded_substrParams($string, $from, $to, $special=0)
+		{	
+			$s = html_entity_decode($this->replaceCharacters($string),ENT_QUOTES, 'UTF-8');
+			$sub = mb_substr($s, $from, $to,'UTF-8');
+			$sum = strlen(urlencode($sub));
+			
+			if($sum  > $to)
+				{    
+					$newsize = $to - $special; 		
+					$sub = mb_substr($s, $from, $newsize,'UTF-8');
+				} 	
+			return trim($sub);
+		}
+
+	
+	/**
+	 * prepare data for the firstname and lastname so that it would be consistent with the validation
+	 */
+	public function NewPersonName($value)
+		{
+			$NewPersonName1 = preg_replace('/[^\p{L}0-9\s\-_]/u',' ',$value);
+			return $this->encoded_substrParams($NewPersonName1,0,50,24);
+		}
+	
+	
+
+	/**
+	 * prepare data for the city so that it would be consistent with the validation
+	 */
+	public function NewCity($value)
+		{
+			$NewCity1 = preg_replace('/[^\p{L}0-9\.\s\-\/_,]/u',' ',$value);
+			return $this->encoded_substrParams($NewCity1,0,50,24);
+		}
+	
+	
+	/**
+	 * prepare data for the street so that it would be consistent with the validation
+	 */
+	public function NewStreet($value)
+		{	
+			$NewStreet1 = preg_replace('/[^\p{L}0-9\.\s\-\/_,]/u',' ',$value);
+			return $this->encoded_substrParams($NewStreet1,0,100,50);
+		}
+		
+	/**
+	 * prepare data for the street_n1 so that it would be consistent with the validation
+	 */
+	public function NewStreet_n1($value)
+		{
+			$NewStreet_n1a = preg_replace('/[^\p{L}0-9\s\-_\/]/u',' ',$value);
+			return $this->encoded_substrParams($NewStreet_n1a,0,30,24);
+		}
+	
+	/**
+	 * prepare data for the phone so that it would be consistent with the validation
+	 */
+	public function NewPhone($value)
+		{
+			$NewPhone1 = preg_replace('/[^\+\s0-9\-_]/','',$value);
+			return $this->encoded_substrParams($NewPhone1,0,20,6);
+		}
+	
+	
+	/**
+	 * prepare data for the postcode so that it would be consistent with the validation
+	 */
+	public function NewPostcode($value)
+		{
+			$NewPostcode1 = preg_replace('/[^\d\w\s\-]/','',$value);
+			return $this->encoded_substrParams($NewPostcode1,0,20,6);
+		}
+	
+	
     /**
      * Returns unique value for every order
      * @return string
      */
     public function getDotControl($source = null)
-    {
-        if ($source == null) {
-			$exAmount_is = $this->api->getExtrachargeAmount(true);
-			 if ($exAmount_is  > 0) {
-				 return $this->getLastOrderNumber().'/'.$_SERVER['SERVER_NAME'].'/module:'.$this->module->version.'/fee:'.$exAmount_is.' '.$this->getDotCurrency();
-			 }else{
-				return $this->getLastOrderNumber().'/'.$_SERVER['SERVER_NAME'].'/module:'.$this->module->version;
-			 }
-            
-        } else {
-            $tmp = explode('/', $source);
-            return $tmp[0];
-        }
-    }
+		{
+			if ($source == null) {
+				
+				if ($this->validateHostname($this->getHost()))
+					{
+						$server_name = $this->getHost();
+					} else {
+						$server_name = "HOSTNAME";
+					}
+					
+				$exAmount_is = $this->api->getExtrachargeAmount(true);
+				 if ($exAmount_is  > 0) {
+					 return $this->getLastOrderNumber().'|'.$server_name.'|PS16 module:'.$this->module->version.'|fee:'.$exAmount_is.' '.$this->getDotCurrency();
+				 }else{
+					return $this->getLastOrderNumber().'|'.$server_name.'|PS16 module:'.$this->module->version;
+				 }
+				
+			} else {
+				$tmp = explode('|', $source);
+				return $tmp[0];
+			}
+		}
     
     /**
      * Returns title of shop
      * @return string
      */
     public function getDotPinfo()
-    {
-        return Configuration::get('PS_SHOP_NAME');
-    }
+		{	
+			$Shop_name = Configuration::get('PS_SHOP_NAME');	
+			$NewShop_name1 = preg_replace('/[^\p{L}0-9\s\"\/\\:\.\$\+!#\^\?\-_@]/u','',$Shop_name);
+			return $this->encoded_substrParams($NewShop_name1,0,300,60);
+			
+			
+		}
     
     /**
      * Returns amount of order
      * @return float
      */
     public function getDotAmount()
-    {
-        if ($this->totalAmount === null) {
-            $this->totalAmount = $this->getInitializedCart()->getOrderTotal(true, Cart::BOTH);
-        }
-        if ($this->currencyId === null) {
-            $this->currencyId = $this->context->cart->id_currency;
-        }
-        return $this->api->getFormatAmount($this->totalAmount);
-    }
+		{
+			if ($this->totalAmount === null) {
+				$this->totalAmount = $this->getInitializedCart()->getOrderTotal(true, Cart::BOTH);
+			}
+			if ($this->currencyId === null) {
+				$this->currencyId = $this->context->cart->id_currency;
+			}
+			return $this->api->getFormatAmount($this->totalAmount);
+		}
     
     /**
      * Returns amount of shipping
      * @return float
      */
     public function getDotShippingAmount()
-    {
-        if ($this->shippingAmount === null) {
-            $this->shippingAmount = $this->getInitializedCart()->getOrderTotal(true, Cart::ONLY_SHIPPING);
-        }
-        if ($this->currencyId === null) {
-            $this->currencyId = $this->context->cart->id_currency;
-        }
-        return $this->api->getFormatAmount($this->shippingAmount);
-    }
-    
+		{
+			if ($this->shippingAmount === null) {
+				$this->shippingAmount = $this->getInitializedCart()->getOrderTotal(true, Cart::ONLY_SHIPPING);
+			}
+			if ($this->currencyId === null) {
+				$this->currencyId = $this->context->cart->id_currency;
+			}
+			return $this->api->getFormatAmount($this->shippingAmount);
+		}
+		
     /**
      * Returns code of currency used in order
      * @return string
@@ -320,7 +463,7 @@ abstract class DotpayController extends ModuleFrontController
      */
     public function getDotFirstname()
     {
-        return $this->getCustomer()->firstname;
+        return $this->NewPersonName($this->getCustomer()->firstname);
     }
     
     /**
@@ -329,7 +472,7 @@ abstract class DotpayController extends ModuleFrontController
      */
     public function getDotLastname()
     {
-        return $this->getCustomer()->lastname;
+		return $this->NewPersonName($this->getCustomer()->lastname);
     }
     
     /**
@@ -337,8 +480,17 @@ abstract class DotpayController extends ModuleFrontController
      * @return string
      */
     public function getDotEmail()
-    {
-        return $this->getCustomer()->email;
+    {	
+		$email = $this->getCustomer()->email;
+		
+		if(!filter_var($email, FILTER_VALIDATE_EMAIL))
+        {
+          $Newemail = filter_var($email,FILTER_SANITIZE_EMAIL);
+        } else {
+		  $Newemail = $email;
+		}
+
+        return $Newemail;
     }
     
     /**
@@ -350,9 +502,9 @@ abstract class DotpayController extends ModuleFrontController
         $address = $this->getAddress();
         $phone = '';
         if ($address->phone != '') {
-            $phone = $address->phone;
+            $phone = $this->NewPhone($address->phone);
         } else if ($address->phone_mobile != '') {
-            $phone = $address->phone_mobile;
+            $phone = $this->NewPhone($address->phone_mobile);
         }
         return $phone;
     }
@@ -364,10 +516,15 @@ abstract class DotpayController extends ModuleFrontController
     public function getDotStreetAndStreetN1()
     {
         $address = $this->getAddress();
-        $street = $address->address1;
-        $street_n1 = $address->address2;
+		
+        $streetA = $address->address1;
+        $street = $this->NewStreet($streetA);
+		
+        $street_n1A = $address->address2;
+        $street_n1 = $this->NewStreet_n1($street_n1A);
+		
         if (empty($street_n1)) {
-            preg_match("/\s[\w\d\/_\-]{0,30}$/", $street, $matches);
+            preg_match("/\s[\p{L}0-9\s\-_\/]{1,15}$/u", $street, $matches);
             if (count($matches)>0) {
                 $street_n1 = trim($matches[0]);
                 $street = str_replace($matches[0], '', $street);
@@ -378,14 +535,16 @@ abstract class DotpayController extends ModuleFrontController
             'street_n1' => $street_n1
         );
     }
-    
+ 
+ 
+	
     /**
      * Returns a city of customer
      * @return string 
      */
     public function getDotCity()
     {
-        return $this->getAddress()->city;
+        return $this->NewCity($this->getAddress()->city);
     }
     
     /**
@@ -394,7 +553,7 @@ abstract class DotpayController extends ModuleFrontController
      */
     public function getDotPostcode()
     {
-        return $this->getAddress()->postcode;
+        return $this->NewPostcode($this->getAddress()->postcode);
     }
     
     /**

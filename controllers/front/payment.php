@@ -67,14 +67,13 @@ class dotpaypaymentModuleFrontController extends DotpayController
             'channelList' => $channelList,
             'isWidget' => (bool)($this->config->isDotpayWidgetMode()&&$this->config->getDotpayApiVersion()=='dev'),
             'userId' => $this->config->getDotpayId(),
-            'currency' => $this->getDotCurrency(),
+            'currencyPay' => $this->getDotCurrency(),
             'amount' => $this->getDotAmount(),
             'lang' => $this->getDotLang(),
             'widgetUrl' => $this->module->getPath().'web/js/payment_widget.js',
             'dotpayUrl' => $this->config->getDotpayTargetUrl(),
             'exMessage' => $this->module->l('This payment will be increased by'),
             'exAmount' => $this->api->getExtrachargeAmount(),
-            'currency' => $this->getDotCurrency(),
             'discMessage' => $this->module->l('This payment will be reduced by'),
             'discAmount' => $this->api->getDiscountAmount(),
             'orderId' => Tools::getValue('order_id'),
@@ -82,7 +81,9 @@ class dotpaypaymentModuleFrontController extends DotpayController
             'disabledChannels' => implode(',', $disabledChannels),
             'channelApiUrl' => $this->config->getDotpayTargetUrl().'payment_api/v1/channels/',
             'inCheckout' => $inCheckout,
-            'directPayment' => (int)!$this->config->isDotpayWidgetMode()
+            'directPayment' => (int)!$this->config->isDotpayWidgetMode(),
+			'getinfoaboutTest' => $this->api->getinfoaboutTest(),
+			'testMessage' => $this->module->l('The payment module is in test mode. All payment information is fake. Order will not be processed!')
         );
     }
 }

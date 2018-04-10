@@ -33,7 +33,7 @@
 
 <h2 class="page-heading">{l s='Manage your saved credit cards' mod='dotpay'}</h2>
 
-{if $cards}
+{if isset($cards)}
 <p class="alert alert-success">{l s='Below is a list of your credit cards registered in this shop. Data identifying these cards are stored in a secure manner in Dotpay. This allows you to make payments with one click. At any time, you can deregister their cards.' mod='dotpay'}</p>
 <table id="credit-cards-list">
     <tr class="ocheader">

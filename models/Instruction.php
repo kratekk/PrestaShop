@@ -130,7 +130,7 @@ class DotpayInstruction extends ObjectModel
                 `currency` varchar(3) NOT null,
                 `channel` INT UNSIGNED NOT null,
                 PRIMARY KEY (`instruction_id`)
-            ) DEFAULT CHARSET=utf8;'
+            ) ENGINE='._MYSQL_ENGINE_.' DEFAULT CHARSET=utf8;'
         );
     }
     

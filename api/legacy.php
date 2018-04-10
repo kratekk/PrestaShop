@@ -255,6 +255,13 @@ class DotpayLegacyApi extends DotpayApi
         return false;
     }
     
+	 /** Returns info about test mode
+     * @return type
+     */							   
+	public function getinfoaboutTest()
+    {
+        return false;
+    }
     /**
      * Returns amount after extra charge
      * @return type

@@ -341,7 +341,8 @@ class dotpaycallbackModuleFrontController extends DotpayController
         if (array_key_exists('HTTP_CF_CONNECTING_IP', $headers)) {
             // Validate IP address (IPv4/IPv6)
             if (filter_var($headers['HTTP_CF_CONNECTING_IP'], FILTER_VALIDATE_IP)) {
-                $ipaddress = $headers['HTTP_CF_CONNECTING_IP'];
+                $ipaddress = $headers['HTTP_CF_CONNECTING_IP']; 
+		 return $ipaddress;   
             }
         }
 

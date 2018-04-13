@@ -33,7 +33,7 @@ function loadJS(filename) {
 }
 
 document.addEventListener("DOMContentLoaded", function(event) { 
-    if(typeof jQuery === undefined) {
+    if(typeof jQuery === "undefined") {
         loadJS('https://code.jquery.com/jquery-2.2.4.min.js');
     }
 });

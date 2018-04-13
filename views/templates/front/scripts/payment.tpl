@@ -245,7 +245,7 @@ function strategyWidget(target) {
     if($('form[form-target="' + target + '"]').find('.channel-container input:checked').length === 1)
         $('form[form-target="' + target + '"] button[type="submit"]').attr('disabled', false);
     /* Fix for jQuery Uniform */
-    if(typeof $.uniform !== undefined)
+    if($.uniform !== undefined)
         $.uniform.restore($('.my-form-widget-container input[type="radio"]'));
 }
 

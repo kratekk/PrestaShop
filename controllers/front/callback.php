@@ -331,7 +331,7 @@ class dotpaycallbackModuleFrontController extends DotpayController
     {	
 		$ipaddress = '';
 		 
-        if (function_exists('apache_request_headers')) {
+        if (function_exists('apache_request_headers') && !$_SERVER["HTTP_CF_IPCOUNTRY"]) {
             $headers = apache_request_headers();
         } else {
             $headers = $_SERVER;
